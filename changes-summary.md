@@ -35,7 +35,7 @@ the connection details into `CONFIG.txt`. Four changes make that work.
 ## How This Was Checked
 
 - **Repository lint passes:** `check_repo.py` reports all checks passed.
-- **Test suite passes:** 214 tests pass.
+- **Test suite passes:** 213 tests pass.
 - **Package links resolve:** The student package was rebuilt exactly as Vocareum builds it.
   All 14 file links inside it point at files that exist. Four of them were broken before.
 - **Credentials against a live database:** `verify_setup.py` loaded `CONFIG.txt` and
