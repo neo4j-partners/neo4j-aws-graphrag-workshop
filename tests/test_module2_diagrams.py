@@ -141,9 +141,9 @@ def test_module_3_says_module_2_selected_the_application_path() -> None:
         if cell["cell_type"] == "markdown"
     )
 
-    assert "Module 2 selected a fixed Hybrid-Cypher path" in content
+    assert "retriever selected in Module 2" in content
     assert "Module 2 compared retrieval patterns" not in content
-    assert "selects this fixed Hybrid-Cypher pattern" in notebook_markdown
+    assert "chooses this configuration for the application" in notebook_markdown
     assert "compares this configuration" not in notebook_markdown
     assert "compares vector, hybrid" not in notebook_markdown
 

@@ -60,7 +60,7 @@ selection mechanism remains visible.
 
 ## Select the Application Retriever
 
-:image[Decision tree for selecting a Neo4j retrieval pattern by query shape]{src="../../images/02-retrieval-decision-tree.png" width=800}
+:image[Decision tree for selecting a Neo4j retrieval pattern by question shape: VectorRetriever, HybridRetriever, VectorCypherRetriever, or reviewed fixed Cypher, with Text2CypherRetriever as an optional extension]{src="../../images/02-select-retriever.svg" width=800}
 
 | Retriever | Best for | Contribution |
 |-----------|----------|--------------|
