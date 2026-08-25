@@ -1,0 +1,64 @@
+assets/*
+!assets/README.md
+
+.claude/*
+evidence/*
+.idea/*
+
+# Workshop Studio infrastructure — lives in Workshop Studio repo, not here
+static/cfn/
+static/iam_policy.json
+
+# Environment — never commit credentials
+.env
+*.env.local
+notebooks/.env
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+
+# Jupyter outputs (strip before committing with: jupyter nbconvert --clear-output)
+.ipynb_checkpoints/
+
+# Corpus extracted from hotel-faqs.zip at run time, not a source artifact
+notebooks/*/data/
+
+# Large data files (go in assets/ S3 bucket, not repo)
+notebooks/*.index
+notebooks/*.json.bak
+notebooks/faqs_*.json
+notebooks/faqs_*.index
+# Workshop Studio files — live in the WS repo, not here
+# (workshop-content/content/ IS allowed — it's the public copy for collaborators)
+contentspec.yaml
+FACILITATOR_GUIDE.md
+static/cfn/
+static/iam_policy.json
+.vscode/
+
+# Module 5 build context staging. `workshop-*.whl` and `reservation_command.py`
+# are staged into runtime_app/ by 5.1_deploy.ipynb immediately before the
+# container build, because Docker cannot reach outside its build context. The
+# originals are the versioned copies; these are regenerated every run.
+notebooks/05-agentcore-deploy/runtime_app/workshop-*.whl
+notebooks/05-agentcore-deploy/runtime_app/reservation_command.py
+notebooks/05-agentcore-deploy/runtime_app/.bedrock_agentcore.yaml
+notebooks/05-agentcore-deploy/runtime_app/Dockerfile.bak
+
+# Build artifacts from `uv build --wheel` on notebooks/workshop/pyproject.toml
+# (also produced by the Module 4.1 Lambda build, in a temp directory instead).
+notebooks/workshop/build/
+notebooks/workshop/workshop.egg-info/
+
+# Executed notebook copies from the maintenance notebook runner
+workfolder/maintenance/notebook-output/
+# Historical notebook-run evidence retained from the former setup runner
+setup/notebook-output/
+
+# pytest, from maintenance checks in workfolder/tests/
+.pytest_cache/
+
+# macOS
+.DS_Store

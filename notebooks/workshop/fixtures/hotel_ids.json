@@ -1,0 +1,7 @@
+{
+  "manifest_version": 1,
+  "hotels": {
+    "hotel-cairo-001.txt": "81393d51-1df3-4f53-b58e-e4cda9736fd7",
+    "hotel-cairo-002.txt": "0d82c2e5-9db8-49a5-8c22-7d8ec209453a"
+  }
+}

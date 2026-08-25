@@ -1,0 +1,1843 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "title",
+      "type": "text",
+      "x": 300,
+      "y": 22,
+      "width": 1000,
+      "height": 40,
+      "angle": 0,
+      "strokeColor": "#232f3e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 546,
+      "version": 1,
+      "versionNonce": 3822,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 24,
+      "fontFamily": 5,
+      "text": "Choose a retrieval pattern by question shape",
+      "originalText": "Choose a retrieval pattern by question shape",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": null
+    },
+    {
+      "id": "decision",
+      "type": "diamond",
+      "x": 635,
+      "y": 80,
+      "width": 330,
+      "height": 110,
+      "angle": 0,
+      "strokeColor": "#232f3e",
+      "backgroundColor": "#ffec99",
+      "fillStyle": "solid",
+      "strokeWidth": 3,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 846,
+      "version": 1,
+      "versionNonce": 5922,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "decision-text",
+          "type": "text"
+        },
+        {
+          "id": "decision-to-vector",
+          "type": "arrow"
+        },
+        {
+          "id": "decision-to-hybrid",
+          "type": "arrow"
+        },
+        {
+          "id": "decision-to-vector-cypher",
+          "type": "arrow"
+        },
+        {
+          "id": "decision-to-fixed-cypher",
+          "type": "arrow"
+        },
+        {
+          "id": "decision-to-optional-text2cypher",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1787464800000,
+      "link": null
+    },
+    {
+      "id": "decision-text",
+      "type": "text",
+      "x": 670,
+      "y": 110,
+      "width": 260,
+      "height": 50,
+      "angle": 0,
+      "strokeColor": "#232f3e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1344,
+      "version": 1,
+      "versionNonce": 9408,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 18,
+      "fontFamily": 5,
+      "text": "What evidence does the question need?",
+      "originalText": "What evidence does the question need?",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": "decision"
+    },
+    {
+      "id": "vector-need",
+      "type": "rectangle",
+      "x": 40,
+      "y": 235,
+      "width": 340,
+      "height": 76,
+      "angle": 0,
+      "strokeColor": "#7b61ff",
+      "backgroundColor": "#ede9fe",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1116,
+      "version": 1,
+      "versionNonce": 7812,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "vector-need-text",
+          "type": "text"
+        },
+        {
+          "id": "decision-to-vector",
+          "type": "arrow"
+        },
+        {
+          "id": "vector-need-to-card",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1787464800000,
+      "link": null
+    },
+    {
+      "id": "vector-need-text",
+      "type": "text",
+      "x": 58,
+      "y": 247,
+      "width": 304,
+      "height": 52,
+      "angle": 0,
+      "strokeColor": "#7b61ff",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1614,
+      "version": 1,
+      "versionNonce": 11298,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 16,
+      "fontFamily": 5,
+      "text": "Semantic or paraphrased\nsource lookup",
+      "originalText": "Semantic or paraphrased\nsource lookup",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": "vector-need"
+    },
+    {
+      "id": "vector-card",
+      "type": "rectangle",
+      "x": 40,
+      "y": 355,
+      "width": 340,
+      "height": 300,
+      "angle": 0,
+      "strokeColor": "#7b61ff",
+      "backgroundColor": "#ede9fe",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1114,
+      "version": 1,
+      "versionNonce": 7798,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "vector-card-title",
+          "type": "text"
+        },
+        {
+          "id": "vector-need-to-card",
+          "type": "arrow"
+        },
+        {
+          "id": "vector-card-to-graph",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1787464800000,
+      "link": null
+    },
+    {
+      "id": "vector-card-title",
+      "type": "text",
+      "x": 60,
+      "y": 372,
+      "width": 300,
+      "height": 32,
+      "angle": 0,
+      "strokeColor": "#7b61ff",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1705,
+      "version": 1,
+      "versionNonce": 11935,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 18,
+      "fontFamily": 5,
+      "text": "VectorRetriever",
+      "originalText": "VectorRetriever",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": "vector-card"
+    },
+    {
+      "id": "vector-card-body",
+      "type": "text",
+      "x": 64,
+      "y": 420,
+      "width": 292,
+      "height": 210,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1589,
+      "version": 1,
+      "versionNonce": 11123,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 13,
+      "fontFamily": 5,
+      "text": "Embedding similarity\n\nEvidence\nRanked source Chunks and scores\n\nExample\nWhen does arrival processing begin?",
+      "originalText": "Embedding similarity\n\nEvidence\nRanked source Chunks and scores\n\nExample\nWhen does arrival processing begin?",
+      "textAlign": "left",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": null
+    },
+    {
+      "id": "decision-to-vector",
+      "type": "arrow",
+      "x": 800,
+      "y": 190,
+      "width": -590,
+      "height": 45,
+      "angle": 0,
+      "strokeColor": "#7b61ff",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1822,
+      "version": 1,
+      "versionNonce": 12754,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -590,
+          45
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "decision",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "vector-need",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "vector-need-to-card",
+      "type": "arrow",
+      "x": 210,
+      "y": 311,
+      "width": 0,
+      "height": 44,
+      "angle": 0,
+      "strokeColor": "#7b61ff",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1843,
+      "version": 1,
+      "versionNonce": 12901,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          44
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "vector-need",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "vector-card",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "vector-card-to-graph",
+      "type": "arrow",
+      "x": 210,
+      "y": 655,
+      "width": 590,
+      "height": 95,
+      "angle": 0,
+      "strokeColor": "#7b61ff",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1961,
+      "version": 1,
+      "versionNonce": 13727,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          590,
+          95
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "vector-card",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "neo4j",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "hybrid-need",
+      "type": "rectangle",
+      "x": 420,
+      "y": 235,
+      "width": 340,
+      "height": 76,
+      "angle": 0,
+      "strokeColor": "#1971c2",
+      "backgroundColor": "#dbe4ff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1099,
+      "version": 1,
+      "versionNonce": 7693,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "hybrid-need-text",
+          "type": "text"
+        },
+        {
+          "id": "decision-to-hybrid",
+          "type": "arrow"
+        },
+        {
+          "id": "hybrid-need-to-card",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1787464800000,
+      "link": null
+    },
+    {
+      "id": "hybrid-need-text",
+      "type": "text",
+      "x": 438,
+      "y": 247,
+      "width": 304,
+      "height": 52,
+      "angle": 0,
+      "strokeColor": "#1971c2",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1597,
+      "version": 1,
+      "versionNonce": 11179,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 16,
+      "fontFamily": 5,
+      "text": "Exact name, code,\nor identifier",
+      "originalText": "Exact name, code,\nor identifier",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": "hybrid-need"
+    },
+    {
+      "id": "hybrid-card",
+      "type": "rectangle",
+      "x": 420,
+      "y": 355,
+      "width": 340,
+      "height": 300,
+      "angle": 0,
+      "strokeColor": "#1971c2",
+      "backgroundColor": "#dbe4ff",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1097,
+      "version": 1,
+      "versionNonce": 7679,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "hybrid-card-title",
+          "type": "text"
+        },
+        {
+          "id": "hybrid-need-to-card",
+          "type": "arrow"
+        },
+        {
+          "id": "hybrid-card-to-graph",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1787464800000,
+      "link": null
+    },
+    {
+      "id": "hybrid-card-title",
+      "type": "text",
+      "x": 440,
+      "y": 372,
+      "width": 300,
+      "height": 32,
+      "angle": 0,
+      "strokeColor": "#1971c2",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1688,
+      "version": 1,
+      "versionNonce": 11816,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 18,
+      "fontFamily": 5,
+      "text": "HybridRetriever",
+      "originalText": "HybridRetriever",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": "hybrid-card"
+    },
+    {
+      "id": "hybrid-card-body",
+      "type": "text",
+      "x": 444,
+      "y": 420,
+      "width": 292,
+      "height": 210,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1572,
+      "version": 1,
+      "versionNonce": 11004,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 13,
+      "fontFamily": 5,
+      "text": "Vector plus full-text relevance\n\nEvidence\nSemantic score and exact-term hits\n\nExample\nFind the policy for ZIP 60611",
+      "originalText": "Vector plus full-text relevance\n\nEvidence\nSemantic score and exact-term hits\n\nExample\nFind the policy for ZIP 60611",
+      "textAlign": "left",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": null
+    },
+    {
+      "id": "decision-to-hybrid",
+      "type": "arrow",
+      "x": 800,
+      "y": 190,
+      "width": -210,
+      "height": 45,
+      "angle": 0,
+      "strokeColor": "#1971c2",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1805,
+      "version": 1,
+      "versionNonce": 12635,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -210,
+          45
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "decision",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "hybrid-need",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "hybrid-need-to-card",
+      "type": "arrow",
+      "x": 590,
+      "y": 311,
+      "width": 0,
+      "height": 44,
+      "angle": 0,
+      "strokeColor": "#1971c2",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1826,
+      "version": 1,
+      "versionNonce": 12782,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          44
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "hybrid-need",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "hybrid-card",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "hybrid-card-to-graph",
+      "type": "arrow",
+      "x": 590,
+      "y": 655,
+      "width": 210,
+      "height": 95,
+      "angle": 0,
+      "strokeColor": "#1971c2",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1944,
+      "version": 1,
+      "versionNonce": 13608,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          210,
+          95
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "hybrid-card",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "neo4j",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "vector-cypher-need",
+      "type": "rectangle",
+      "x": 800,
+      "y": 235,
+      "width": 340,
+      "height": 76,
+      "angle": 0,
+      "strokeColor": "#1098ad",
+      "backgroundColor": "#c5f6fa",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1812,
+      "version": 1,
+      "versionNonce": 12684,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "vector-cypher-need-text",
+          "type": "text"
+        },
+        {
+          "id": "decision-to-vector-cypher",
+          "type": "arrow"
+        },
+        {
+          "id": "vector-cypher-need-to-card",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1787464800000,
+      "link": null
+    },
+    {
+      "id": "vector-cypher-need-text",
+      "type": "text",
+      "x": 818,
+      "y": 247,
+      "width": 304,
+      "height": 52,
+      "angle": 0,
+      "strokeColor": "#1098ad",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2310,
+      "version": 1,
+      "versionNonce": 16170,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 16,
+      "fontFamily": 5,
+      "text": "Semantic match plus\nconnected facts",
+      "originalText": "Semantic match plus\nconnected facts",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": "vector-cypher-need"
+    },
+    {
+      "id": "vector-cypher-card",
+      "type": "rectangle",
+      "x": 800,
+      "y": 355,
+      "width": 340,
+      "height": 300,
+      "angle": 0,
+      "strokeColor": "#1098ad",
+      "backgroundColor": "#c5f6fa",
+      "fillStyle": "solid",
+      "strokeWidth": 3,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1810,
+      "version": 1,
+      "versionNonce": 12670,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "vector-cypher-card-title",
+          "type": "text"
+        },
+        {
+          "id": "vector-cypher-need-to-card",
+          "type": "arrow"
+        },
+        {
+          "id": "vector-cypher-card-to-graph",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1787464800000,
+      "link": null
+    },
+    {
+      "id": "vector-cypher-card-title",
+      "type": "text",
+      "x": 820,
+      "y": 372,
+      "width": 300,
+      "height": 32,
+      "angle": 0,
+      "strokeColor": "#1098ad",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2401,
+      "version": 1,
+      "versionNonce": 16807,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 18,
+      "fontFamily": 5,
+      "text": "VectorCypherRetriever",
+      "originalText": "VectorCypherRetriever",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": "vector-cypher-card"
+    },
+    {
+      "id": "vector-cypher-card-body",
+      "type": "text",
+      "x": 824,
+      "y": 420,
+      "width": 292,
+      "height": 210,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2285,
+      "version": 1,
+      "versionNonce": 15995,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 13,
+      "fontFamily": 5,
+      "text": "1  Semantic match finds a Chunk node\n2  Reviewed traversal expands the graph\n3  Named fields include provenance\n\nExample\nAmenities and rating for the Cairo hotel",
+      "originalText": "1  Semantic match finds a Chunk node\n2  Reviewed traversal expands the graph\n3  Named fields include provenance\n\nExample\nAmenities and rating for the Cairo hotel",
+      "textAlign": "left",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": null
+    },
+    {
+      "id": "decision-to-vector-cypher",
+      "type": "arrow",
+      "x": 800,
+      "y": 190,
+      "width": 170,
+      "height": 45,
+      "angle": 0,
+      "strokeColor": "#1098ad",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2518,
+      "version": 1,
+      "versionNonce": 17626,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          170,
+          45
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "decision",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "vector-cypher-need",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "vector-cypher-need-to-card",
+      "type": "arrow",
+      "x": 970,
+      "y": 311,
+      "width": 0,
+      "height": 44,
+      "angle": 0,
+      "strokeColor": "#1098ad",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2539,
+      "version": 1,
+      "versionNonce": 17773,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          44
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "vector-cypher-need",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "vector-cypher-card",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "vector-cypher-card-to-graph",
+      "type": "arrow",
+      "x": 970,
+      "y": 655,
+      "width": -170,
+      "height": 95,
+      "angle": 0,
+      "strokeColor": "#1098ad",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2657,
+      "version": 1,
+      "versionNonce": 18599,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -170,
+          95
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "vector-cypher-card",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "neo4j",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "fixed-cypher-need",
+      "type": "rectangle",
+      "x": 1180,
+      "y": 235,
+      "width": 340,
+      "height": 76,
+      "angle": 0,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#ffe8cc",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1611,
+      "version": 1,
+      "versionNonce": 11277,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "fixed-cypher-need-text",
+          "type": "text"
+        },
+        {
+          "id": "decision-to-fixed-cypher",
+          "type": "arrow"
+        },
+        {
+          "id": "fixed-cypher-need-to-card",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1787464800000,
+      "link": null
+    },
+    {
+      "id": "fixed-cypher-need-text",
+      "type": "text",
+      "x": 1198,
+      "y": 247,
+      "width": 304,
+      "height": 52,
+      "angle": 0,
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2109,
+      "version": 1,
+      "versionNonce": 14763,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 16,
+      "fontFamily": 5,
+      "text": "Reviewed structured\nfiltering",
+      "originalText": "Reviewed structured\nfiltering",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": "fixed-cypher-need"
+    },
+    {
+      "id": "fixed-cypher-card",
+      "type": "rectangle",
+      "x": 1180,
+      "y": 355,
+      "width": 340,
+      "height": 300,
+      "angle": 0,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#ffe8cc",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 1609,
+      "version": 1,
+      "versionNonce": 11263,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "fixed-cypher-card-title",
+          "type": "text"
+        },
+        {
+          "id": "fixed-cypher-need-to-card",
+          "type": "arrow"
+        },
+        {
+          "id": "fixed-cypher-card-to-graph",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1787464800000,
+      "link": null
+    },
+    {
+      "id": "fixed-cypher-card-title",
+      "type": "text",
+      "x": 1200,
+      "y": 372,
+      "width": 300,
+      "height": 32,
+      "angle": 0,
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2200,
+      "version": 1,
+      "versionNonce": 15400,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 18,
+      "fontFamily": 5,
+      "text": "Reviewed fixed Cypher",
+      "originalText": "Reviewed fixed Cypher",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": "fixed-cypher-card"
+    },
+    {
+      "id": "fixed-cypher-card-body",
+      "type": "text",
+      "x": 1204,
+      "y": 420,
+      "width": 292,
+      "height": 210,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2084,
+      "version": 1,
+      "versionNonce": 14588,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 13,
+      "fontFamily": 5,
+      "text": "Application-owned query over named fields\nand relationships\n\nEvidence\nReviewed Cypher and database records\n\nExample\nChicago hotels with a spa and pool",
+      "originalText": "Application-owned query over named fields\nand relationships\n\nEvidence\nReviewed Cypher and database records\n\nExample\nChicago hotels with a spa and pool",
+      "textAlign": "left",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": null
+    },
+    {
+      "id": "decision-to-fixed-cypher",
+      "type": "arrow",
+      "x": 800,
+      "y": 190,
+      "width": 550,
+      "height": 45,
+      "angle": 0,
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2317,
+      "version": 1,
+      "versionNonce": 16219,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          550,
+          45
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "decision",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "fixed-cypher-need",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "optional-text2cypher",
+      "type": "rectangle",
+      "x": 1000,
+      "y": 86,
+      "width": 530,
+      "height": 96,
+      "angle": 0,
+      "strokeColor": "#e67700",
+      "backgroundColor": "#fff9db",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2601,
+      "version": 1,
+      "versionNonce": 18207,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "optional-text2cypher-text",
+          "type": "text"
+        },
+        {
+          "id": "decision-to-optional-text2cypher",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1787464800000,
+      "link": null
+    },
+    {
+      "id": "optional-text2cypher-text",
+      "type": "text",
+      "x": 1020,
+      "y": 101,
+      "width": 490,
+      "height": 66,
+      "angle": 0,
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2602,
+      "version": 1,
+      "versionNonce": 18214,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 16,
+      "fontFamily": 5,
+      "text": "Optional: Text2CypherRetriever\nModel-generated read-only Cypher for flexible questions",
+      "originalText": "Optional: Text2CypherRetriever\nModel-generated read-only Cypher for flexible questions",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": "optional-text2cypher"
+    },
+    {
+      "id": "decision-to-optional-text2cypher",
+      "type": "arrow",
+      "x": 965,
+      "y": 135,
+      "width": 35,
+      "height": 0,
+      "angle": 0,
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "dashed",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2603,
+      "version": 1,
+      "versionNonce": 18221,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          35,
+          0
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "decision",
+        "fixedPoint": [
+          1,
+          0.5
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "optional-text2cypher",
+        "fixedPoint": [
+          0,
+          0.5
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "fixed-cypher-need-to-card",
+      "type": "arrow",
+      "x": 1350,
+      "y": 311,
+      "width": 0,
+      "height": 44,
+      "angle": 0,
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2338,
+      "version": 1,
+      "versionNonce": 16366,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          44
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "fixed-cypher-need",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "fixed-cypher-card",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "fixed-cypher-card-to-graph",
+      "type": "arrow",
+      "x": 1350,
+      "y": 655,
+      "width": -550,
+      "height": 95,
+      "angle": 0,
+      "strokeColor": "#e67700",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 2456,
+      "version": 1,
+      "versionNonce": 17192,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -550,
+          95
+        ]
+      ],
+      "startBinding": {
+        "mode": "orbit",
+        "elementId": "fixed-cypher-card",
+        "fixedPoint": [
+          0.5,
+          1
+        ]
+      },
+      "endBinding": {
+        "mode": "orbit",
+        "elementId": "neo4j",
+        "fixedPoint": [
+          0.5,
+          0
+        ]
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow",
+      "elbowed": false,
+      "lastCommittedPoint": null
+    },
+    {
+      "id": "neo4j",
+      "type": "rectangle",
+      "x": 360,
+      "y": 750,
+      "width": 880,
+      "height": 84,
+      "angle": 0,
+      "strokeColor": "#9c36b5",
+      "backgroundColor": "#f3d9fa",
+      "fillStyle": "solid",
+      "strokeWidth": 3,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 480,
+      "version": 1,
+      "versionNonce": 3360,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "boundElements": [
+        {
+          "id": "neo4j-text",
+          "type": "text"
+        },
+        {
+          "id": "vector-card-to-graph",
+          "type": "arrow"
+        },
+        {
+          "id": "hybrid-card-to-graph",
+          "type": "arrow"
+        },
+        {
+          "id": "vector-cypher-card-to-graph",
+          "type": "arrow"
+        },
+        {
+          "id": "fixed-cypher-card-to-graph",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1787464800000,
+      "link": null
+    },
+    {
+      "id": "neo4j-text",
+      "type": "text",
+      "x": 390,
+      "y": 764,
+      "width": 820,
+      "height": 56,
+      "angle": 0,
+      "strokeColor": "#7b2c91",
+      "backgroundColor": "transparent",
+      "fillStyle": "solid",
+      "strokeWidth": 2,
+      "strokeStyle": "solid",
+      "roughness": 0,
+      "opacity": 100,
+      "seed": 978,
+      "version": 1,
+      "versionNonce": 6846,
+      "isDeleted": false,
+      "locked": false,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "boundElements": [],
+      "updated": 1787464800000,
+      "link": null,
+      "fontSize": 18,
+      "fontFamily": 5,
+      "text": "Neo4j Knowledge Graph\nSource Chunks, named entities, and connected facts",
+      "originalText": "Neo4j Knowledge Graph\nSource Chunks, named entities, and connected facts",
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "lineHeight": 1.25,
+      "autoResize": false,
+      "containerId": "neo4j"
+    }
+  ],
+  "appState": {
+    "gridSize": 20,
+    "gridModeEnabled": false,
+    "viewBackgroundColor": "#ffffff",
+    "currentItemFontFamily": 5,
+    "currentItemRoughness": 0,
+    "currentItemRoundness": "round",
+    "currentItemArrowType": "round",
+    "currentItemStrokeWidth": 2,
+    "exportBackground": true,
+    "exportScale": 2,
+    "theme": "light",
+    "bindMode": "orbit"
+  },
+  "files": {}
+}

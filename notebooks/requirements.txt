@@ -1,0 +1,16 @@
+strands-agents>=1.27.0
+neo4j>=5.24.0
+neo4j-graphrag>=1.6.0
+neo4j-agent-memory[bedrock]==0.5.0
+numpy>=2.0.0
+boto3>=1.38.0
+bedrock-agentcore>=0.1.0
+bedrock-agentcore-starter-toolkit>=0.1.0
+mcp>=1.0.0
+python-dotenv>=1.0.0
+
+# Needed only by the maintenance notebook runner. Workshop
+# participants do not need these to run the notebooks themselves.
+nbconvert>=7.17.1
+nbformat>=5.11.1
+ipykernel>=7.3.0

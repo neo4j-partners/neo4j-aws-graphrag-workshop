@@ -1,0 +1,38 @@
+[
+  {
+    "name": "search_hotel_knowledge",
+    "description": "Search grounded hotel documents and enrich the matching chunks with reviewed Neo4j hotel facts. Use for semantic questions about a hotel's rooms, amenities, policies, and services. Does not provide live inventory or guaranteed availability, and never writes.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Natural-language hotel question."
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "additionalProperties": false
+    }
+  },
+  {
+    "name": "graph_query",
+    "description": "Answer a structured hotel question with read-only Cypher generated against the pinned graph schema. Use for counts, averages, filters, and connected traversals that need the database to calculate over the full matching set rather than return top-k text. Returns the generated Cypher alongside its records, and never writes.",
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Natural-language question about counts, averages, or relationships across hotels."
+        }
+      },
+      "required": [
+        "query"
+      ],
+      "additionalProperties": false
+    }
+  }
+]

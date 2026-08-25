@@ -1,0 +1,10 @@
+# Third-party packages the retrieval Lambdas need, and nothing else.
+#
+# boto3 and botocore are deliberately absent: the Lambda Python runtime already
+# ships them, so vendoring them only makes the package bigger.
+#
+# neo4j-rust-ext is deliberately absent as well. It is an optional native
+# accelerator for the driver, and adding it puts a compiled artifact back into
+# a package that is otherwise pure Python wheels.
+neo4j==6.2.0
+neo4j-graphrag==1.18.0
