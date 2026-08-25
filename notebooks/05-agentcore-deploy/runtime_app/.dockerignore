@@ -1,0 +1,50 @@
+# Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+
+# Virtual environments and local secrets. `.env` in particular: the Neo4j
+# credentials reach the container as launch-time environment variables, and a
+# copy baked into the image would outlive the Runtime in ECR.
+.venv/
+venv/
+.env
+*.pem
+*.key
+credentials
+.aws/
+
+# Testing and tooling
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+
+# Notebooks. The image runs booking_agent.py; the notebook that deploys it has
+# no reason to ship inside it.
+*.ipynb
+.ipynb_checkpoints/
+
+# Development noise
+*.log
+*.bak
+*.swp
+.DS_Store
+.vscode/
+.idea/
+.git/
+
+# The shared package reaches the image as the wheel that 5.1_deploy.ipynb
+# builds, never as a loose source tree. An earlier flow copied the tree here
+# instead, and a leftover copy both bloats the build context and shadows the
+# installed package for anything importing `workshop` from this directory.
+workshop/
+
+# Starter toolkit state. `.bedrock_agentcore.yaml` records the runtime ID of a
+# previous deploy and belongs on the machine doing the deploying, not in the
+# image it produces.
+.bedrock_agentcore.yaml
+.bedrock_agentcore/
+Dockerfile
+.dockerignore

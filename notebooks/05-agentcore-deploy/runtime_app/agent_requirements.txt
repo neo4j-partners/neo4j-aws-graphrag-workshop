@@ -1,0 +1,12 @@
+# Pinned, not floated. The image is built once and then answers every
+# invocation for the life of the Runtime, so a range that resolves differently
+# next Tuesday changes what is deployed without anything in this repository
+# changing. `notebooks/requirements.txt` floats on purpose, because a
+# participant's laptop should pick up fixes; a deployed artifact should not
+# move under you. The versions below are the ones the workshop is verified on.
+strands-agents[otel]==1.52.0
+bedrock-agentcore==1.22.0
+aws-opentelemetry-distro==0.19.0
+boto3==1.43.74
+neo4j==6.2.0
+neo4j-graphrag==1.18.0
