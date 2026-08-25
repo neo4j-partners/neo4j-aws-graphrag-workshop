@@ -5,16 +5,24 @@ weight: 0
 
 ## Build Agents from Connected Evidence
 
-A booking agent is useful only when it can name the hotel it means and show where that answer came from. Semantic search finds source text that is relevant to a question. Graph traversal can extend that match with named fields, relationships, and provenance. The two signals solve different parts of the retrieval problem.
+A grounded booking agent identifies the hotel and shows the source for its
+answer. Semantic search finds relevant source text. Graph traversal adds named
+fields, relationships, and provenance.
 
-This workshop uses a hotel booking scenario to compare four retrieval patterns, select a fixed production retriever, and wire a grounded agent with :link[Amazon Bedrock AgentCore]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}, :link[Neo4j]{href="https://neo4j.com/" external=true} retrieval tools, and inspectable graph memory.
+This workshop uses a hotel booking scenario. You will:
 
-New to property graphs, GraphRAG, or AgentCore? Start with
-[Foundations](./foundations/) for the architecture and vocabulary used by every
-module.
+- **Compare retrieval:** Test four retrieval patterns.
+- **Select a retriever:** Choose one fixed pattern for the application.
+- **Build an agent:** Ground answers in Neo4j evidence.
+- **Deploy tools and the agent:** Use :link[Amazon Bedrock AgentCore]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}.
+- **Add memory:** Store inspectable memory in :link[Neo4j]{href="https://neo4j.com/" external=true}.
+
+Read [Foundations](./foundations/) first if property graphs, GraphRAG, or
+AgentCore are new to you.
 
 :::alert{type="info" header="Region"}
-This workshop runs in **us-east-1 (N. Virginia)**. Your AWS account arrives pre-configured. You create the Neo4j database yourself in Setup, on the free tier.
+This workshop runs in **us-east-1**, the N. Virginia region. Your AWS account
+arrives pre-configured. Setup guides you through creating a free Neo4j database.
 :::
 
 ---
@@ -43,19 +51,19 @@ Module 5 demonstrates a separate deployment pattern: a packaged agent on
 AgentCore Runtime that connects directly to Neo4j. Module 6 then adds
 cross-session graph memory.
 
-**Neo4j owns:** hotel knowledge, retrieval indexes, business rules, reservation writes, and graph memory.
-**Amazon Bedrock owns:** reasoning over retrieved evidence and embeddings.
+- **Neo4j:** Stores hotel knowledge, indexes, business rules, reservation requests, and graph memory.
+- **Amazon Bedrock:** Provides reasoning and embedding models.
 
 ---
 
 ## What You Will Learn
 
-1. How a pinned schema and provenance make extracted knowledge predictable to query
-2. When to use Vector, Hybrid, VectorCypher, and Text2Cypher retrieval
-3. How to build a grounded agent that declines unsupported requests and enforces rules atomically
-4. How to deploy tools to AgentCore Gateway and connect agents over IAM-authenticated MCP
-5. How explicit graph memory supports audit and correction
-6. How Neo4j, Bedrock, Strands, Gateway, Runtime, Lambda, and IAM divide responsibility
+- **Graph construction:** Use a pinned schema and provenance to create queryable facts.
+- **Retrieval:** Choose Vector, Hybrid, VectorCypher, or Text2Cypher for each question shape.
+- **Grounding:** Answer from evidence and enforce write rules in one transaction.
+- **Remote tools:** Deploy tools to AgentCore Gateway and call them through IAM-authenticated MCP.
+- **Memory:** Store graph memory that supports audit and correction.
+- **Architecture:** Assign clear roles to Neo4j, Bedrock, Strands, Gateway, Runtime, Lambda, and IAM.
 
 ---
 

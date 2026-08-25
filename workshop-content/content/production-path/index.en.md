@@ -3,149 +3,128 @@ title: "Production Path"
 weight: 85
 ---
 
-## Move from a Workshop to an Operated System
+## Overview
 
-The workshop optimizes for learning. It uses a small corpus, one AuraDB Free
-instance, shared workshop credentials, and notebooks that create resources on
-demand. A production system must optimize for reliability, security, measurable
-quality, cost, and change over time.
+The workshop uses a small dataset and simple setup. A production system needs
+stronger security, testing, monitoring, and data management.
 
-The core architecture can remain the same. The work is to harden each boundary
-and establish an operating process around it.
+- **Graph:** Secure, size, back up, and monitor Neo4j.
+- **Ingestion:** Process each source change as an incremental update.
+- **Quality:** Test retrieval and generated answers separately.
+- **Operations:** Monitor Gateway, Lambda, Runtime, Bedrock, and Neo4j.
+- **Memory:** Control who can create, read, correct, and delete stored data.
 
 ---
 
 ## Harden the Graph
 
-Treat Neo4j as part of the application's production data plane:
-
-- Choose an Aura tier and capacity that fit the graph, vector indexes, query load, recovery objectives, and availability requirements.
-- Use separate Neo4j identities for retrieval and writes. Give retrieval services read-only access, and grant the reservation command only the permissions it requires.
-- Store credentials in a managed secret store. Rotate them and remove `CONFIG.txt` from every deployed path.
-- Apply the network controls supported by the selected Aura tier and AWS architecture.
-- Configure backups, restore testing, query monitoring, and capacity alerts.
-- Version the graph schema, constraints, indexes, and migrations with the application.
-
-The application-level `EXPLAIN` check around Text2Cypher is useful, but it is
-not the final authorization boundary. A read-only Neo4j identity ensures the
-database independently rejects a generated write.
+- **Capacity:** Choose an Aura tier that fits the graph, indexes, and query load.
+- **Database access:** Use separate Neo4j identities for reads and writes.
+- **Read tools:** Give retrieval services read-only database access.
+- **Write commands:** Grant only the permissions required for each command.
+- **Secrets:** Store credentials in a managed secret store and rotate them.
+- **Network:** Apply the network controls supported by the selected Aura tier.
+- **Recovery:** Configure backups and test the restore process.
+- **Monitoring:** Track query speed, errors, storage, and memory use.
+- **Schema:** Version constraints, indexes, and migrations with the application.
+- **Text2Cypher:** Use `EXPLAIN` and a read-only Neo4j identity. The database then rejects generated writes.
 
 ---
 
 ## Grow the Ingestion Pipeline
 
-Module 1 extracts a fixed set of documents under a pinned schema. A production
-pipeline must handle new, changed, and deleted sources without rebuilding all
-data:
+Module 1 processes a fixed set of documents. A production pipeline must process
+new, changed, and deleted sources.
 
-- Give every source, entity, and chunk a stable identity so ingestion can use idempotent `MERGE` operations.
-- Record the source version, extraction model, embedding model, schema version, and ingestion time with each run.
-- Validate extracted labels, relationships, required properties, and provenance before publishing new data to retrieval.
-- Add entity resolution rules for alternate names while preserving cases where identical names describe different entities.
-- Re-embed a chunk whenever its text or embedding contract changes.
-- Plan index migrations so readers never depend on a partially populated index.
-- Define how source deletions remove derived facts without damaging shared entities.
-
-Keep deterministic parsing for fields that already have reliable structure.
-Use model extraction where the source requires language understanding, and test
-that boundary with held-out documents.
+- **Stable identity:** Give every source, entity, and chunk a stable key. Use that key with idempotent `MERGE` operations.
+- **Run metadata:** Record the source version, models, schema version, and ingestion time.
+- **Validation:** Check labels, relationships, required properties, and provenance before publishing data.
+- **Entity resolution:** Merge alternate names while keeping different entities separate.
+- **Embeddings:** Re-embed a chunk when its text or embedding settings change.
+- **Indexes:** Populate and verify a new index before readers use it.
+- **Deletion:** Remove facts from a deleted source and preserve shared entities.
+- **Parsing:** Use code for reliable structured fields. Use model extraction for prose.
+- **Testing:** Test extraction with held-out documents before release.
 
 ---
 
 ## Evaluate Retrieval and Answers Separately
 
-Retrieval quality sets the evidence ceiling for the answer. Build an evaluation
-set from representative user questions and include each question shape from the
-workshop:
+Test retrieval before testing the final answer. This shows which layer caused a
+failure.
 
-| Question shape | Evidence behavior to measure |
-|---|---|
-| Paraphrased description | The vector arm finds relevant source text |
-| Exact name or identifier | The full-text arm preserves the exact match |
-| Connected question | The graph expansion returns the required fields and provenance |
-| Structured filter or aggregation | Cypher selects the correct database records |
-| Unsupported question | The tool returns an explicit evidence gap and the agent abstains |
-
-Measure retrieval first. Check whether the required source and graph fields were
-returned, how highly they ranked, and how much irrelevant context accompanied
-them. Measure generation separately. Check whether the answer used the returned
-evidence, preserved important values, cited its source, and declined unsupported
-claims.
-
-Track these results when changing chunking, embedding models, fusion behavior,
-top-k values, traversal Cypher, prompts, or foundation models. A single final
-answer score cannot show whether a regression came from retrieval or generation.
+- **Semantic question:** Confirm that vector search finds the correct source text.
+- **Exact question:** Confirm that full-text search keeps the exact name or identifier.
+- **Connected question:** Confirm that graph expansion returns the required fields and source.
+- **Structured question:** Confirm that Cypher returns the correct records.
+- **Unsupported question:** Confirm that the tool reports missing evidence and the agent abstains.
+- **Retrieval quality:** Measure source coverage, field coverage, rank, and irrelevant context.
+- **Answer quality:** Measure factual use of evidence, exact values, citations, and abstention.
+- **Regression tracking:** Run the same tests after changes to chunks, models, retrieval settings, Cypher, or prompts.
 
 ---
 
 ## Operate Gateway Tools and the Runtime
 
-Instrument both production patterns built in the workshop:
+- **Request tracking:** Pass one correlation ID through AgentCore, Lambda, Bedrock, and Neo4j.
+- **Tool metrics:** Record tool name, duration, result count, retries, and failures.
+- **Service alerts:** Track latency, errors, throttling, concurrency, Runtime failures, and cost.
+- **Retrieval controls:** Test one known result and one empty result. A known result detects broken indexes and credentials.
+- **Timeouts:** Set a timeout and retry policy for each network call.
+- **Safe retries:** Make writes idempotent so retries cannot create duplicates.
+- **Deployment record:** Record the source version, dependencies, model IDs, prompts, and tool schemas.
+- **Sensitive data:** Keep secrets and unnecessary user content out of logs.
 
-- Record request and correlation identifiers across the caller, AgentCore, Lambda, Bedrock, and Neo4j.
-- Capture tool names, durations, result counts, retries, throttles, model usage, and failures without logging secrets or unnecessary user content.
-- Alert on latency, error rate, repeated empty results, Lambda concurrency, Runtime failures, and cost changes.
-- Keep a positive retrieval control alongside negative controls. Empty results are expected for some questions, but they can also signal a broken index or credential.
-- Define timeouts and retry behavior at every network boundary.
-- Make every write idempotent so a caller or service retry cannot create duplicate work.
-- Pin and inventory the deployed source, dependencies, model identifiers, prompts, and tool schemas.
-
-Module 4 and Module 5 remain separate patterns. If a production design combines
-Runtime with Gateway, evaluate the added network hop, authorization boundary,
-latency, and operational ownership explicitly.
+Module 4 and Module 5 show separate patterns. A design that connects Runtime to
+Gateway adds another network call and access boundary. Measure the effect on
+speed, cost, and operations.
 
 ---
 
 ## Add Security and Guardrails in Layers
 
-Use independent controls so one failed check does not expose the full system:
+- **Input validation:** Validate tool inputs before database or API calls.
+- **Generated Cypher:** Run it with a read-only database identity.
+- **IAM:** Grant access only to the required models, secrets, tools, and runtimes.
+- **Bedrock Guardrails:** Apply prompt and response policies where required.
+- **Tool separation:** Keep retrieval tools separate from write commands.
+- **Database rules:** Enforce business rules and uniqueness in the write transaction.
+- **Logging:** Review which prompts, results, and memory records may enter logs.
 
-- Validate tool inputs before database or API calls.
-- Keep generated Cypher on a read-only path and restrict procedures that a retrieval identity can call.
-- Limit IAM roles to the required models, secrets, functions, gateways, and runtimes.
-- Apply Bedrock Guardrails where prompt and response policy requires them.
-- Separate read tools from commands that change business state.
-- Enforce business rules and uniqueness constraints inside the write transaction.
-- Review what source text, prompts, tool results, and memory records may appear in logs.
-
-The model can propose an action. The command and database decide whether that
-action is valid and authorized.
+The model proposes an action. The command validates it. The database enforces
+the final write rules.
 
 ---
 
 ## Govern Memory
 
-Cross-session memory creates durable user data. Define its lifecycle before
-expanding beyond the workshop preference:
+Cross-session memory stores user data beyond one request. Define how the
+application manages that data.
 
-- Bind actor and session identifiers to authenticated callers.
-- Authorize every recall against the selected actor rather than trusting an identifier supplied in the prompt.
-- Define retention, deletion, correction, and export workflows.
-- Preserve the source message and application version that produced each durable record.
-- Record confidence or review state when a model extracts memory automatically.
-- Limit which domain nodes a memory record may reference.
-- Monitor growth and decide when to summarize, archive, or remove old conversations.
-
-Neo4j graph memory is useful when records need explicit provenance, correction,
-and relationships to domain data. AgentCore Memory is useful when managed
-extraction and AWS-operated recall better fit the application. A production
-system can use each for a different class of memory.
+- **Identity:** Bind actor and session IDs to authenticated callers.
+- **Authorization:** Check the actor before every memory read and write.
+- **Lifecycle:** Define retention, deletion, correction, and export workflows.
+- **Provenance:** Store the source message and application version for each record.
+- **Review:** Record confidence or review state for model-extracted memory.
+- **Domain links:** Limit which graph records a memory can reference.
+- **Growth:** Define when to summarize, archive, or delete old conversations.
+- **Neo4j memory:** Use it for explicit provenance, correction, and domain links.
+- **AgentCore Memory:** Use it for managed extraction and AWS-operated recall.
 
 ---
 
 ## Keep the Portable Contracts
 
-Several workshop decisions should survive the move to production:
+Keep these workshop contracts in production:
 
-1. **Pinned graph schema:** extraction writes a vocabulary that applications can query consistently.
-2. **Source provenance:** every derived fact can be inspected against the material that produced it.
-3. **Fixed retrieval interface:** callers receive one bounded result shape instead of configuring retrieval for each request.
-4. **Grounded answer policy:** missing evidence produces abstention rather than invention.
-5. **Transactional command:** rule enforcement, idempotency, and the write occur behind one reviewed boundary.
-6. **Actor-scoped memory:** recall starts from an authenticated actor and follows explicit relationships.
+- **Pinned graph schema:** Use one queryable vocabulary for extracted data.
+- **Source provenance:** Link each derived fact to its source.
+- **Fixed retrieval interface:** Return one bounded result shape to callers.
+- **Grounded answer policy:** State when the evidence cannot answer a question.
+- **Transactional command:** Check rules, prevent duplicates, and write in one boundary.
+- **Actor-scoped memory:** Start recall from an authenticated actor.
 
-These contracts turn the workshop demonstrations into components that can be
-tested, deployed, and operated independently.
+Test, deploy, and operate each contract as a separate component.
 
 ## Next
 

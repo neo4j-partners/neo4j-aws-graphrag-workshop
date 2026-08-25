@@ -5,7 +5,8 @@ weight: 70
 
 ## Add Inspectable Memory with Neo4j
 
-This is the workshop's hands-on cross-session memory lab. Neo4j graph memory gives the application direct access to each stored preference, its source message, and the hotel it describes. You can inspect and correct a preference such as "near the elevator" when the guest asked to stay away from it.
+Module 6 stores one hotel preference in Neo4j. The preference links to its actor,
+source message, session, and hotel. You can inspect, recall, and correct it.
 
 :image[AgentCore Memory vs Neo4j Memory: managed extraction compared with explicit graph provenance]{src="../../images/04-memory-comparison.png" width=800}
 
@@ -13,23 +14,15 @@ This is the workshop's hands-on cross-session memory lab. Neo4j graph memory giv
 
 ## Place This Lab in the Memory Landscape
 
-Agent memory can hold several kinds of state:
+Agent memory can store three kinds of state:
 
-| Memory kind | Purpose | Example |
-|---|---|---|
-| Short-term memory | Preserves the current conversation and session context | Resolve "it" to the hotel discussed in the previous turn |
-| Long-term memory | Carries durable facts and preferences across sessions | Remember that one actor prefers a high floor |
-| Reasoning memory | Records decisions, tool calls, outcomes, and the entities they touched | Trace which search result supported a recommendation |
+- **Short-term memory:** Stores the current conversation. It can resolve "it" to a hotel from the previous turn.
+- **Long-term memory:** Stores facts and preferences across sessions. It can remember that an actor prefers a high floor.
+- **Reasoning memory:** Stores decisions, tool calls, and outcomes. It can show which search result supported an answer.
 
-This module implements a focused long-term memory path. It stores
-`Conversation` and `Message` nodes to preserve the source, then connects one
-durable `Preference` to that message and the canonical `Hotel`. It demonstrates
-cross-session recall, actor isolation, provenance, and correction.
-
-The module does not add prior conversation turns to an agent prompt, so it is
-not a short-term conversational recall implementation. It also does not persist
-reasoning traces. Those are natural extensions once the application has defined
-their retention and authorization rules.
+- **This module:** Implements long-term preference memory with actor-scoped recall.
+- **Provenance:** Connects the preference to its source `Message` and `Hotel`.
+- **Extensions:** Short-term prompt recall and reasoning traces require separate retention and access rules.
 
 ---
 
@@ -42,16 +35,17 @@ Open `notebooks/06-neo4j-memory/6.1_neo4j_memory.ipynb`.
                                       ↘[:ABOUT_HOTEL]->(Hotel)
 ```
 
-Every preference links to its exact source message and the existing `Hotel` node. The `ABOUT_HOTEL` relationship connects to domain data instead of storing only the hotel name.
+- **`DERIVED_FROM`:** Links the preference to its source message.
+- **`ABOUT_HOTEL`:** Links the preference to the existing `Hotel` node.
 
 ---
 
 ## Verify Recall and Provenance
 
-The notebook checks recall for two actors:
+The notebook checks actor-scoped recall:
 
-- Actor A starts `SESSION_A2` and asks a new question. The actor-scoped query recalls the preference stored during the earlier session.
-- Actor B asks the same question in a separate session. The actor-scoped query returns no preference.
+- **Actor A:** Starts `SESSION_A2` and recalls a preference from an earlier session.
+- **Actor B:** Asks the same question and receives no preference.
 
 The following Cypher query returns the complete provenance path:
 
@@ -80,7 +74,7 @@ the Neo4j path so you can inspect its provenance and domain relationships.
 |---|---|---|
 | Write timing | Asynchronous, from seconds to minutes | Synchronous |
 | Extraction | LLM-driven | Explicit writes |
-| Auditability | Memory API and :link[Amazon CloudWatch]{href="https://aws.amazon.com/cloudwatch/" external=true} operational logs, without a source-message link | Full graph provenance |
+| Auditability | Memory API and :link[Amazon CloudWatch]{href="https://aws.amazon.com/cloudwatch/" external=true} operational logs | Full graph provenance with a source-message link |
 | Correction path | Managed through the Memory service API | `SET` on one property |
 | Domain link | Separate from domain data | `[:ABOUT_HOTEL]→Hotel` |
 | Operations | AWS manages it | You own it |

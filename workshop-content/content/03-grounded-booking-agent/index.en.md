@@ -3,31 +3,25 @@ title: "Module 3: Build the Grounded Booking Agent"
 weight: 40
 ---
 
-Ask a booking agent for a guest rating and it can return a plausible number it never read, then accept a reservation the hotel cannot honor. Module 2 selected a fixed Hybrid-Cypher path because hotel questions need exact-name support and connected named fields. Module 3 uses that path through `search_hotel_knowledge` and keeps reservation writes behind a reviewed command.
+Module 3 grounds hotel answers in Neo4j evidence. It uses the fixed Hybrid-Cypher
+retriever selected in Module 2. A separate command handles reservation writes.
 
 :image[Grounded agent architecture: Neo4j enforces retrieval, rules, and writes; Amazon Bedrock handles reasoning only]{src="../../images/03-grounded-agent-architecture.png" width=800}
 
 ## How the Grounded Agent Works
 
-An agent combines a model, instructions, and tools in a reason-act-observe loop.
-The model reads the question, calls a tool, observes the returned result, and
-then decides whether it has enough evidence to answer.
+Module 3 uses a controlled reason-act-observe loop:
 
-Module 3 narrows that general loop to one controlled path:
+- **Question:** The model reads the hotel question.
+- **Required tool:** The model must call `search_hotel_knowledge_tool`.
+- **Fixed retriever:** The tool runs the `HybridCypherRetriever` selected in Module 2.
+- **Observation:** The tool returns bounded JSON with graph facts and source evidence.
+- **Answer:** The model uses the evidence or states that the evidence is missing.
+- **Write:** A separate command validates and writes reservation requests.
 
-1. A fresh hotel question requires a call to `search_hotel_knowledge_tool`.
-2. The tool calls the fixed `HybridCypherRetriever` selected in Module 2.
-3. The retriever returns bounded JSON with graph fields, source evidence, and provenance.
-4. The tool result becomes the model's observation for that question.
-5. The grounding instructions require an evidence-backed answer or an explicit abstention.
-
-The Strands `@tool` decorator publishes the Python function's name, arguments,
-and description to the model. It does not give the model direct database access.
-The function controls the query contract and the result shape.
-
-The reservation exercise uses a separate reviewed command. Module 3 calls that
-command directly so the model cannot bypass its validation. Neo4j applies the
-guest limit and the idempotency constraint inside the write boundary.
+- **`@tool` decorator:** Gives the model the function name, arguments, and description.
+- **Tool boundary:** Keeps database access and result shape inside the function.
+- **Database boundary:** Applies the guest limit and duplicate check during the write.
 
 Open `notebooks/03-grounded-booking-agent/3.1_grounded_booking_agent.ipynb`.
 
@@ -35,13 +29,21 @@ Open `notebooks/03-grounded-booking-agent/3.1_grounded_booking_agent.ipynb`.
 
 > **"What amenities and guest rating does AnyCompany Cairo Nile View have?"**
 
-Run this query. The `HybridCypherRetriever` uses full-text search to match the hotel name and vector search to match the requested meaning. It then traverses the graph relationships and returns structured facts, including the amenity list and exact guest rating.
+Run this query.
+
+- **Full-text search:** Matches the hotel name.
+- **Vector search:** Matches the request for amenities and a rating.
+- **Graph expansion:** Returns the amenity list and exact guest rating.
 
 ### Query 2: Does the hotel guarantee availability next weekend?
 
 > **"Does AnyCompany Cairo Nile View guarantee room availability next weekend?"**
 
-Run this query. Neo4j stores hotel knowledge, and live inventory is outside its scope. The graph has no `guaranteedAvailability` property. The retrieved evidence cannot confirm availability, so the agent abstains.
+Run this query.
+
+- **Stored evidence:** Neo4j contains hotel facts.
+- **Missing evidence:** The graph has no live inventory field.
+- **Result:** The agent states that it cannot confirm availability.
 
 ### Reject a 15-guest reservation
 
@@ -59,7 +61,11 @@ The rule check runs inside the write transaction and blocks the `CREATE` operati
 
 ### Safely Retry a Valid Request
 
-Submit a valid reservation with a new `request_id`, then submit the same valid payload again. The first call creates one node. The second call returns `duplicate: true` with the original `created_at`. The uniqueness constraint prevents another node.
+Submit the same valid request twice.
+
+- **First request:** Creates one `ReservationRequest` node.
+- **Second request:** Returns `duplicate: true` with the original `created_at`.
+- **Constraint:** Prevents a second node for the same `request_id`.
 
 ## Next
 
