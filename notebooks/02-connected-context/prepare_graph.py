@@ -31,6 +31,7 @@ from dotenv import load_dotenv
 
 load_dotenv(NOTEBOOKS_ROOT / ".env")
 load_dotenv(REPO_ROOT / ".env")
+load_dotenv(REPO_ROOT / "CONFIG.txt")
 
 from graph_builder import connect, graph_database, report, run_build
 from graph_config import HELD_OUT_DOCUMENTS, select_lite_files

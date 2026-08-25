@@ -5,14 +5,21 @@ assets/*
 evidence/*
 .idea/*
 
-# Workshop Studio infrastructure — lives in Workshop Studio repo, not here
+# Retired Workshop Studio infrastructure. The workshop is hosted on Vocareum
+# and uses Neo4j AuraDB Free, so these are no longer part of any setup path.
 static/cfn/
 static/iam_policy.json
 
-# Environment — never commit credentials
+# Environment. Never commit credentials.
+# CONFIG.txt is tracked, because it ships as the placeholder template a
+# participant fills in. The entry below therefore does nothing on its own,
+# since .gitignore has no effect on a tracked file. It is here so that a copy
+# made anywhere else in the tree stays out, and as the reminder that a
+# filled-in CONFIG.txt must never be committed.
 .env
 *.env.local
 notebooks/.env
+CONFIG.txt
 
 # Python
 __pycache__/
@@ -30,8 +37,8 @@ notebooks/*.index
 notebooks/*.json.bak
 notebooks/faqs_*.json
 notebooks/faqs_*.index
-# Workshop Studio files — live in the WS repo, not here
-# (workshop-content/content/ IS allowed — it's the public copy for collaborators)
+# Retired Workshop Studio files. They live in the Workshop Studio repo, not here.
+# workshop-content/content/ IS allowed. It is the public copy for collaborators.
 contentspec.yaml
 FACILITATOR_GUIDE.md
 static/cfn/

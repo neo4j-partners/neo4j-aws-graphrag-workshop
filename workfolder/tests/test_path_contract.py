@@ -140,3 +140,4 @@ def test_prepare_graph_paths_are_anchored_to_the_script() -> None:
     assert 'CORPUS_ZIP = SCRIPT_DIR / "hotel-faqs.zip"' in source
     assert 'load_dotenv(NOTEBOOKS_ROOT / ".env")' in source
     assert 'load_dotenv(REPO_ROOT / ".env")' in source
+    assert 'load_dotenv(REPO_ROOT / "CONFIG.txt")' in source

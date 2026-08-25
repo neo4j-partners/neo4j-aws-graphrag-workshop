@@ -31,14 +31,14 @@ independently.
 |---|---|
 | [`2.1_connected_context.ipynb`](2.1_connected_context.ipynb) | Compares vector, hybrid, Vector-Cypher, and structured retrieval evidence |
 
-In Workshop Studio, Module 1 already prepared the graph. Run the notebook cells
-in order. The **Verify the prepared graph** cell performs the non-destructive
-readiness check directly from Python, so no terminal command is required.
+Module 1 already prepared the graph. Run the notebook cells in order. The
+**Verify the prepared graph** cell performs the non-destructive readiness check
+directly from Python, so no terminal command is required.
 
 If the readiness cell reports that Module 2.1 is not ready, return to the Module
 1 notebook, run its cells through completion, and then rerun Module 2.1 from the
 top. The Module 2.1 notebook only reads the graph and never clears learner work.
-For setup outside Workshop Studio, follow the self-paced instructions in the
+For the setup that gets you to a prepared graph, see the
 [repository README](../../README.md).
 
 ## Evidence and application boundaries

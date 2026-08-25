@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "course_key": "graphrag",
+  "assets": {
+    "template": "lab.template",
+    "manifest": "expected.json",
+    "notebook": ""
+  },
+  "startercode": {
+    "repository": "https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop.git",
+    "commit": "19cb2333e7e86ca4f9bc9b0a766ad52b19665619",
+    "source": "..",
+    "paths": [
+      ".env.example",
+      "README.md",
+      "notebooks",
+      "setup/verify_setup.py"
+    ]
+  },
+  "vocareum": {
+    "course_name": "GraphRAG with Neo4j + AWS Workshop",
+    "assignment_name": "GraphRAG with Neo4j + AWS Workshop",
+    "part_name": "Part 1",
+    "lab_type": "Vocareum Notebook",
+    "session_length": "240",
+    "cloud_labs": true,
+    "budget": {
+      "total_dollar": "200",
+      "monthly_dollar": "100",
+      "total_time": "0",
+      "monthly_time": "0"
+    }
+  },
+  "cleanup": {
+    "resource_prefixes": [],
+    "iam_role_prefixes": [],
+    "s3_bucket_prefixes": []
+  }
+}

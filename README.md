@@ -4,11 +4,11 @@
 [![Amazon Bedrock](https://img.shields.io/badge/Amazon-Bedrock-FF9900.svg?style=flat&logo=amazon-aws)](https://aws.amazon.com/bedrock/)
 [![Neo4j](https://img.shields.io/badge/Neo4j-Graph--RAG-4581C3.svg?style=flat&logo=neo4j)](https://neo4j.com)
 [![Strands Agents](https://img.shields.io/badge/Strands_Agents-1.27+-00B4D8.svg?style=flat)](https://strandsagents.com)
-[![Workshop Studio](https://img.shields.io/badge/AWS-Workshop_Studio-FF9900.svg?style=flat&logo=amazon-aws)](https://workshops.aws)
+[![Vocareum](https://img.shields.io/badge/Hosted_on-Vocareum-1F6FEB.svg?style=flat)](https://www.vocareum.com/)
 
 > Semantic search finds relevant source text. Graph traversal turns that entry point into compact, connected evidence with explicit provenance.
 
-An AWS Workshop Studio workshop in six modules. You build a hotel knowledge graph, compare semantic, exact-term, graph-enriched, and structured retrieval, apply a fixed retriever in a grounded booking agent, deploy its tools through Amazon Bedrock AgentCore, and add graph memory whose provenance you can inspect and correct.
+A hands-on workshop in six modules. You build a hotel knowledge graph, compare semantic, exact-term, graph-enriched, and structured retrieval, apply a fixed retriever in a grounded booking agent, deploy its tools through Amazon Bedrock AgentCore, and add graph memory whose provenance you can inspect and correct.
 
 ---
 
@@ -37,14 +37,14 @@ validate that it contains the shared `workshop` package before using it.
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                    Code Editor (browser)                        │
+│                    JupyterLab (browser)                         │
 │                                                                 │
 │  Jupyter Notebook ──► Strands Agent ──► @tool                  │
 │                              │                                  │
 │                    ┌─────────┴──────────┐                       │
 │                    │                    │                       │
 │             ┌──────▼──────┐    ┌────────▼────────┐             │
-│             │ Neo4j (ECS) │    │ Amazon Bedrock  │             │
+│             │ Neo4j Aura  │    │ Amazon Bedrock  │             │
 │             │             │    │                 │             │
 │             │ • Hotel KG  │    │ • Claude Sonnet │             │
 │             │ • Indexes   │    │ • Nova 2 Embed  │             │
@@ -68,33 +68,33 @@ created the prebuilt graph and applies to the five hotels added during the lab.
 
 This is a hosted workshop. Almost everyone runs it the first way.
 
-### At an AWS event
+### At a hosted event, on Vocareum
 
-Everything is provisioned before you arrive: an AWS account with Amazon Bedrock model access enabled in `us-east-1`, a Neo4j instance on ECS Fargate with the hotel graph already restored from a dump, and a browser-based Code Editor with this repository cloned at `/Workshop`. There is nothing to install locally, no Neo4j account to create, and no model access to request.
+Vocareum provides a browser-based JupyterLab environment and an AWS account with Amazon Bedrock model access enabled in `us-east-1`. Neo4j is not part of that environment. You create your own free database and restore the workshop graph into it.
 
-1. Open the **CodeEditorURL** from the Workshop Studio **Outputs** panel and sign in with **CodeEditorUser**.
-2. In the Code Editor terminal, export `NEO4J_URI`, `NEO4J_USERNAME`, `NEO4J_PASSWORD`, `NEO4J_DATABASE`, and `AWS_REGION` from the same Outputs panel, and write them to `notebooks/.env`.
-3. Install dependencies: `cd /Workshop/notebooks && uv venv && uv pip install -r requirements.txt`
-4. Open `notebooks/01-build-graph/1.1_build_graph.ipynb` and work forward through the modules in order.
+1. Create a Neo4j AuraDB Free instance and restore `neo4j-hotel-graph.dump` into it through the Aura console. The steps are on the [Neo4j AuraDB Free Setup](./workshop-content/content/setup/aura-free-setup/) page.
+2. Launch JupyterLab from the Vocareum lab page and open a terminal in it.
+3. Paste the Aura URI, username, and password into `CONFIG.txt` at the repository root.
+4. Install dependencies: `cd notebooks && uv venv && uv pip install -r requirements.txt`
+5. Open `notebooks/01-build-graph/1.1_build_graph.ipynb` and work forward through the modules in order.
 
 The [Setup](./workshop-content/content/setup/) pages carry the exact commands and a verification snippet that checks both Neo4j and Bedrock before Module 1 starts. Run that check first; every failure it catches is cheaper here than three modules in.
 
 ### Self-paced, in your own AWS account
 
-You supply what the event would otherwise have provisioned. See [Own Account Setup](./workshop-content/content/setup/own-account-setup/) for the full path, including the CloudFormation stack that stands up Neo4j and the Code Editor.
+You supply the AWS account and run the notebooks locally. The database is the same AuraDB Free instance the hosted path uses. See [Own Account Setup](./workshop-content/content/setup/own-account-setup/) for the full path.
 
 To run the notebooks against a Neo4j instance you already have:
 
 ```bash
 # 1. Configure environment
-cp .env.example .env
-# Edit .env with your Neo4j connection details and AWS region
+# Edit CONFIG.txt at the repository root with your Neo4j connection details
 
 # 2. Install dependencies
 cd notebooks
 uv venv && uv pip install -r requirements.txt
 
-# 3. Build the graph the hosted environment restores from a dump
+# 3. Build the graph from scratch instead of restoring the dump
 uv run python 02-connected-context/prepare_graph.py
 
 # 4. Run the modules in order
@@ -102,7 +102,7 @@ uv run jupyter lab
 # Open 01-build-graph/1.1_build_graph.ipynb first
 ```
 
-Prerequisites for this path are Python 3.11+, [`uv`](https://docs.astral.sh/uv/), an AWS account with Amazon Bedrock model access enabled in `us-east-1`, and a reachable Neo4j instance. A [Neo4j Aura](https://neo4j.com/cloud/platform/aura-graph-database/) free-tier database is enough.
+Prerequisites for this path are Python 3.11+, [`uv`](https://docs.astral.sh/uv/), an AWS account with Amazon Bedrock model access enabled in `us-east-1`, and a reachable Neo4j instance. A [Neo4j AuraDB Free](https://console.neo4j.io/) database is what the workshop targets.
 
 `prepare_graph.py` wipes and rebuilds. Module 1's notebook uses the additive path instead, so it extends a restored graph without deleting anything a participant has already built.
 
@@ -110,11 +110,11 @@ Prerequisites for this path are Python 3.11+, [`uv`](https://docs.astral.sh/uv/)
 
 ## Workshop Content
 
-This repository is deployed as an [AWS Workshop Studio](https://workshops.aws) workshop. The `workshop-content/content/` directory contains the workshop pages. Participants run the notebooks in `notebooks/` during the session.
+The workshop is hosted on [Vocareum](https://www.vocareum.com/). The `workshop-content/content/` directory contains the workshop pages. Participants run the notebooks in `notebooks/` during the session.
 
 | Directory | Purpose |
 |-----------|---------|
-| `workshop-content/content/` | Workshop Studio markdown pages |
+| `workshop-content/content/` | Workshop markdown pages |
 | `workshop-content/images/` | Diagram images referenced by the workshop pages |
 | `notebooks/` | Jupyter notebooks (one or two per module) |
 | `static/` | Architecture diagrams (PNG exports and drawio sources) |

@@ -1,0 +1,35 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: GraphRAG uses Vocareum Notebook with required Bedrock access
+
+Metadata:
+  SourceRepository: https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop.git
+  SourceCommit: 19cb2333e7e86ca4f9bc9b0a766ad52b19665619
+
+Resources:
+  LaunchSentinel:
+    Type: AWS::CloudFormation::WaitConditionHandle
+
+  LabRoleBedrockGrant:
+    Type: AWS::IAM::RolePolicy
+    Properties:
+      RoleName: voclabs
+      PolicyName: GraphRAGBedrockGrant
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: BedrockInvoke
+            Effect: Allow
+            Action:
+              - bedrock:InvokeModel
+              - bedrock:InvokeModelWithResponseStream
+            Resource:
+              - "arn:aws:bedrock:*::foundation-model/anthropic.*"
+              - "arn:aws:bedrock:*::foundation-model/amazon.*"
+              - !Sub "arn:aws:bedrock:*:${AWS::AccountId}:inference-profile/us.anthropic.*"
+          - Sid: BedrockMarketplace
+            Effect: Allow
+            Action:
+              - aws-marketplace:ViewSubscriptions
+              - aws-marketplace:Subscribe
+              - aws-marketplace:Unsubscribe
+            Resource: "*"

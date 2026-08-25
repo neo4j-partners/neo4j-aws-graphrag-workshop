@@ -1,33 +1,15 @@
 # Static Assets
 
-## `/iam_policy.json`
-
-IAM policy for workshop participants. Grants least-privilege access to:
-- Amazon Bedrock (model invocation, AgentCore control plane)
-- AWS Lambda (`hotel-booking-*` prefix)
-- Amazon ECR (`workshop-*` repos only; `GetAuthorizationToken` on `*`)
-- AWS Secrets Manager (`workshop-*`, `neo4j-ws-*`, `bedrock-agentcore-*` prefixes)
-- Amazon DynamoDB (`workshop-*` tables)
-- Amazon S3 (`workshop-*`, `bedrock-agentcore-*` buckets)
-- IAM roles (`workshop-*`, `AmazonBedrockAgentCoreSDK*` prefixes)
-- CloudWatch Logs, CodeBuild, EC2 Describe
-
-Uses Workshop Studio magic variables: `{{.AccountId}}`.
-
-## `/cfn/`
-
-| Template | Purpose |
-|---|---|
-| `code-editor.yaml` | VPC + Code Editor EC2 (ARM) + Neo4j on ECS Fargate. **Main participant template.** |
-| `neo4j-foundation.yaml` | Secret, S3 dump bucket, IAM roles, Security Group, ECS Cluster. Deploy first. |
-| `neo4j-service.yaml` | NLB + single Fargate task that restores from S3 dump and serves Bolt. |
-| `neo4j-build.yaml` | One-shot ECS task that builds the graph from FAQs and saves a dump to S3. |
-| `central-neo4j.yaml` | Facilitator-account template: shared Neo4j instance for multi-participant events. |
-
 ## `/neo4j-hotel-graph.dump`
 
-Neo4j database dump with the hotel knowledge graph pre-built. It does not contain the vector or full-text index; Module 1 creates those. Loaded by the Fargate init container at startup, so participants start from a built graph instead of watching the extraction run.
+Neo4j database dump with the hotel knowledge graph pre-built. It does not contain the vector or full-text index; Module 1 creates those. Participants download this file during Setup and restore it into their own Neo4j AuraDB Free instance, so they start from a built graph instead of watching the extraction run.
 
 ## `/images/`
 
 Architecture diagrams for workshop content pages.
+
+`03-agentcore-architecture.png` and its `.drawio` source are stale. They still draw Neo4j on ECS Fargate, which was the topology when the workshop ran on AWS Workshop Studio. The database is Neo4j AuraDB Free now. The content page alt text already says AuraDB, so the diagram is the only thing left to redraw.
+
+## Retired
+
+`iam_policy.json` and `cfn/` are gitignored and are not part of any setup path. They held the participant IAM policy and the CloudFormation templates that stood up a Code Editor instance with Neo4j on ECS Fargate. The workshop is hosted on Vocareum now, and each participant creates their own Neo4j AuraDB Free database.

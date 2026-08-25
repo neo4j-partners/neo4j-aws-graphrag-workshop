@@ -5,7 +5,7 @@ weight: 60
 
 ## Deploy the Agent to AgentCore Runtime
 
-Nothing outside your notebook can call the grounded booking agent from Module 3. It runs in the Workshop Studio notebook kernel. The notebook environment holds the Neo4j password, and its AWS credentials authorize the Bedrock calls.
+Nothing outside your notebook can call the grounded booking agent from Module 3. It runs in your JupyterLab notebook kernel. The notebook environment holds the Neo4j password, and its AWS credentials authorize the Bedrock calls.
 
 In this module, you package a deployment-oriented version of the agent in a container managed by :link[Amazon Bedrock AgentCore Runtime]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}. This deployment changes where the agent runs and how callers invoke it.
 
@@ -29,7 +29,7 @@ Open `notebooks/05-agentcore-deploy/5.1_deploy.ipynb`.
 :::alert{type="warning" header="AWS resources created"}
 The notebook creates one IAM execution role, one ECR repository, one CodeBuild project, and one AgentCore Runtime. The container build takes three to five minutes.
 
-Runtime use, ECR image storage, and CodeBuild builds can incur AWS charges. The workshop does not delete these resources automatically. At an AWS Workshop Studio event, the account is reclaimed when the event ends. If you use your own account, remove the Runtime, ECR repository, CodeBuild project, and IAM execution role when you finish.
+Runtime use, ECR image storage, and CodeBuild builds can incur AWS charges. The workshop does not delete these resources automatically. On the Vocareum path, the lab account goes away when the lab session ends. If you use your own account, remove the Runtime, ECR repository, CodeBuild project, and IAM execution role when you finish.
 :::
 
 ```

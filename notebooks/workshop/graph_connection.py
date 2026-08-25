@@ -22,15 +22,15 @@ Module 3.1's notebook instead reads the same variables itself and skips its live
 cells when they are unset, because it is written to be readable without a
 database.
 
-Values are read at call time rather than bound at import, so a `.env` the caller
-loads after importing this module is still honoured.
+Values are read at call time rather than bound at import, so a `CONFIG.txt` or
+`.env` the caller loads after importing this module is still honoured.
 """
 
 import os
 
-# Aura's default database is always `neo4j`, and a participant whose .env omits
-# the name should not get a different failure in Module 2 than in Module 1. The
-# build path defaults it, so the read and write paths default it the same way.
+# Aura's default database is always `neo4j`, and a participant whose CONFIG.txt
+# omits the name should not get a different failure in Module 2 than in Module 1.
+# The build path defaults it, so the read and write paths default it the same way.
 DEFAULT_NEO4J_DATABASE = "neo4j"
 
 # The two with no safe default. `NEO4J_USERNAME` is absent because it has one,
@@ -49,7 +49,8 @@ def require_neo4j_env() -> None:
     if missing:
         raise RuntimeError(
             f"Missing required Neo4j environment values: {', '.join(missing)}. "
-            "Set them (see .env.example) before running the workshop modules. Neither "
+            "Fill in CONFIG.txt at the repository root before running the workshop "
+            "modules. Neither "
             "has a default, so a missing one fails loudly here instead of sending a "
             "bad credential to Neo4j or a good one to a localhost that is not "
             "listening."

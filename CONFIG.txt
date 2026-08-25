@@ -1,0 +1,25 @@
+# Workshop Configuration
+#
+# IMPORTANT: You only need to fill in the Neo4j credentials below.
+# Every other setting has a working default and does not need to be modified.
+
+# =============================================================================
+# Neo4j AuraDB Free (REQUIRED - fill in during Setup)
+# =============================================================================
+# Enter the credentials from the AuraDB Free instance you created in Setup.
+# They are shown once when the instance is created. Make sure you saved them.
+NEO4J_URI=neo4j+s://xxxxxxxx.databases.neo4j.io
+NEO4J_USERNAME=neo4j
+NEO4J_PASSWORD=your_password_here
+NEO4J_DATABASE=neo4j
+
+# =============================================================================
+# AWS settings (pre-configured - no changes needed)
+# =============================================================================
+# The notebooks read this name and export it as AWS_DEFAULT_REGION during setup,
+# because botocore reads only AWS_DEFAULT_REGION and would otherwise fall back to
+# whatever region your active AWS profile configures.
+AWS_REGION=us-east-1
+
+# Model override. The workshop default is us.anthropic.claude-sonnet-5.
+# MODEL_ID=us.anthropic.claude-sonnet-5

@@ -24,7 +24,7 @@ from pathlib import Path
 from typing import Any, Iterable, Mapping
 from uuid import UUID
 
-from dotenv import load_dotenv
+from dotenv import find_dotenv, load_dotenv
 from neo4j import Driver, GraphDatabase
 
 from workshop import contracts, graph_connection
@@ -464,7 +464,12 @@ def parse_args() -> argparse.Namespace:
 
 
 def main() -> int:
+    # Searched upward from the working directory rather than anchored to a
+    # repo-root constant, because this module also ships inside the wheel
+    # installed into Lambda and AgentCore Runtime, where no repo root exists.
+    # A name that is not found resolves to "", which loads nothing.
     load_dotenv()
+    load_dotenv(find_dotenv("CONFIG.txt", usecwd=True))
     args = parse_args()
     manifest = load_manifest()
 

@@ -10,7 +10,7 @@ A booking agent is useful only when it can name the hotel it means and show wher
 This workshop uses a hotel booking scenario to compare four retrieval patterns, select a fixed production retriever, and wire a grounded agent with :link[Amazon Bedrock AgentCore]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}, :link[Neo4j]{href="https://neo4j.com/" external=true} retrieval tools, and inspectable graph memory.
 
 :::alert{type="info" header="Region"}
-This workshop runs in **us-east-1 (N. Virginia)**. Your AWS account and Neo4j database are pre-configured.
+This workshop runs in **us-east-1 (N. Virginia)**. Your AWS account arrives pre-configured. You create the Neo4j database yourself in Setup, on the free tier.
 :::
 
 ---
@@ -19,7 +19,7 @@ This workshop runs in **us-east-1 (N. Virginia)**. Your AWS account and Neo4j da
 
 | Module | What You Will Build |
 |--------|---------------------|
-| **Setup** | Open Code Editor, verify Neo4j and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} access |
+| **Setup** | Create a Neo4j AuraDB Free database, restore the workshop graph, verify Neo4j and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} access |
 | **Module 1: Build the Graph** | Extract five held-out hotel documents into the graph, pin the extraction schema, create both retrieval indexes |
 | **Module 2: From Similarity Search to Connected Context** | Semantic retrieval, exact-term search, and connected graph context |
 | **Module 3: Build the Grounded Booking Agent** | Grounded answers, abstention, and protected reservation writes |
@@ -32,7 +32,7 @@ This workshop runs in **us-east-1 (N. Virginia)**. Your AWS account and Neo4j da
 
 ## Architecture
 
-:image[Production agent architecture: Strands Agent in AgentCore Runtime calls Lambda tools via AgentCore Gateway, stores memory in AgentCore Memory, and queries Neo4j on ECS Fargate]{src="../images/03-agentcore-architecture.png" width=800}
+:image[Production agent architecture: Strands Agent in AgentCore Runtime calls Lambda tools via AgentCore Gateway, stores memory in AgentCore Memory, and queries Neo4j AuraDB]{src="../images/03-agentcore-architecture.png" width=800}
 
 **Neo4j owns:** hotel knowledge, retrieval indexes, business rules, reservation writes, and graph memory.
 **Amazon Bedrock owns:** reasoning over retrieved evidence, embeddings, and managed memory.
@@ -52,7 +52,8 @@ This workshop runs in **us-east-1 (N. Virginia)**. Your AWS account and Neo4j da
 ## Prerequisites
 
 - Basic Python and AWS CLI familiarity
-- No local setup required; everything runs in your Code Editor environment
+- A :link[Neo4j Aura]{href="https://console.neo4j.io/" external=true} account, free to create, which you set up in the first Setup step
+- Nothing to install on your own machine for the hosted path; the notebooks run in the JupyterLab environment Vocareum provides
 
 :::alert{type="warning" header="Cost"}
 This workshop creates AWS resources that incur charges. Follow the cleanup instructions at the end. Estimated cost\: under $2.

@@ -119,8 +119,8 @@ def settings_problems(env: Mapping[str, str]) -> list[str]:
     missing = [name for name in graph_connection.REQUIRED_ENV_VARS if not env.get(name)]
     if missing:
         return [
-            f"{', '.join(missing)} is not set; copy .env.example into the "
-            "notebooks directory as .env and fill it in"
+            f"{', '.join(missing)} is not set; fill in CONFIG.txt at the "
+            "repository root and re-run this script"
         ]
     return []
 
@@ -203,12 +203,15 @@ def embedding_problems(
 
 
 def load_environment() -> list[Path]:
-    """Load the .env files the notebooks would find, nearest one winning.
+    """Load the settings files the notebooks would find, nearest one winning.
 
     A notebook runs from inside its module folder, so `load_dotenv()` there
     finds `notebooks/.env` before anything at the repository root. Loading them
     in that order here, and never overriding an already-set value, makes this
     script read exactly the settings the notebooks will read.
+
+    `CONFIG.txt` is last because it is the participant-facing file. A `.env`
+    is a maintainer's own override, so it wins where both are present.
     """
     try:
         from dotenv import load_dotenv
@@ -219,7 +222,11 @@ def load_environment() -> list[Path]:
         return []
 
     loaded: list[Path] = []
-    for candidate in (NOTEBOOKS / ".env", REPO_ROOT / ".env"):
+    for candidate in (
+        NOTEBOOKS / ".env",
+        REPO_ROOT / ".env",
+        REPO_ROOT / "CONFIG.txt",
+    ):
         if candidate.is_file():
             load_dotenv(candidate, override=False)
             loaded.append(candidate)
@@ -376,7 +383,10 @@ def main() -> int:
     for path in loaded:
         print(f"      loaded {path.relative_to(REPO_ROOT)}")
     if not loaded:
-        print("      no .env file found; reading settings from the environment")
+        print(
+            "      no CONFIG.txt or .env file found; reading settings from "
+            "the environment"
+        )
 
     failures = 0
     blocked = False

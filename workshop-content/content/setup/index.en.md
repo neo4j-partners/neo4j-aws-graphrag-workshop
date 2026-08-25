@@ -7,20 +7,26 @@ weight: 10
 
 Every module in this workshop talks to two services\: a :link[Neo4j]{href="https://neo4j.com/" external=true} database holding the hotel graph, and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} for the models. Setup is the work of proving both are reachable from your terminal before you open a notebook.
 
-Choose your path\:
+The database is the same on every path. You create a **Neo4j AuraDB Free** instance and restore the workshop graph into it yourself\:
+
+| Step | Page |
+|------|------|
+| Create the database, restore the graph | [Neo4j AuraDB Free Setup](./aura-free-setup/) |
+
+Then pick the environment you run the notebooks in\:
 
 | Path | When to use |
 |------|------------|
-| [Workshop Studio Access](./workshop-studio-access/) | AWS-hosted event — your account is pre-provisioned |
-| [Own Account Setup](./own-account-setup/) | Self-paced — your own AWS account |
+| [Vocareum Access](./vocareum-access/) | Hosted event. Vocareum gives you JupyterLab and an AWS account |
+| [Own Account Setup](./own-account-setup/) | Self-paced, on your own machine and your own AWS account |
 
-Both paths end at the same place\: a Code Editor terminal, four Neo4j settings, AWS credentials in **us-east-1**, and the workshop dependencies installed.
+Both paths end at the same place\: a terminal, four Neo4j settings in `CONFIG.txt`, AWS credentials in **us-east-1**, and the workshop dependencies installed.
 
 ---
 
 ## What You Are Configuring
 
-**Neo4j.** The graph arrives as a database dump that the environment restores for you. It already contains the hotel corpus, extracted under the pinned schema Module 1 explains. It deliberately does **not** contain the vector index, the full-text index, or the five hotels you extract yourself — Module 1 creates all of those.
+**Neo4j.** The graph arrives as a database dump that you restore into your own AuraDB Free instance. It already contains the hotel corpus, extracted under the pinned schema Module 1 explains. It deliberately does **not** contain the vector index, the full-text index, or the five hotels you extract yourself. Module 1 creates all of those.
 
 **Amazon Bedrock.** Three models, all in **us-east-1**\:
 
@@ -34,24 +40,23 @@ Both paths end at the same place\: a Code Editor terminal, four Neo4j settings, 
 
 ## The Settings File
 
-The notebooks read their settings from a `.env` file in the `notebooks/` directory. Copy the template at the repository root and fill in the four Neo4j values your path gave you\:
-
-:::code{language=bash showCopyAction=true}
-cd notebooks
-cp ../.env.example .env
-:::
-
-The file names\:
+The notebooks read their settings from `CONFIG.txt` at the repository root. It is already there, filled with placeholders. Open it and replace the Neo4j values with the ones from the instance you created\:
 
 | Setting | Value |
 |---|---|
-| `NEO4J_URI` | The connection URI from your path's outputs |
+| `NEO4J_URI` | The `neo4j+s://` URI from your Aura credentials file |
 | `NEO4J_USERNAME` | `neo4j` |
-| `NEO4J_PASSWORD` | The password from your path's outputs |
+| `NEO4J_PASSWORD` | The password from your Aura credentials file |
 | `NEO4J_DATABASE` | `neo4j` |
-| `AWS_REGION` | `us-east-1` |
+| `AWS_REGION` | `us-east-1`, already set |
+
+Everything below the Neo4j block already has a working value. Paste the credentials with no surrounding quotes and no trailing spaces.
 
 `NEO4J_URI` and `NEO4J_PASSWORD` have no defaults, on purpose. A built-in default password sends a bad credential to the right host and a built-in localhost URI sends a good credential to a host that is not listening, and both read like an outage rather than a missing setting.
+
+:::alert{type="warning" header="Do not commit your filled-in CONFIG.txt"}
+The repository ships `CONFIG.txt` as a template, so the file is tracked and your edits to it show up in `git status` like any other change. Leave them uncommitted. If you work from a fork, the safest move is `git update-index --skip-worktree CONFIG.txt` before you paste the password in.
+:::
 
 ---
 
@@ -80,7 +85,7 @@ uv run python ../setup/verify_setup.py
 **Expected output\:**
 
 :::code{language=text}
-      loaded notebooks/.env
+      loaded CONFIG.txt
 ok    python interpreter is supported
 ok    workshop dependencies import
 ok    neo4j settings are present
@@ -108,23 +113,27 @@ The install step did not finish. Re-run `uv pip install -r requirements.txt` fro
 :::
 
 :::expand{header="NEO4J_URI, NEO4J_PASSWORD is not set" defaultExpanded=false}
-The script looks for `.env` in the `notebooks/` directory first, then at the repository root. Confirm the file is in one of those two places and that the values have no surrounding quotes.
+The script did not find the values. Confirm `CONFIG.txt` is at the repository root, that you edited that file rather than a copy, and that the values have no surrounding quotes. The line the script prints before its first check names the settings file it actually loaded.
 :::
 
-:::expand{header="AuthError, or ServiceUnavailable" defaultExpanded=false}
-The password is wrong, or the database is still starting. Re-copy the password from your path's outputs, then retry. If the URI is right and the password is right, give the database another moment to come up and run the script again.
+:::expand{header="AuthError" defaultExpanded=false}
+The password is wrong. Aura shows the generated password once, so a mistyped or truncated paste is the usual cause. Re-copy it from the credentials file you downloaded, or reset the password from the Aura console and paste the new one.
+:::
+
+:::expand{header="ServiceUnavailable, or a connection timeout" defaultExpanded=false}
+The Aura instance is not accepting connections. Open :link[the Aura console]{href="https://console.neo4j.io/" external=true} and check its status. A newly created instance may still be provisioning, and a free instance left idle for three days pauses and has to be resumed. Wait for **RUNNING**, then run the script again.
 :::
 
 :::expand{header="the graph has no hotel named ..." defaultExpanded=false}
-The connection works but the dump is not there. Check that `NEO4J_DATABASE` is `neo4j` and not some other database name, then confirm with your path that the restore finished.
+The connection works but the dump is not in this instance. Confirm `NEO4J_URI` points at the instance you restored into, that `NEO4J_DATABASE` is `neo4j`, and that the restore finished rather than failing partway. Re-running the restore is safe on a workshop instance, because it overwrites.
 :::
 
 :::expand{header="AccessDeniedException from Bedrock" defaultExpanded=false}
-Confirm `AWS_REGION` is `us-east-1`. All three models live there. On the Workshop Studio path model access is pre-enabled; on your own account, enable the three models listed above under **Model access** in the Bedrock console.
+Confirm `AWS_REGION` is `us-east-1`. All three models live there. On the Vocareum path model access is enabled for you; on your own account, enable the three models listed above under **Model access** in the Bedrock console.
 :::
 
 :::expand{header="NoCredentialsError" defaultExpanded=false}
-The terminal has no AWS credentials. On the Workshop Studio path the Code Editor instance carries them through an instance role, so this usually means you are running somewhere other than the Code Editor. On your own account, run `aws configure` or export the usual credential variables.
+The terminal has no AWS credentials. On the Vocareum path they come from the lab environment, so this usually means the lab session expired or the terminal was opened before the lab started. On your own account, run `aws configure` or export the usual credential variables.
 :::
 
 ---

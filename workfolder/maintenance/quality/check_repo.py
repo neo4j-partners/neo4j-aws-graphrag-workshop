@@ -126,7 +126,7 @@ WEIGHT_PATTERN = re.compile(r"^weight:\s*(\d+)\s*$", re.MULTILINE)
 
 
 def content_weights_unique() -> list[str]:
-    """Two pages sharing a weight order unpredictably in Workshop Studio."""
+    """Two pages sharing a weight order unpredictably on the published site."""
     problems: list[str] = []
     seen: dict[int, str] = {}
     for path in sorted(CONTENT.glob("*/index.en.md")):
@@ -277,7 +277,7 @@ NON_LOCAL_PREFIXES = ("http://", "https://", "s3://", "arn:", "/", "~", "-")
 # Named on purpose and correctly absent. Each entry says why, because an
 # allowlist nobody can justify is how a gate stops meaning anything.
 PATH_ALLOWLIST = {
-    ".env": "the participant creates it from .env.example",
+    ".env": "an optional local override; the participant fills in CONFIG.txt",
     "Lab_5_Agent_Memory/lib/memory_utils.py": "cites the upstream sample this module came from",
 }
 SCRIPT_SUFFIXES = (".py", ".ipynb")

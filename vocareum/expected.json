@@ -1,0 +1,5 @@
+{
+  "stacks": [
+    "${LAB_STACK_NAME}"
+  ]
+}

@@ -2,7 +2,7 @@
 
 # Module 5: Deploy to AgentCore Runtime
 
-The grounded booking agent from Module 3.1 runs in the Workshop Studio notebook kernel. The notebook environment holds the Neo4j password, and its AWS credentials authorize the Bedrock calls. This module packages a deployment-oriented version of that agent in a container managed by Amazon Bedrock AgentCore Runtime. It reuses the retrieval code, grounding instructions, and reservation command. It also exposes the command as an agent tool and adds Runtime request handling.
+The grounded booking agent from Module 3.1 runs in your JupyterLab notebook kernel. The notebook environment holds the Neo4j password, and its AWS credentials authorize the Bedrock calls. This module packages a deployment-oriented version of that agent in a container managed by Amazon Bedrock AgentCore Runtime. It reuses the retrieval code, grounding instructions, and reservation command. It also exposes the command as an agent tool and adds Runtime request handling.
 
 **At a Glance**
 
@@ -42,7 +42,7 @@ The cells that create or invoke AWS resources check `DEPLOY_READY` first. They s
 
 ## Cleanup
 
-Runtime use, ECR image storage, and CodeBuild builds can incur AWS charges. This module does not delete its resources automatically. The notebook applies the `WorkshopResource` tag to each resource so you can find and remove them when you finish. At an AWS Workshop Studio event, the account is reclaimed when the event ends.
+Runtime use, ECR image storage, and CodeBuild builds can incur AWS charges. This module does not delete its resources automatically. The notebook applies the `WorkshopResource` tag to each resource so you can find and remove them when you finish. On the Vocareum path, the lab account goes away when the lab session ends.
 
 ## The workshop page
 

@@ -25,10 +25,10 @@ read-only Neo4j user so the database independently rejects writes.
 ## Prepare the Graph
 
 The notebook verifies its graph fixtures and both retrieval indexes before it
-constructs a retriever. Module 1 already prepared the hosted graph. Run the
+constructs a retriever. Module 1 already prepared the graph. Run the
 Module 2.1 notebook cells in order. Its **Verify the prepared graph** cell runs
-the non-destructive readiness check directly from Python, so Workshop Studio
-does not require terminal access.
+the non-destructive readiness check directly from Python, so no terminal command
+is required.
 
 If the readiness cell reports that Module 2.1 is not ready, return to the Module
 1 notebook, run its cells through completion, and then rerun Module 2.1 from the

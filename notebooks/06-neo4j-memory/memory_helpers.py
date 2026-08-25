@@ -107,9 +107,9 @@ PROVENANCE_RELATIONSHIP = "DERIVED_FROM"
 HOTEL_RELATIONSHIP = "ABOUT_HOTEL"
 
 PREPARATION_HINT = (
-    "Set NEO4J_URI, NEO4J_USERNAME, and NEO4J_PASSWORD in the environment or "
-    "in a .env file (see .env.example at the repository root) before building "
-    "the memory client."
+    "Fill in NEO4J_URI, NEO4J_USERNAME, and NEO4J_PASSWORD in CONFIG.txt at "
+    "the repository root, or set them in the environment, before building the "
+    "memory client."
 )
 
 _DEMO_DIR = Path(__file__).resolve().parent
@@ -137,24 +137,34 @@ class MemoryDemoConfig:
 
 
 def load_config() -> MemoryDemoConfig:
-    """Read the demo configuration from the environment or a ``.env`` file.
+    """Read the demo configuration from the environment or a settings file.
 
     Reads the same NEO4J_URI, NEO4J_USERNAME, and NEO4J_PASSWORD settings the
-    other demos use, checking this demo's ``.env`` and then the repository
-    root ``.env``. Values already present in the environment win.
+    other demos use, checking this demo's ``.env``, then the repository root
+    ``.env``, then the repository root ``CONFIG.txt``. Values already present
+    in the environment win.
 
     Raises:
-        RuntimeError: If NEO4J_PASSWORD is not set anywhere.
+        RuntimeError: If NEO4J_URI or NEO4J_PASSWORD is not set anywhere.
     """
     load_dotenv(_DEMO_DIR / ".env")
     load_dotenv(_DEMO_DIR.parent.parent / ".env")
+    load_dotenv(_DEMO_DIR.parent.parent / "CONFIG.txt")
+
+    # Neither value gets a default. A built-in password sends a bad credential
+    # to the right host, and a built-in localhost URI sends a good credential to
+    # a host that is not listening. Both surface as a timeout that reads like an
+    # Aura outage rather than as a setting the participant never filled in.
+    uri = os.getenv("NEO4J_URI")
+    if not uri:
+        raise RuntimeError(f"NEO4J_URI is not set. {PREPARATION_HINT}")
 
     password = os.getenv("NEO4J_PASSWORD")
     if not password:
         raise RuntimeError(f"NEO4J_PASSWORD is not set. {PREPARATION_HINT}")
 
     return MemoryDemoConfig(
-        uri=os.getenv("NEO4J_URI", "bolt://localhost:7687"),
+        uri=uri,
         username=os.getenv("NEO4J_USERNAME", "neo4j"),
         password=password,
         database=os.getenv("NEO4J_DATABASE", "neo4j"),
