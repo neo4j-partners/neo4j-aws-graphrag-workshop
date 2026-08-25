@@ -32,8 +32,20 @@
     }
   },
   "cleanup": {
-    "resource_prefixes": [],
-    "iam_role_prefixes": [],
-    "s3_bucket_prefixes": []
+    "resource_prefixes": [
+      "workshop-",
+      "hotel-booking-",
+      "hotel_booking_",
+      "neo4j-ws-",
+      "bedrock-agentcore-",
+      "GraphRagBookingAgent"
+    ],
+    "iam_role_prefixes": [
+      "workshop-",
+      "AmazonBedrockAgentCoreSDK"
+    ],
+    "s3_bucket_prefixes": [
+      "bedrock-agentcore-codebuild-sources"
+    ]
   }
 }
