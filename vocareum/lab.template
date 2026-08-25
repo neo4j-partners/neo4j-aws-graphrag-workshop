@@ -110,6 +110,7 @@ Resources:
               - secretsmanager:DescribeSecret
               - secretsmanager:GetSecretValue
               - secretsmanager:PutSecretValue
+              - secretsmanager:RestoreSecret
               - secretsmanager:TagResource
               - secretsmanager:DeleteSecret
             Resource: !Sub "arn:aws:secretsmanager:*:${AWS::AccountId}:secret:neo4j-ws-*"
