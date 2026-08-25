@@ -11,6 +11,28 @@ This is the workshop's hands-on cross-session memory lab. Neo4j graph memory giv
 
 ---
 
+## Place This Lab in the Memory Landscape
+
+Agent memory can hold several kinds of state:
+
+| Memory kind | Purpose | Example |
+|---|---|---|
+| Short-term memory | Preserves the current conversation and session context | Resolve "it" to the hotel discussed in the previous turn |
+| Long-term memory | Carries durable facts and preferences across sessions | Remember that one actor prefers a high floor |
+| Reasoning memory | Records decisions, tool calls, outcomes, and the entities they touched | Trace which search result supported a recommendation |
+
+This module implements a focused long-term memory path. It stores
+`Conversation` and `Message` nodes to preserve the source, then connects one
+durable `Preference` to that message and the canonical `Hotel`. It demonstrates
+cross-session recall, actor isolation, provenance, and correction.
+
+The module does not add prior conversation turns to an agent prompt, so it is
+not a short-term conversational recall implementation. It also does not persist
+reasoning traces. Those are natural extensions once the application has defined
+their retention and authorization rules.
+
+---
+
 ## Connect Each Preference to Its Source
 
 Open `notebooks/06-neo4j-memory/6.1_neo4j_memory.ipynb`.

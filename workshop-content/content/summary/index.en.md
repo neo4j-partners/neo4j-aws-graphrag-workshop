@@ -86,4 +86,5 @@ Three pieces of this repository port to another domain without being rewritten\:
 
 ## Next
 
-Head to [Wrap-up](../wrap-up/).
+Head to [Production Path](../production-path/) to turn the workshop contracts
+into an operated system.

@@ -1,4 +1,5 @@
 * xref:index.adoc[Home]
+* xref:foundations/index.adoc[Foundations]
 * xref:setup/index.adoc[Setup]
 ** xref:setup/aura-free-setup/index.adoc[Neo4j AuraDB Free Setup]
 ** xref:setup/vocareum-access/index.adoc[Vocareum Access]
@@ -10,4 +11,5 @@
 * xref:05-agentcore-deploy/index.adoc[Module 5: AgentCore Deployment]
 * xref:06-neo4j-memory/index.adoc[Module 6: Inspectable Neo4j Memory]
 * xref:summary/index.adoc[Summary]
+* xref:production-path/index.adoc[Production Path]
 * xref:wrap-up/index.adoc[Wrap-up]

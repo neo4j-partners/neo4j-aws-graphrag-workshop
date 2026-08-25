@@ -9,6 +9,10 @@ A booking agent is useful only when it can name the hotel it means and show wher
 
 This workshop uses a hotel booking scenario to compare four retrieval patterns, select a fixed production retriever, and wire a grounded agent with :link[Amazon Bedrock AgentCore]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}, :link[Neo4j]{href="https://neo4j.com/" external=true} retrieval tools, and inspectable graph memory.
 
+New to property graphs, GraphRAG, or AgentCore? Start with
+[Foundations](./foundations/) for the architecture and vocabulary used by every
+module.
+
 :::alert{type="info" header="Region"}
 This workshop runs in **us-east-1 (N. Virginia)**. Your AWS account arrives pre-configured. You create the Neo4j database yourself in Setup, on the free tier.
 :::
@@ -19,6 +23,7 @@ This workshop runs in **us-east-1 (N. Virginia)**. Your AWS account arrives pre-
 
 | Module | What You Will Build |
 |--------|---------------------|
+| **Foundations** | Learn the property graph, GraphRAG evidence flow, service responsibilities, and AgentCore capability boundaries |
 | **Setup** | Create a Neo4j AuraDB Free database, restore the workshop graph, verify Neo4j and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} access |
 | **Module 1: Build the Graph** | Extract five held-out hotel documents into the graph, pin the extraction schema, create both retrieval indexes |
 | **Module 2: From Similarity Search to Connected Context** | Semantic retrieval, exact-term search, and connected graph context |
@@ -26,7 +31,7 @@ This workshop runs in **us-east-1 (N. Virginia)**. Your AWS account arrives pre-
 | **Module 4: Production Agent with AgentCore** | AgentCore Gateway, IAM-authenticated MCP, and a Strands agent over remote tools |
 | **Module 5: Deploy to AgentCore Runtime** | Containerize the agent, launch it on Runtime, correlate one request end to end |
 | **Module 6: Inspectable Neo4j Memory** | Cross-session graph memory, actor-scoped recall, full provenance, and a conceptual AgentCore comparison |
-| **Summary and Wrap-up** | The argument end to end, the two decision tables, and where to take it next |
+| **Summary, Production Path, and Wrap-up** | The argument end to end, the decision tables, the work required for production, and where to take it next |
 
 ---
 
@@ -50,6 +55,7 @@ cross-session graph memory.
 3. How to build a grounded agent that declines unsupported requests and enforces rules atomically
 4. How to deploy tools to AgentCore Gateway and connect agents over IAM-authenticated MCP
 5. How explicit graph memory supports audit and correction
+6. How Neo4j, Bedrock, Strands, Gateway, Runtime, Lambda, and IAM divide responsibility
 
 ---
 

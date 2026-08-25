@@ -7,6 +7,28 @@ Ask a booking agent for a guest rating and it can return a plausible number it n
 
 :image[Grounded agent architecture: Neo4j enforces retrieval, rules, and writes; Amazon Bedrock handles reasoning only]{src="../../images/03-grounded-agent-architecture.png" width=800}
 
+## How the Grounded Agent Works
+
+An agent combines a model, instructions, and tools in a reason-act-observe loop.
+The model reads the question, calls a tool, observes the returned result, and
+then decides whether it has enough evidence to answer.
+
+Module 3 narrows that general loop to one controlled path:
+
+1. A fresh hotel question requires a call to `search_hotel_knowledge_tool`.
+2. The tool calls the fixed `HybridCypherRetriever` selected in Module 2.
+3. The retriever returns bounded JSON with graph fields, source evidence, and provenance.
+4. The tool result becomes the model's observation for that question.
+5. The grounding instructions require an evidence-backed answer or an explicit abstention.
+
+The Strands `@tool` decorator publishes the Python function's name, arguments,
+and description to the model. It does not give the model direct database access.
+The function controls the query contract and the result shape.
+
+The reservation exercise uses a separate reviewed command. Module 3 calls that
+command directly so the model cannot bypass its validation. Neo4j applies the
+guest limit and the idempotency constraint inside the write boundary.
+
 Open `notebooks/03-grounded-booking-agent/3.1_grounded_booking_agent.ipynb`.
 
 ### Query 1: Retrieve Amenities and a Guest Rating
