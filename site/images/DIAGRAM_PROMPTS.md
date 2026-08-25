@@ -7,64 +7,64 @@ Use these prompts in [Canva's AI image generator](https://www.canva.com/ai-image
 ---
 
 ## Diagram 3: Retrieval Patterns Decision Tree
-**Filename:** `02-retrieval-decision-tree.png`
-**Editable source:** `02-retrieval-decision-tree.excalidraw`
-**Dimensions:** 1600 × 900 px (16:9)
+**Filename:** `02-select-retriever.svg`
+**Editable source:** the SVG itself
+**Dimensions:** 960 x 640 viewBox, rendered at `width=800`
 
-The checked-in Excalidraw file is the authoritative source. Open it in
-Excalidraw and export a 1600 × 900 PNG after editing. Copy the source and export
-to both image trees, then run the repository checker to verify byte equality.
+This diagram is hand-authored SVG, in the same style as `01-graph-structure.svg`.
+There is no separate editor file and no raster export. Edit the SVG directly and
+the site picks the change up on the next build. Keep the `id` attributes on the
+group elements: `tests/test_module2_diagrams.py` resolves the Chicago example
+through `branch-fixed-cypher` and `optional-text2cypher`.
 
 **Design contract:**
 ```
-Modern flowchart decision tree on a white background with pastel node colors.
+START: "What evidence does the question need?" in a dark navy bar across the top.
 
-START: Diamond shape "What evidence does the question need?" at top
+FOUR WORKSHOP BRANCHES fan out below it, each a colored question-shape header
+above a detail card carrying the retriever name, what it does, its EVIDENCE, and
+one EXAMPLE question:
 
-FOUR WORKSHOP BRANCHES flowing down, plus one separate optional extension:
-
-BRANCH 1 (leftmost, purple):
-Label: "Semantic or paraphrased source lookup"
-Arrow to rounded rectangle: "VectorRetriever"
-Sub-label: "embedding similarity"
+BRANCH 1 (leftmost, purple, id "branch-vector"):
+Header: "Semantic or paraphrased source lookup"
+Card: "VectorRetriever", embedding similarity over Chunk text
 Evidence: ranked source Chunks and scores
 Example: "When does arrival processing begin?"
 
-BRANCH 2 (left-center, blue):
-Label: "Exact name, code, or ID"
-Arrow to rounded rectangle: "HybridRetriever"
-Sub-label: "vector plus full-text relevance"
+BRANCH 2 (left-center, blue, id "branch-hybrid"):
+Header: "Exact name, code, or identifier"
+Card: "HybridRetriever", vector plus full-text relevance
 Evidence: semantic score and exact-term hits
 Example: "Find the policy for ZIP 60611"
 
-BRANCH 3 (right-center, teal):
-Label: "Semantic match plus connected facts"
-Arrow to rounded rectangle: "VectorCypherRetriever"
-Steps: semantic match finds a Chunk node, reviewed traversal expands the graph,
-then named fields include provenance
+BRANCH 3 (right-center, teal, id "branch-vector-cypher"):
+Header: "Semantic match plus connected facts"
+Card: "VectorCypherRetriever". Semantic match finds a Chunk node, reviewed
+traversal expands the graph, and named fields include provenance.
+Evidence: named fields with source provenance
 Example: "Amenities and rating for the Cairo hotel"
 
-BRANCH 4 (rightmost, orange):
-Label: "Reviewed structured filtering"
-Arrow to rounded rectangle: "Reviewed fixed Cypher"
-Sub-label: "application-owned query over named fields and relationships"
+BRANCH 4 (rightmost, amber, id "branch-fixed-cypher"):
+Header: "Reviewed structured filtering"
+Card: "Reviewed fixed Cypher", application-owned query over named fields and
+relationships
 Evidence: reviewed Cypher and database records
 Example: "Chicago hotels with a spa and pool"
 
-BOTTOM ROW: All four arrows connect to a final box "Neo4j Knowledge Graph."
+BOTTOM ROW: all four branches converge on "Neo4j Knowledge Graph."
 
-SEPARATE OPTIONAL EXTENSION (orange dashed outline):
-Arrow from the start diamond to "Optional: Text2CypherRetriever"
-Sub-label: "Model-generated read-only Cypher for flexible questions"
+SEPARATE OPTIONAL EXTENSION (amber dashed outline, id "optional-text2cypher"):
+"Text2CypherRetriever generates read-only Cypher for flexible questions. It is
+planned with EXPLAIN and runs only when Neo4j reports it read-only."
 
-Style: clean sans-serif font, flat design, white background, colored borders
-matching branch colors
+Style: white card with a warm border and soft shadow, Helvetica stack, flat fills,
+one hue per branch, metadata labels in small caps.
 ```
 
 ---
 
 ## Diagram 4: Grounded Agent Architecture
-**Filename:** `03-grounded-agent-architecture.png`
+**Filename:** `03-grounded-agent-architecture-context.png`
 **Dimensions:** 1600 × 900 px (16:9)
 
 **Canva prompt:**
@@ -92,12 +92,12 @@ Boxes from top to bottom:
 1. "Amazon Nova 2 Embeddings" - vector icon
    (1024-dim query embedding)
 2. "Claude Sonnet" - brain/LLM icon
-   (reasons over retrieved evidence only)
+   (reasons over retrieved context only)
 3. "Strands Agent" - tool calling icon
    (tool: search_hotel_knowledge_tool)
 
 CENTER (connecting the zones):
-Arrow from Neo4j retrieval → Bedrock: "Bounded evidence JSON"
+Arrow from Neo4j retrieval → Bedrock: "Bounded context JSON"
 Arrow from Bedrock decision → Neo4j write: "Validated command input"
 
 BOTTOM BAR: "The LLM never sees the write path. Rules are enforced by the graph."

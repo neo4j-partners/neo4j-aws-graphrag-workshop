@@ -3,10 +3,15 @@ title: "Module 3: Build the Grounded Booking Agent"
 weight: 40
 ---
 
-Module 3 grounds hotel answers in Neo4j evidence. It uses the fixed Hybrid-Cypher
-retriever selected in Module 2. A separate command handles reservation writes.
+Module 3 builds a hotel assistant that answers questions from context retrieved
+from Neo4j. Module 2 selected a fixed Hybrid-Cypher path for this application.
+This module exposes that path through `HybridCypherRetriever`. The retriever
+combines semantic and exact-term search, then follows graph relationships to
+return connected hotel data. When the graph lacks a requested fact, the
+assistant explains what information is missing. A separate reservation command
+validates business rules and writes approved requests to Neo4j.
 
-:image[Grounded agent architecture: Neo4j enforces retrieval, rules, and writes; Amazon Bedrock handles reasoning only]{src="../../images/03-grounded-agent-architecture.png" width=800}
+:image[Grounded agent architecture: Neo4j supplies connected context and enforces reservation rules; Amazon Bedrock uses the context to answer questions]{src="../../images/03-grounded-agent-architecture-context.png" width=800}
 
 ## Learn the Strands Agent Basics
 
@@ -18,20 +23,21 @@ This module introduces the :link[Strands Agents SDK]{href="https://strandsagents
 - **`BedrockModel`:** Connects the agent to the Amazon Bedrock model named by the model ID.
 - **`@tool`:** Marks a Python function as a tool the model can call.
 
-The notebook turns `search_hotel_knowledge` into a tool. The agent calls this tool for every new hotel question. It answers from the returned facts. It reports missing evidence when required facts are absent.
+The notebook exposes `search_hotel_knowledge` as a tool so the agent can retrieve
+context for each hotel question. The agent answers from the facts returned by
+the tool and explains when the context lacks a required fact.
 
 ## How the Grounded Agent Works
 
-Module 3 runs these steps:
+To answer a hotel question, the model calls `search_hotel_knowledge_tool`. The
+tool runs the `HybridCypherRetriever` selected in Module 2 and returns bounded
+JSON containing connected graph facts and source text. The model uses this
+context to answer the question or explain which information is missing. The
+tool function controls database access and keeps the result format consistent.
 
-- **Question:** The model reads the hotel question.
-- **Tool call:** The model calls `search_hotel_knowledge_tool`.
-- **Search:** The tool runs the `HybridCypherRetriever` selected in Module 2.
-- **Result:** The tool returns JSON with graph facts and source text.
-- **Answer:** The model uses the facts or reports missing evidence.
-- **Write:** A separate command checks and writes reservation requests.
-- **Tool boundary:** The function controls database access and the result format.
-- **Database boundary:** Neo4j checks the guest limit and duplicate requests during the write.
+Reservation requests use a separate write path. The reservation command checks
+the request and sends the write to Neo4j, where the database enforces the guest
+limit and prevents duplicate requests in the same transaction.
 
 Open `notebooks/03-grounded-booking-agent/3.1_grounded_booking_agent.ipynb`.
 
@@ -39,25 +45,24 @@ Open `notebooks/03-grounded-booking-agent/3.1_grounded_booking_agent.ipynb`.
 
 > **"What amenities and guest rating does AnyCompany Cairo Nile View have?"**
 
-Run this query.
-
-- **Full-text search:** Matches the hotel name.
-- **Vector search:** Matches the request for amenities and a rating.
-- **Graph expansion:** Returns the amenity list and exact guest rating.
+Run this query to see how the retriever combines three search operations.
+Full-text search matches the hotel name, while vector search matches the request
+for amenities and a rating. A Cypher traversal then follows the matched content
+to the connected hotel and returns its amenity list and exact guest rating.
 
 ### Query 2: Does the hotel guarantee availability next weekend?
 
 > **"Does AnyCompany Cairo Nile View guarantee room availability next weekend?"**
 
-Run this query.
-
-- **Stored evidence:** Neo4j contains hotel facts.
-- **Missing evidence:** The graph has no live inventory field.
-- **Result:** The agent states that it cannot confirm availability.
+Run this query to test how the agent handles missing context. Neo4j contains
+descriptive hotel facts but no live inventory field, so the retrieved context
+cannot confirm availability. The agent explains that it cannot determine whether
+rooms are available next weekend.
 
 ### Reject a 15-guest reservation
 
-Submit a reservation for 15 guests. The maximum is 10\:
+Submit a reservation for 15 guests to test the maximum-guests rule. Neo4j stores
+a limit of 10 guests, so the command returns this rejection\:
 
 :::code{language=json}
 {
@@ -67,15 +72,16 @@ Submit a reservation for 15 guests. The maximum is 10\:
 }
 :::
 
-The rule check runs inside the write transaction and blocks the `CREATE` operation.
+The rule check runs inside the write transaction. Because the request exceeds
+the stored limit, Neo4j returns the rejection without creating a
+`ReservationRequest` node.
 
 ### Safely Retry a Valid Request
 
-Submit the same valid request twice.
-
-- **First request:** Creates one `ReservationRequest` node.
-- **Second request:** Returns `duplicate: true` with the original `created_at`.
-- **Constraint:** Prevents a second node for the same `request_id`.
+Submit the same valid request twice to verify that retries are safe. The first
+request creates one `ReservationRequest` node. The second returns
+`duplicate: true` with the original `created_at` value because the uniqueness
+constraint prevents another node from using the same `request_id`.
 
 ## Next
 

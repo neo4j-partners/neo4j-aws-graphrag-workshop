@@ -5,8 +5,10 @@ weight: 70
 
 ## Add Inspectable Memory with Neo4j
 
-Module 6 stores one hotel preference in Neo4j. The preference links to its actor,
-source message, session, and hotel. You can inspect, recall, and correct it.
+Module 6 adds long-term hotel preference memory to Neo4j so the agent can recall
+a preference across sessions. Each stored preference links to its actor, source
+message, session, and hotel. These relationships make the memory inspectable and
+allow you to trace or correct it directly.
 
 :image[AgentCore Memory vs Neo4j Memory: managed extraction compared with explicit graph provenance]{src="../../images/04-memory-comparison.png" width=800}
 
@@ -14,26 +16,34 @@ source message, session, and hotel. You can inspect, recall, and correct it.
 
 ## Place This Lab in the Memory Landscape
 
-Agent memory can store three kinds of state:
+Agent memory serves three distinct purposes:
 
-- **Short-term memory:** Stores the current conversation. It can resolve "it" to a hotel from the previous turn.
-- **Long-term memory:** Stores facts and preferences across sessions. It can remember that an actor prefers a high floor.
-- **Reasoning memory:** Stores decisions, tool calls, and outcomes. It can show which search result supported an answer.
+- **Short-term memory:** Stores the current conversation so the agent can resolve
+  "it" to a hotel from the previous turn.
+- **Long-term memory:** Stores facts and preferences across sessions so the agent
+  can remember that an actor prefers a high floor.
+- **Reasoning memory:** Stores decisions, tool calls, and outcomes so you can see
+  which search result supplied the answer's context.
 
-- **This module:** Implements long-term preference memory with actor-scoped recall.
-- **Provenance:** Connects the preference to its source `Message` and `Hotel`.
-- **Extensions:** Short-term prompt recall and reasoning traces require separate retention and access rules.
+This module implements long-term preference memory and scopes each recall to one
+actor. The graph connects every preference to its source `Message` and `Hotel`,
+and those links preserve its provenance alongside the domain data. Adding
+short-term prompt recall or reasoning traces requires separate retention and
+access rules.
 
 ---
 
 ## Connect Each Preference to Its Source
 
-Open `notebooks/06-neo4j-memory/6.1_neo4j_memory.ipynb`.
+Open `notebooks/06-neo4j-memory/6.1_neo4j_memory.ipynb` to create the preference
+memory and connect it to the workshop graph.
 
 ```
 (User)-[:HAS_PREFERENCE]->(Preference)-[:DERIVED_FROM]->(Message)
                                       ↘[:ABOUT_HOTEL]->(Hotel)
 ```
+
+The two relationships make the preference traceable:
 
 - **`DERIVED_FROM`:** Links the preference to its source message.
 - **`ABOUT_HOTEL`:** Links the preference to the existing `Hotel` node.
@@ -42,12 +52,15 @@ Open `notebooks/06-neo4j-memory/6.1_neo4j_memory.ipynb`.
 
 ## Verify Recall and Provenance
 
-The notebook checks actor-scoped recall:
+Run the notebook's recall checks to confirm that preferences remain isolated by
+actor:
 
 - **Actor A:** Starts `SESSION_A2` and recalls a preference from an earlier session.
 - **Actor B:** Asks the same question and receives no preference.
 
-The following Cypher query returns the complete provenance path:
+Use the following Cypher query to return the complete provenance path. The result
+identifies the actor, stored preference, source message, source session, and hotel
+in one row.
 
 :::code{language=cypher showCopyAction=true}
 CYPHER 25
@@ -60,15 +73,17 @@ RETURN u.identifier AS actor, p.preference AS preference, m.content AS source_me
        c.session_id AS source_session, h.name AS hotel
 :::
 
-Correct the preference directly with `SET p.preference = "high floor, away from elevator"`.
+Correct the stored value directly with
+`SET p.preference = "high floor, away from elevator"`. The next recall reads the
+updated property from the same `Preference` node.
 
 ---
 
 ## Conceptual Comparison: AgentCore vs Neo4j Memory
 
 :link[AgentCore Memory]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}
-is a managed alternative for extraction and recall. The workshop implements
-the Neo4j path so you can inspect its provenance and domain relationships.
+provides managed extraction and recall. This workshop implements memory in Neo4j
+so you can inspect its provenance and connect each preference to domain data.
 
 | | AgentCore Memory | :link[Neo4j graph memory]{href="https://neo4j.com/" external=true} |
 |---|---|---|
