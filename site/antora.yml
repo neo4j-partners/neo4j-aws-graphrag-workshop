@@ -1,0 +1,13 @@
+name: neo4j-aws-graphrag-workshop
+title: 'Grounded AI Agents with Neo4j and AWS'
+version: '1.0'
+start_page: ROOT:index.adoc
+nav:
+- nav.adoc
+asciidoc:
+  attributes:
+    experimental: ''
+    source-highlighter: highlight.js
+    icons: font
+    idprefix: ''
+    idseparator: '-'

@@ -1,0 +1,27 @@
+site:
+  title: 'Grounded AI Agents with Neo4j and AWS'
+  url: https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop
+  start_page: neo4j-aws-graphrag-workshop::index.adoc
+
+content:
+  sources:
+  - url: ..
+    branches: HEAD
+    start_path: site
+
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./supplemental-ui
+
+asciidoc:
+  attributes:
+    experimental: ''
+    idprefix: ''
+    idseparator: '-'
+    source-highlighter: highlight.js
+
+output:
+  dir: ./build/site
+  clean: true

@@ -1,0 +1,24 @@
+.doc {
+  max-width: 960px;
+  margin: 0 auto;
+}
+
+.article {
+  padding: 2rem 3rem;
+}
+
+.article .imageblock {
+  margin: 2rem 0;
+}
+
+.article .imageblock img {
+  border: 1px solid #d8e0ea;
+  border-radius: 0.35rem;
+  box-shadow: 0 0.35rem 1.2rem rgb(0 0 0 / 8%);
+}
+
+@media screen and (max-width: 1023px) {
+  .article {
+    padding: 1.5rem 2rem;
+  }
+}

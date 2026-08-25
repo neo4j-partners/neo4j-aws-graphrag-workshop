@@ -1,0 +1,17 @@
+{
+  "name": "neo4j-aws-graphrag-workshop-site",
+  "private": true,
+  "version": "1.0.0",
+  "description": "Published workshop guide for Grounded AI Agents with Neo4j and AWS",
+  "scripts": {
+    "prepare-content": "node scripts/prepare-content.mjs",
+    "build": "npm run prepare-content && antora antora-playbook.yml",
+    "serve": "npx http-server build/site -p 8080 -o"
+  },
+  "license": "MIT-0",
+  "devDependencies": {
+    "@antora/cli": "^3.1.7",
+    "@antora/site-generator": "^3.1.7",
+    "http-server": "^14.1.1"
+  }
+}
