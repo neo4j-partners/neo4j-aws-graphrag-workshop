@@ -20,6 +20,8 @@ This workshop uses a hotel booking scenario. You will:
 Read [Foundations](./foundations/) first if property graphs, GraphRAG, or
 AgentCore are new to you.
 
+**Source code:** :link[Open the workshop repository on GitHub]{href="https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop" external=true}.
+
 :::alert{type="info" header="Region"}
 This workshop runs in **us-east-1**, the N. Virginia region. Your AWS account
 arrives pre-configured. Setup guides you through creating a free Neo4j database.
