@@ -26,10 +26,3 @@ npm run serve
 Open http://localhost:8080. This needs Node.js and
 [Pandoc](https://pandoc.org/). The production deployment is handled by
 `.github/workflows/deploy-site.yml` whenever `site/` changes on `main`.
-
-## Known stale diagram
-
-`images/03-agentcore-architecture.png` and its `.drawio` source still draw
-Neo4j on ECS Fargate, which was the topology when the workshop ran on AWS
-Workshop Studio. The database is Neo4j AuraDB Free now. The content page alt
-text already says AuraDB, so the diagram is the only thing left to redraw.

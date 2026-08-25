@@ -47,7 +47,7 @@ arrives pre-configured. Setup guides you through creating a free Neo4j database.
 
 ## Module 4 Tool Architecture
 
-:image[Production agent architecture: a Strands agent calls Neo4j retrieval Lambdas through AgentCore Gateway]{src="../images/03-agentcore-architecture.png" width=800}
+:image[Production agent architecture: a Strands agent calls Neo4j retrieval Lambdas through AgentCore Gateway]{src="../images/03-agentcore-architecture.svg" width=800}
 
 Module 5 demonstrates a separate deployment pattern: a packaged agent on
 AgentCore Runtime that connects directly to Neo4j. Module 6 then adds

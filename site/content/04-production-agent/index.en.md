@@ -19,7 +19,7 @@ The Gateway places two retrieval Lambdas behind one managed endpoint. A Strands
 agent then resolves the remote MCP tools and uses them through the same tool
 interface as local functions.
 
-:image[Module 4 architecture: a Strands agent calls Neo4j retrieval Lambdas through an IAM-authenticated AgentCore Gateway]{src="../../images/03-agentcore-architecture.png" width=800}
+:image[Module 4 architecture: a Strands agent calls Neo4j retrieval Lambdas through an IAM-authenticated AgentCore Gateway]{src="../../images/03-agentcore-architecture.svg" width=800}
 
 ---
 
