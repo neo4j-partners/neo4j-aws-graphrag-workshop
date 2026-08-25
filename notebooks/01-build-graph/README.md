@@ -18,6 +18,7 @@ Five hotel FAQ documents go to Claude on Amazon Bedrock and come back as typed n
 
 | Notebook | What it proves |
 |---|---|
+| [`1.0_verify_environment.ipynb`](1.0_verify_environment.ipynb) | The allocated Vocareum account has valid temporary credentials and can invoke Sonnet 4.6 and Nova embeddings in `us-east-1` |
 | [`1.1_build_graph.ipynb`](1.1_build_graph.ipynb) | A pinned LLM schema and deterministic amenity parser turn five documents into a source-reconciled graph |
 
 One optional cell extracts a single document with no schema and prints the labels the model invented. It is there for anyone who would rather see the problem than read about it, and skipping it changes nothing downstream.
@@ -26,6 +27,7 @@ One optional cell extracts a single document with no schema and prints the label
 
 | File | Purpose |
 |---|---|
+| `1.0_verify_environment.ipynb` | Fast, read-only AWS identity and Bedrock model-access gate |
 | `1.1_build_graph.ipynb` | The module notebook |
 | `held_out_documents.py` | Names the five documents held out of the dump and unpacks them from the corpus archive. The Cairo fixture hotel is deliberately not among them because Module 2 starts its retrieval comparison there, and that evidence must not depend on a participant's extraction having succeeded |
 | `data/` | The five held-out source documents, unpacked |
