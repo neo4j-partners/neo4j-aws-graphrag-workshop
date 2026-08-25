@@ -29,7 +29,7 @@ Amazon Nova 2 Multimodal Embeddings is available only in us-east-1, so the whole
 
 ## Step 2: Create Your Neo4j Database
 
-Follow [Neo4j AuraDB Free Setup](../aura-free-setup/) to create an instance and restore the hotel graph into it. Come back here with the URI and password in hand.
+If you have not done it already, follow [Neo4j AuraDB Free Setup](../aura-free-setup/) to create an instance and restore the hotel graph into it. Come back here with the URI and password in hand.
 
 ---
 
@@ -40,7 +40,7 @@ git clone https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop.git
 cd neo4j-aws-graphrag-workshop
 :::
 
-`CONFIG.txt` at the repository root holds every setting the notebooks read. Replace the three placeholder Neo4j values with the ones from your Aura instance\:
+`CONFIG.txt` at the repository root holds every setting the notebooks read. Replace the placeholder URI and password with the ones from your Aura instance\:
 
 :::code{language=text}
 NEO4J_URI=neo4j+s://xxxxxxxx.databases.neo4j.io
@@ -49,7 +49,7 @@ NEO4J_PASSWORD=your_password_here
 NEO4J_DATABASE=neo4j
 :::
 
-Nothing below the Neo4j block needs changing.
+The username and the database name are already `neo4j`, which is what every Aura instance uses. Nothing below the Neo4j block needs changing either.
 
 ---
 

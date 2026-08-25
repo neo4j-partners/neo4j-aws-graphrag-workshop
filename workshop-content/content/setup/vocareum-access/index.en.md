@@ -21,7 +21,7 @@ The lab environment carries the AWS credentials the notebooks use. You do not ru
 
 The lab starts you with the workshop files already in place\: the `notebooks/` directory, `setup/verify_setup.py`, `CONFIG.txt`, and the repository `README.md`. Open the JupyterLab file browser and confirm you can see them.
 
-Every path on this page is relative to the directory holding those files. Open a terminal there with **File → New → Terminal**.
+Every path on this page is relative to the directory holding those files. This page calls it the workshop root. Open a terminal there with **File → New → Terminal**.
 
 If the files are not there, clone the repository yourself and work from that checkout instead\:
 
@@ -34,13 +34,13 @@ cd neo4j-aws-graphrag-workshop
 
 ## Step 3: Create Your Neo4j Database
 
-The Vocareum lab does not include Neo4j. Follow [Neo4j AuraDB Free Setup](../aura-free-setup/) to create an instance and restore the hotel graph into it, then come back here with the URI and password in hand.
+The Vocareum lab does not include Neo4j. If you have not done it already, follow [Neo4j AuraDB Free Setup](../aura-free-setup/) to create an instance and restore the hotel graph into it. Come back here with the URI and password in hand.
 
 ---
 
 ## Step 4: Fill In CONFIG.txt
 
-`CONFIG.txt` at the repository root holds every setting the notebooks read. Open it from the JupyterLab file browser, or edit it in the terminal. Replace the three placeholder Neo4j values with the ones from your Aura instance\:
+`CONFIG.txt` at the workshop root holds every setting the notebooks read. Open it from the JupyterLab file browser, or edit it in the terminal. Replace the placeholder URI and password with the ones from your Aura instance\:
 
 :::code{language=text}
 NEO4J_URI=neo4j+s://xxxxxxxx.databases.neo4j.io
@@ -49,11 +49,13 @@ NEO4J_PASSWORD=your_password_here
 NEO4J_DATABASE=neo4j
 :::
 
-Save the file. Nothing below the Neo4j block needs changing. Paste the values with no surrounding quotes and no trailing spaces.
+The username and the database name are already `neo4j`, which is what every Aura instance uses, so leave those two alone. Nothing below the Neo4j block needs changing either. Paste the URI and password with no surrounding quotes and no trailing spaces, then save the file.
 
 ---
 
 ## Step 5: Install the Dependencies
+
+From the workshop root\:
 
 :::code{language=bash showCopyAction=true}
 cd notebooks
@@ -64,10 +66,9 @@ uv venv && uv pip install -r requirements.txt
 
 ## Step 6: Verify Everything Works
 
-One command checks the interpreter, the installed packages, the Neo4j settings, the AWS credentials, the restored graph, and all three Bedrock models\:
+One command checks the interpreter, the installed packages, the Neo4j settings, the AWS credentials, the restored graph, and all three Bedrock models. Run it from the same `notebooks/` directory you just installed into\:
 
 :::code{language=bash showCopyAction=true}
-cd notebooks
 uv run python ../setup/verify_setup.py
 :::
 

@@ -7,11 +7,7 @@ weight: 10
 
 Every module in this workshop talks to two services\: a :link[Neo4j]{href="https://neo4j.com/" external=true} database holding the hotel graph, and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} for the models. Setup is the work of proving both are reachable from your terminal before you open a notebook.
 
-The database is the same on every path. You create a **Neo4j AuraDB Free** instance and restore the workshop graph into it yourself\:
-
-| Step | Page |
-|------|------|
-| Create the database, restore the graph | [Neo4j AuraDB Free Setup](./aura-free-setup/) |
+Start with the database, because every path uses the same one. You create a **Neo4j AuraDB Free** instance and restore the workshop graph into it yourself. The steps are on the [Neo4j AuraDB Free Setup](./aura-free-setup/) page.
 
 Then pick the environment you run the notebooks in\:
 
@@ -50,7 +46,7 @@ The notebooks read their settings from `CONFIG.txt` at the repository root. It i
 | `NEO4J_DATABASE` | `neo4j` |
 | `AWS_REGION` | `us-east-1`, already set |
 
-Everything below the Neo4j block already has a working value. Paste the credentials with no surrounding quotes and no trailing spaces.
+Only the URI and the password actually need typing. The username and the database name are already `neo4j`, and everything below the Neo4j block already has a working value. Paste the credentials with no surrounding quotes and no trailing spaces.
 
 `NEO4J_URI` and `NEO4J_PASSWORD` have no defaults, on purpose. A built-in default password sends a bad credential to the right host and a built-in localhost URI sends a good credential to a host that is not listening, and both read like an outage rather than a missing setting.
 

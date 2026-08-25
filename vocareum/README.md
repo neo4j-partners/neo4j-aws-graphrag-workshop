@@ -7,8 +7,8 @@ lab definition stay in one place and move together.
 ## What each file is
 
 - **`course.json`:** This file states the course key, the Vocareum course name
-  and budget, the cleanup prefixes, and the pinned commit the student starter
-  package is built from.
+  and budget, the cleanup prefixes, and the pinned commit and file list the
+  student starter package is built from.
 - **`lab.template`:** CloudFormation runs this file in each student's AWS
   account at Start Lab. Vocareum submits it inline, so it must stay at or under
   51,200 bytes.
@@ -46,6 +46,15 @@ uv run vocareum-release --course graphrag                # reads all three
   package is built from the pinned commit rather than the working tree, so an
   uncommitted edit never reaches a student. An unbumped commit ships the old
   files.
+- **Update `startercode.paths` in the same edit when a listed path moves.** The
+  list is passed to `git archive`, which fails on a path the pinned commit does
+  not have.
+- **Set `lab.template`'s `Metadata.SourceCommit` to the same commit.** The
+  validator compares the two and refuses a release when they disagree.
+- **Give any new dotfile a visible name.** Vocareum's extractor drops dotfiles.
+  The build refuses to package one unless `aws-vocareum` names a visible
+  replacement for it, so a dropped file stops a release instead of reaching a
+  student as a missing file.
 - **Check the template size after editing it.** Run
   `wc -c vocareum/lab.template`. A file over 51,200 bytes fails at upload
   rather than at lint.

@@ -5,7 +5,7 @@ weight: 1
 
 ## Create the Database Every Module Talks To
 
-Every module in this workshop reads and writes one :link[Neo4j]{href="https://neo4j.com/" external=true} graph. You create that database yourself on **Neo4j AuraDB Free** and restore the workshop's hotel graph into it. Both compute paths, Vocareum and your own AWS account, use the same database, so do this before you open a notebook.
+Every module in this workshop reads and writes one :link[Neo4j]{href="https://neo4j.com/" external=true} graph. You create that database yourself on **Neo4j AuraDB Free** and restore the workshop's hotel graph into it. The database is the same on both compute paths, Vocareum and your own AWS account, so do this before you open a notebook.
 
 ---
 
@@ -46,10 +46,12 @@ The file is `neo4j-hotel-graph.dump`, a few megabytes. It is also in this reposi
 
 ## Step 3: Restore the Dump
 
-1. On the instance in the Aura console, open **Backup & restore**
-2. Select the **Restore from backup file** tab
+1. On the instance card in the Aura console, open the more menu (`...`) and choose **Inspect**
+2. Select the **Restore from backup file** tab, which sits next to **Snapshots**
 3. Drag `neo4j-hotel-graph.dump` onto the upload area, or browse to it
 4. Confirm the restore and wait for the instance to return to **RUNNING**
+
+The tab accepts `.backup`, `.dump`, and `.tar` files, so the dump goes in as it downloaded.
 
 :::alert{type="warning" header="A restore overwrites the instance"}
 Restoring replaces everything already in the instance. That is why it is the first thing you do with a freshly created one. Do not restore over an instance you use for anything else.
@@ -74,7 +76,7 @@ That is the same check `setup/verify_setup.py` runs later. It reads one hotel by
 
 ## What the Restored Graph Deliberately Does Not Have
 
-The dump holds the hotel corpus, extracted under the pinned schema Module 1 explains. It does **not** hold the vector index, the full-text index, or five of the hotels. Module 1 creates both indexes and extracts those five hotels live, which is the point of that module. An instance with no indexes on it right now is the expected starting state, not a failed restore.
+The dump holds the hotel corpus, extracted under the pinned schema Module 1 explains. It does **not** hold the vector index, the full-text index, or five of the hotels. Module 1 creates both indexes and extracts those five hotels live, which is the point of that module. An instance with no indexes is the expected starting state, not a failed restore.
 
 ---
 

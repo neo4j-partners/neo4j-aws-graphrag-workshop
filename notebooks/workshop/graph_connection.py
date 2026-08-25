@@ -49,9 +49,9 @@ def require_neo4j_env() -> None:
     if missing:
         raise RuntimeError(
             f"Missing required Neo4j environment values: {', '.join(missing)}. "
-            "Fill in CONFIG.txt at the repository root before running the workshop "
-            "modules. Neither "
-            "has a default, so a missing one fails loudly here instead of sending a "
+            "Fill in CONFIG.txt at the repository root before running the "
+            "workshop modules. Neither NEO4J_URI nor NEO4J_PASSWORD has a "
+            "default, so a missing one fails loudly here instead of sending a "
             "bad credential to Neo4j or a good one to a localhost that is not "
             "listening."
         )
