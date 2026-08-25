@@ -2,7 +2,7 @@
 
 **[Open the workshop microsite](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/)**
 
-**[Run the workshop in your own AWS account](standalone/README.md)**
+**[Run the workshop in your own AWS account](environment/own-account/README.md)**
 
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Amazon Bedrock](https://img.shields.io/badge/Amazon-Bedrock-FF9900.svg?style=flat&logo=amazon-aws)](https://aws.amazon.com/bedrock/)
@@ -20,12 +20,12 @@ A hands-on workshop in six modules. You build a hotel knowledge graph, compare s
 
 | Module | Notebooks | What You Build |
 |--------|-----------|----------------|
-| [01: Build the Graph](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/01-build-graph) | `1.1_build_graph.ipynb` | Live extraction of five held-out hotels, deterministic amenities, both retrieval indexes |
-| [02: From Similarity Search to Connected Context](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/02-connected-context) | `2.1_connected_context.ipynb` | Semantic, exact-term, graph-enriched, and structured retrieval evidence |
-| [03: Build the Grounded Booking Agent](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/03-grounded-booking-agent) | `3.1_grounded_booking_agent.ipynb` | Grounded answers, abstention, and a protected reservation command |
-| [04: Production Agent with AgentCore](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/04-production-agent) | `4.1_agentcore_gateway.ipynb` | Gateway Lambda tools, IAM-authenticated MCP, and a Strands agent over the Gateway |
-| [05: Deploy to AgentCore Runtime](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/05-agentcore-deploy) | `5.1_deploy.ipynb` | Containerized agent on AgentCore Runtime, one request correlated end to end |
-| [06: Inspectable Neo4j Memory](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/06-neo4j-memory) | `6.1_neo4j_memory.ipynb` | Cross-session graph memory with actor-scoped recall and full provenance tracing |
+| [01: Build the Graph](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/site/content/01-build-graph) | `1.1_build_graph.ipynb` | Live extraction of five held-out hotels, deterministic amenities, both retrieval indexes |
+| [02: From Similarity Search to Connected Context](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/site/content/02-connected-context) | `2.1_connected_context.ipynb` | Semantic, exact-term, graph-enriched, and structured retrieval evidence |
+| [03: Build the Grounded Booking Agent](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/site/content/03-grounded-booking-agent) | `3.1_grounded_booking_agent.ipynb` | Grounded answers, abstention, and a protected reservation command |
+| [04: Production Agent with AgentCore](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/site/content/04-production-agent) | `4.1_agentcore_gateway.ipynb` | Gateway Lambda tools, IAM-authenticated MCP, and a Strands agent over the Gateway |
+| [05: Deploy to AgentCore Runtime](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/site/content/05-agentcore-deploy) | `5.1_deploy.ipynb` | Containerized agent on AgentCore Runtime, one request correlated end to end |
+| [06: Inspectable Neo4j Memory](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/site/content/06-neo4j-memory) | `6.1_neo4j_memory.ipynb` | Cross-session graph memory with actor-scoped recall and full provenance tracing |
 
 Each module folder under `notebooks/` carries its own `README.md`: an At a Glance summary, what the module proves, and what every file in the folder is for.
 
@@ -91,7 +91,7 @@ Wait for the instance card to report **RUNNING**. A restore into an instance tha
 The hotel graph ships as a Neo4j database dump. Download it to the machine your browser is running on, not to the Vocareum environment, because the Aura console uploads it from that browser:
 
 ```
-https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/raw/main/static/neo4j-hotel-graph.dump
+https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/raw/main/graph/neo4j-hotel-graph.dump
 ```
 
 #### Step 3: Restore the dump
@@ -139,7 +139,7 @@ Open a terminal in JupyterLab and run:
 ```bash
 cd notebooks
 uv venv && uv pip install -r requirements.txt
-uv run python ../setup/verify_setup.py
+uv run python ../environment/verify.py
 ```
 
 Every line must read `ok`:
@@ -191,7 +191,7 @@ CloudFront, clones this repository, installs its dependencies, and configures
 the workshop Jupyter kernel:
 
 ```bash
-cd standalone
+cd environment/own-account
 ./deploy.py
 ```
 
@@ -200,7 +200,7 @@ AWS credentials, `uv`, a default VPC with a public subnet, and permission to
 create the documented CloudFormation and IAM resources. The generated IDE URL
 is a bearer credential and must not be shared publicly.
 
-See [standalone/README.md](standalone/README.md) for prerequisites,
+See [environment/own-account/README.md](environment/own-account/README.md) for prerequisites,
 configuration overrides, security considerations, troubleshooting, and
 cleanup.
 
@@ -227,7 +227,7 @@ uv run jupyter lab
 # Open 01-build-graph/1.1_build_graph.ipynb first
 ```
 
-Prerequisites for this path are Python 3.11+, [`uv`](https://docs.astral.sh/uv/), an AWS account with Amazon Bedrock model access enabled in `us-east-1`, and a reachable Neo4j instance. A [Neo4j AuraDB Free](https://console.neo4j.io/) database is what the workshop targets. The full walkthrough is on the [Own Account Setup](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/setup/own-account-setup) page.
+Prerequisites for this path are Python 3.11+, [`uv`](https://docs.astral.sh/uv/), an AWS account with Amazon Bedrock model access enabled in `us-east-1`, and a reachable Neo4j instance. A [Neo4j AuraDB Free](https://console.neo4j.io/) database is what the workshop targets. The full walkthrough is on the [Own Account Setup](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/site/content/setup/own-account-setup) page.
 
 `prepare_graph.py` wipes and rebuilds. Module 1's notebook uses the additive path instead, so it extends a restored graph without deleting anything a participant has already built.
 
@@ -237,15 +237,19 @@ Modules 4 and 5 leave running AWS resources behind on this path, and the worksho
 
 ## Workshop Content
 
-The workshop is hosted on [Vocareum](https://www.vocareum.com/). The `workshop-content/content/` directory contains the workshop pages. Participants run the notebooks in `notebooks/` during the session.
+The workshop is hosted on [Vocareum](https://www.vocareum.com/). Participants run the notebooks in `notebooks/` during the session, and the workshop pages they read are published from `site/content/`.
+
+As a participant you need three things: this README, `CONFIG.txt`, and `notebooks/`. Everything else in the repository is for whoever maintains or hosts the workshop.
 
 | Directory | Purpose |
 |-----------|---------|
-| `workshop-content/content/` | Workshop markdown pages |
-| `workshop-content/images/` | Diagram images referenced by the workshop pages |
-| `notebooks/` | Jupyter notebooks (one or two per module) |
-| `standalone/` | Browser-based Code Editor deployment for a student's AWS account |
-| `static/` | Architecture diagrams (PNG exports and drawio sources) |
+| `notebooks/` | Jupyter notebooks, one or two per module. **This is the workshop.** |
+| `CONFIG.txt` | The Neo4j connection details you fill in |
+| `environment/` | Standing up and checking an environment: `verify.py`, `own-account/`, `vocareum/` |
+| `site/` | Workshop pages (`content/`), their diagrams (`images/`), and the Antora build that publishes them |
+| `graph/` | The prebuilt Neo4j dump participants restore during Setup |
+| `tools/` | Maintainer tooling: offline content checks and the graph release pipeline |
+| `tests/` | Offline test suite for the tooling and the notebook contracts |
 
 ---
 
@@ -269,9 +273,9 @@ This library is licensed under the MIT-0 License. See the [LICENSE](https://gith
 
 ## Updating and Maintaining the Workshop Site
 
-The published workshop site is available at [neo4j-partners.github.io/neo4j-aws-graphrag-workshop](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/). Its source content lives in `workshop-content/`; do not edit the generated files under `site/modules/` or `site/build/`.
+The published workshop site is available at [neo4j-partners.github.io/neo4j-aws-graphrag-workshop](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/). Its source content lives in `site/content/`; do not edit the generated files under `site/modules/` or `site/build/`.
 
-To update a lesson, edit the relevant page in `workshop-content/content/`. Add or replace diagrams in `workshop-content/images/`, then reference them from the page using the existing `:image[...]` directive. The site build converts this Markdown and its workshop directives into the published Antora site.
+To update a lesson, edit the relevant page in `site/content/`. Add or replace diagrams in `site/images/`, then reference them from the page using the existing `:image[...]` directive. The site build converts this Markdown and its workshop directives into the published Antora site.
 
 Preview changes locally before opening a pull request:
 
@@ -284,4 +288,4 @@ npm run serve
 
 This requires Node.js and [Pandoc](https://pandoc.org/). Open http://localhost:8080 and check the edited page, navigation, links, and images. `npm run build` regenerates the ignored `site/modules/` directory and writes the static output to the ignored `site/build/` directory.
 
-Pushing changes to `main` that affect `workshop-content/`, `site/`, or `.github/workflows/deploy-site.yml` automatically deploys the site through GitHub Pages. Check deployment progress in the [Deploy workshop site workflow](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/actions/workflows/deploy-site.yml).
+Pushing changes to `main` that affect `site/` or `.github/workflows/deploy-site.yml` automatically deploys the site through GitHub Pages. Check deployment progress in the [Deploy workshop site workflow](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/actions/workflows/deploy-site.yml).

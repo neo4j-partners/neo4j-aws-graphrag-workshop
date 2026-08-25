@@ -11,6 +11,7 @@ command to test a rule-enforced write.
 **At a Glance**
 
 - **What it demonstrates:** ground an answer in named evidence, abstain when the evidence cannot answer, reject requests that exceed the guest limit, and prevent duplicate writes for a retried `request_id`.
+- **Strands Agents:** teaches the `Agent` loop, `BedrockModel`, and `@tool` before you build the local agent.
 - **Neo4j:** reads through the `hotel_chunk_embeddings` and `hotel_chunk_fulltext` indexes; writes one workshop-owned `ReservationRequest` node behind a uniqueness constraint on `request_id`.
 - **AWS:** Amazon Bedrock provides LLM reasoning; Amazon Nova embeds each query.
 - **You'll build:** one workshop-owned `ReservationRequest` node. The write path preserves the hotel data and all other graph content.
@@ -21,7 +22,17 @@ command to test a rule-enforced write.
 
 | Notebook | What it demonstrates |
 |---|---|
-| [`3.1_grounded_booking_agent.ipynb`](3.1_grounded_booking_agent.ipynb) | Grounds answers in returned fields, abstains when evidence is missing, enforces a guest limit, and prevents duplicate writes for the same `request_id` |
+| [`3.1_grounded_booking_agent.ipynb`](3.1_grounded_booking_agent.ipynb) | Introduces Strands Agents, grounds answers in graph facts, checks a guest limit, and prevents duplicate writes |
+
+## Strands agent basics
+
+**Brief overview**
+
+- **`Agent`:** Sends questions to the model and runs the tools it requests.
+- **`BedrockModel`:** Connects the agent to the Amazon Bedrock model named by the model ID.
+- **`@tool`:** Marks a Python function as a tool the model can call.
+
+The notebook turns `search_hotel_knowledge` into a tool. The agent calls it for each new hotel question. It answers from the returned facts. It reports missing evidence when required facts are absent.
 
 ## The reservation command
 
@@ -47,4 +58,4 @@ case.
 
 ## The workshop page
 
-`workshop-content/content/03-grounded-booking-agent/index.en.md`
+`site/content/03-grounded-booking-agent/index.en.md`

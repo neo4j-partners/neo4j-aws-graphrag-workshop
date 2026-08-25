@@ -4,9 +4,8 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 const siteDirectory = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const repositoryDirectory = path.resolve(siteDirectory, '..')
-const sourceDirectory = path.join(repositoryDirectory, 'workshop-content', 'content')
-const imageDirectory = path.join(repositoryDirectory, 'workshop-content', 'images')
+const sourceDirectory = path.join(siteDirectory, 'content')
+const imageDirectory = path.join(siteDirectory, 'images')
 const generatedModuleDirectory = path.join(siteDirectory, 'modules', 'ROOT')
 const pagesDirectory = path.join(generatedModuleDirectory, 'pages')
 const generatedImagesDirectory = path.join(generatedModuleDirectory, 'images')

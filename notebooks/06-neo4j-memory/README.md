@@ -56,4 +56,4 @@ correction, source provenance, and relationships to domain data.
 
 ## The workshop page
 
-`workshop-content/content/06-neo4j-memory/index.en.md`
+`site/content/06-neo4j-memory/index.en.md`

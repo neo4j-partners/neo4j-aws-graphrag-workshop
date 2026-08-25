@@ -36,14 +36,8 @@ One optional cell extracts a single document with no schema and prints the label
 
 - **The pinned schema.** Module 2 compares source retrieval with graph-enriched retrieval that returns `name`, `address`, and `guest_rating` from the `Hotel` node. That contract is possible because extraction was constrained when the data was written.
 - **The deterministic boundary.** The LLM extracts genuinely unstructured facts. The parser reads the authored `## Hotel Amenities` bullets and merges one shared `Amenity` node for each exact label.
-- **Both indexes.** The dump ships without them on purpose, so they are built against the vectors this module's own extraction just wrote. `workshop/retrieval_setup.py` creates them and verifies the result against the retrieval contract, rather than the notebook hand-writing the Cypher.
-
-## Reading section at the end
-
-The notebook closes with the Strands Agents SDK basics that Module 3 applies: what an `Agent` is, why `BedrockModel` uses an explicit model ID, and what `@tool` does to a Python function. Module 2 first compares retrieval evidence and selects the fixed retrieval function that Module 3 gives to the agent.
-
-The idea to carry forward is that an agent is only as grounded as its tools. A tool must expose the evidence boundary clearly enough for the application to decline unsupported requests. Model wording can vary even when the model ID and tool evidence stay fixed.
+- **Both indexes.** This module builds the vector and full-text indexes for every stored `Chunk`. `workshop/retrieval_setup.py` creates and verifies them. Module 2 compares the retrieval evidence and selects the graph-enriched pattern. Module 3 uses that pattern.
 
 ## The workshop page
 
-`workshop-content/content/01-build-graph/index.en.md`
+`site/content/01-build-graph/index.en.md`

@@ -46,4 +46,4 @@ Runtime use, ECR image storage, and CodeBuild builds can incur AWS charges. This
 
 ## The workshop page
 
-`workshop-content/content/05-agentcore-deploy/index.en.md`
+`site/content/05-agentcore-deploy/index.en.md`

@@ -58,4 +58,4 @@ workshop's hands-on cross-session memory lab.
 
 ## The workshop page
 
-`workshop-content/content/04-production-agent/index.en.md`
+`site/content/04-production-agent/index.en.md`

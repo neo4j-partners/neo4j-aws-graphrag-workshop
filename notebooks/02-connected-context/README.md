@@ -66,4 +66,4 @@ reservation command.
 
 ## The workshop page
 
-`workshop-content/content/02-connected-context/index.en.md`
+`site/content/02-connected-context/index.en.md`

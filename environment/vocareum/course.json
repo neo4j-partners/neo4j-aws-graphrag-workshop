@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "course_key": "graphrag",
+  "assets": {
+    "template": "lab.template",
+    "manifest": "expected.json",
+    "notebook": ""
+  },
+  "startercode": {
+    "repository": "https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop.git",
+    "commit": "248df9ff312a867728ce00aa5b89ac194fd9b498",
+    "source": "../..",
+    "paths": [
+      "CONFIG.txt",
+      "README.md",
+      "notebooks",
+      "environment/verify.py"
+    ]
+  },
+  "vocareum": {
+    "course_name": "Neo4j + AWS GraphRAG Workshop",
+    "assignment_name": "Neo4j + AWS GraphRAG Workshop",
+    "part_name": "Part 1",
+    "lab_type": "Vocareum Notebook",
+    "session_length": "240",
+    "cloud_labs": true,
+    "budget": {
+      "total_dollar": "200",
+      "monthly_dollar": "100",
+      "total_time": "0",
+      "monthly_time": "0"
+    }
+  },
+  "cleanup": {
+    "resource_prefixes": [
+      "workshop-",
+      "hotel-booking-",
+      "hotel_booking_",
+      "neo4j-ws-",
+      "bedrock-agentcore-",
+      "GraphRagBookingAgent"
+    ],
+    "iam_role_prefixes": [
+      "workshop-",
+      "AmazonBedrockAgentCoreSDK"
+    ],
+    "s3_bucket_prefixes": [
+      "bedrock-agentcore-codebuild-sources"
+    ]
+  }
+}
