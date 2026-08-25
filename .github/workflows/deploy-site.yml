@@ -30,6 +30,8 @@ jobs:
           cache-dependency-path: site/package-lock.json
       - run: npm ci
         working-directory: site
+      - name: Install Pandoc
+        run: sudo apt-get update && sudo apt-get install -y pandoc
       - run: npm run build
         working-directory: site
       - uses: actions/upload-pages-artifact@v3
