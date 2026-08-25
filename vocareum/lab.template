@@ -3,7 +3,7 @@ Description: GraphRAG uses Vocareum Notebook with required Bedrock access
 
 Metadata:
   SourceRepository: https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop.git
-  SourceCommit: 538a2728ac4c74471c6c6c85493400ca2631c652
+  SourceCommit: a37cc3c55fea2b611fdbcb10d7decb4028e7db83
 
 Resources:
   LaunchSentinel:
@@ -33,3 +33,183 @@ Resources:
               - aws-marketplace:Subscribe
               - aws-marketplace:Unsubscribe
             Resource: "*"
+
+  LabRoleAgentCoreGrant:
+    Type: AWS::IAM::RolePolicy
+    Properties:
+      RoleName: voclabs
+      PolicyName: GraphRAGAgentCoreGrant
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: AgentCoreControlPlane
+            Effect: Allow
+            Action:
+              - bedrock-agentcore:CreateGateway
+              - bedrock-agentcore:GetGateway
+              - bedrock-agentcore:UpdateGateway
+              - bedrock-agentcore:DeleteGateway
+              - bedrock-agentcore:ListGateways
+              - bedrock-agentcore:CreateGatewayTarget
+              - bedrock-agentcore:GetGatewayTarget
+              - bedrock-agentcore:UpdateGatewayTarget
+              - bedrock-agentcore:DeleteGatewayTarget
+              - bedrock-agentcore:ListGatewayTargets
+              - bedrock-agentcore:CreateMemory
+              - bedrock-agentcore:GetMemory
+              - bedrock-agentcore:UpdateMemory
+              - bedrock-agentcore:DeleteMemory
+              - bedrock-agentcore:ListMemories
+              - bedrock-agentcore:CreateAgentRuntime
+              - bedrock-agentcore:GetAgentRuntime
+              - bedrock-agentcore:UpdateAgentRuntime
+              - bedrock-agentcore:DeleteAgentRuntime
+              - bedrock-agentcore:ListAgentRuntimes
+              - bedrock-agentcore:CreateAgentRuntimeEndpoint
+              - bedrock-agentcore:GetAgentRuntimeEndpoint
+              - bedrock-agentcore:ListAgentRuntimeEndpoints
+              - bedrock-agentcore:TagResource
+              - bedrock-agentcore:UntagResource
+              - bedrock-agentcore:ListTagsForResource
+            Resource: "*"
+          - Sid: AgentCoreDataPlane
+            Effect: Allow
+            Action:
+              - bedrock-agentcore:InvokeGateway
+              - bedrock-agentcore:InvokeAgentRuntime
+              - bedrock-agentcore:CreateEvent
+              - bedrock-agentcore:GetEvent
+              - bedrock-agentcore:ListEvents
+              - bedrock-agentcore:DeleteEvent
+              - bedrock-agentcore:ListSessions
+              - bedrock-agentcore:RetrieveMemoryRecords
+              - bedrock-agentcore:GetMemoryRecord
+              - bedrock-agentcore:ListMemoryRecords
+              - bedrock-agentcore:GetWorkloadAccessToken
+              - bedrock-agentcore:GetWorkloadAccessTokenForJWT
+            Resource: "*"
+          - Sid: HotelToolLambda
+            Effect: Allow
+            Action:
+              - lambda:CreateFunction
+              - lambda:GetFunction
+              - lambda:GetFunctionConfiguration
+              - lambda:UpdateFunctionCode
+              - lambda:UpdateFunctionConfiguration
+              - lambda:InvokeFunction
+              - lambda:AddPermission
+              - lambda:RemovePermission
+              - lambda:DeleteFunction
+              - lambda:TagResource
+              - lambda:ListTags
+            Resource: !Sub "arn:aws:lambda:*:${AWS::AccountId}:function:hotel-booking-*"
+          - Sid: RetrievalSecret
+            Effect: Allow
+            Action:
+              - secretsmanager:CreateSecret
+              - secretsmanager:DescribeSecret
+              - secretsmanager:GetSecretValue
+              - secretsmanager:PutSecretValue
+              - secretsmanager:TagResource
+              - secretsmanager:DeleteSecret
+            Resource: !Sub "arn:aws:secretsmanager:*:${AWS::AccountId}:secret:neo4j-ws-*"
+          - Sid: ContainerRepositories
+            Effect: Allow
+            Action:
+              - ecr:CreateRepository
+              - ecr:DescribeRepositories
+              - ecr:DescribeImages
+              - ecr:ListImages
+              - ecr:GetRepositoryPolicy
+              - ecr:BatchGetImage
+              - ecr:BatchCheckLayerAvailability
+              - ecr:GetDownloadUrlForLayer
+              - ecr:InitiateLayerUpload
+              - ecr:UploadLayerPart
+              - ecr:CompleteLayerUpload
+              - ecr:PutImage
+              - ecr:TagResource
+              - ecr:DeleteRepository
+            Resource:
+              - !Sub "arn:aws:ecr:*:${AWS::AccountId}:repository/workshop-*"
+              - !Sub "arn:aws:ecr:*:${AWS::AccountId}:repository/bedrock-agentcore-*"
+          - Sid: ContainerRegistryLogin
+            Effect: Allow
+            Action: ecr:GetAuthorizationToken
+            Resource: "*"
+          - Sid: ImageBuildProject
+            Effect: Allow
+            Action:
+              - codebuild:CreateProject
+              - codebuild:UpdateProject
+              - codebuild:BatchGetProjects
+              - codebuild:DeleteProject
+              - codebuild:StartBuild
+              - codebuild:BatchGetBuilds
+              - codebuild:ListBuildsForProject
+            Resource:
+              - !Sub "arn:aws:codebuild:*:${AWS::AccountId}:project/bedrock-agentcore-*"
+              - !Sub "arn:aws:codebuild:*:${AWS::AccountId}:build/bedrock-agentcore-*"
+          - Sid: ImageBuildProjectList
+            Effect: Allow
+            Action: codebuild:ListProjects
+            Resource: "*"
+          - Sid: ImageBuildSourceBucket
+            Effect: Allow
+            Action:
+              - s3:CreateBucket
+              - s3:ListBucket
+              - s3:GetBucketLocation
+              - s3:PutLifecycleConfiguration
+              - s3:GetObject
+              - s3:PutObject
+              - s3:DeleteObject
+            Resource:
+              - "arn:aws:s3:::bedrock-agentcore-*"
+              - "arn:aws:s3:::bedrock-agentcore-*/*"
+          - Sid: BuildAndRuntimeLogs
+            Effect: Allow
+            Action:
+              - logs:DescribeLogGroups
+              - logs:DescribeLogStreams
+              - logs:GetLogEvents
+              - logs:FilterLogEvents
+            Resource:
+              - !Sub "arn:aws:logs:*:${AWS::AccountId}:log-group:/aws/bedrock-agentcore/*"
+              - !Sub "arn:aws:logs:*:${AWS::AccountId}:log-group:/aws/codebuild/*"
+              - !Sub "arn:aws:logs:*:${AWS::AccountId}:log-group:/aws/lambda/hotel-booking-*"
+
+  LabRoleWorkshopRoleGrant:
+    Type: AWS::IAM::RolePolicy
+    Properties:
+      RoleName: voclabs
+      PolicyName: GraphRAGWorkshopRoleGrant
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: ManageWorkshopRoles
+            Effect: Allow
+            Action:
+              - iam:CreateRole
+              - iam:GetRole
+              - iam:DeleteRole
+              - iam:TagRole
+              - iam:PutRolePolicy
+              - iam:GetRolePolicy
+              - iam:DeleteRolePolicy
+              - iam:AttachRolePolicy
+              - iam:DetachRolePolicy
+              - iam:ListRolePolicies
+              - iam:ListAttachedRolePolicies
+              - iam:UpdateAssumeRolePolicy
+            Resource:
+              - !Sub "arn:aws:iam::${AWS::AccountId}:role/workshop-*"
+              - !Sub "arn:aws:iam::${AWS::AccountId}:role/AmazonBedrockAgentCore*"
+              - !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/AmazonBedrockAgentCore*"
+          - Sid: PassWorkshopRoles
+            Effect: Allow
+            Action: iam:PassRole
+            Resource:
+              - !Sub "arn:aws:iam::${AWS::AccountId}:role/workshop-*"
+              - !Sub "arn:aws:iam::${AWS::AccountId}:role/AmazonBedrockAgentCore*"
+              - !Sub "arn:aws:iam::${AWS::AccountId}:role/service-role/AmazonBedrockAgentCore*"
