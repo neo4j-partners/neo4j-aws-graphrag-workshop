@@ -1,5 +1,7 @@
 # Grounded AI Agents with Neo4j and AWS
 
+**[Open the workshop microsite](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/)**
+
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Amazon Bedrock](https://img.shields.io/badge/Amazon-Bedrock-FF9900.svg?style=flat&logo=amazon-aws)](https://aws.amazon.com/bedrock/)
 [![Neo4j](https://img.shields.io/badge/Neo4j-Graph--RAG-4581C3.svg?style=flat&logo=neo4j)](https://neo4j.com)
