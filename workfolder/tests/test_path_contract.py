@@ -22,7 +22,6 @@ NOTEBOOKS = (
     / "03-grounded-booking-agent"
     / "3.1_grounded_booking_agent.ipynb",
     NOTEBOOKS_ROOT / "04-production-agent" / "4.1_agentcore_gateway.ipynb",
-    NOTEBOOKS_ROOT / "04-production-agent" / "4.2_agentcore_memory.ipynb",
     NOTEBOOKS_ROOT / "05-agentcore-deploy" / "5.1_deploy.ipynb",
     NOTEBOOKS_ROOT / "06-neo4j-memory" / "6.1_neo4j_memory.ipynb",
 )

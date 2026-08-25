@@ -30,14 +30,15 @@ weight: 90
 ### Modules 4 and 5: Built Production Infrastructure
 - **AgentCore Gateway** - Lambda retrieval tools exposed as a managed MCP endpoint
 - **IAM SigV4 authentication** - signed tool calls with no API keys to manage
-- **AgentCore Memory** - cross-session fact and preference recall
+- **Strands over MCP** - the Gateway's resolved remote tools passed directly to an agent
 - **AgentCore Runtime** - the agent containerized, launched on Runtime, and one request correlated end to end
 
 ### Module 6: Made Memory Inspectable
+- Recalled a preference for the same actor in a new session while isolating a second actor
 - Stored preferences as **graph nodes** instead of opaque managed records
 - Kept **full provenance** - every `Preference` links back to its source `Message` and to the real `Hotel` node
 - Corrected a wrong preference with a single `SET`, no delete and re-extract
-- Weighed **Neo4j memory against AgentCore Memory** on write timing, auditability, correction, and who operates it
+- Compared **Neo4j memory with AgentCore Memory** conceptually on write timing, auditability, correction, and who operates it
 
 ---
 
@@ -45,44 +46,29 @@ weight: 90
 
 1. **Retrieval signals are complementary.** Semantic similarity finds relevant language. Exact terms protect identifiers. Graph structure adds connected fields and relationships.
 2. **A graph gives structural precision.** Named fields and relationships can be queried, filtered, and handed to a write path with their provenance.
-3. **MCP keeps tool integration clean.** The agent code did not change when the tools moved behind a Gateway, and it did not change again when the agent moved onto Runtime.
+3. **MCP keeps remote-tool integration clean.** In Module 4, Gateway tools enter the Strands agent through the same `tools` interface as local functions. Module 5 demonstrates a separate deployment pattern: a packaged agent on Runtime that connects directly to Neo4j.
 4. **Graph memory gives long-term context you can audit.** Provenance is what turns a wrong preference from an outage into a one-line correction.
 
 ---
 
-## Architecture You Built
+## Architectures You Built
 
 ```text
-                    User Query
-                         │
-                         ▼
-┌──────────────────────────────────────────────────┐
-│                AgentCore Runtime                 │
-│  ┌────────────────────────────────────────────┐  │
-│  │               Strands Agent                │  │
-│  │  us.anthropic.claude-sonnet-5 + Tool Use   │  │
-│  └────────────────────────────────────────────┘  │
-└────────────────────────┬─────────────────────────┘
-                         │ IAM-authenticated MCP (SigV4)
-                         ▼
-┌──────────────────────────────────────────────────┐
-│                AgentCore Gateway                 │
-│            managed MCP tool endpoint             │
-└────────────────────────┬─────────────────────────┘
-                         │
-                         ▼
-┌──────────────────────────────────────────────────┐
-│              Lambda Retrieval Tools              │
-│     one function per graph retrieval pattern     │
-└────────────────────────┬─────────────────────────┘
-                         │ Cypher
-                         ▼
-               ┌────────────────────┐
-               │       Neo4j        │
-               │  Hotel Knowledge   │
-               │       Graph        │
-               └────────────────────┘
+Module 4 remote tools
+Notebook Strands agent → AgentCore Gateway → Lambda retrieval tools → Neo4j
+                              IAM/MCP                     Cypher
+
+Module 5 deployed agent
+Authorized caller → AgentCore Runtime → Packaged Strands agent → Neo4j
+                                                └────────→ Bedrock
+
+Module 6 cross-session memory
+Notebook or app → Neo4j User/Conversation/Message/Preference graph
 ```
+
+Runtime does not call Gateway in this workshop. Modules 4 and 5 are two
+production patterns built from the earlier retrieval work, while Module 6 is
+the canonical hands-on memory path.
 
 ---
 

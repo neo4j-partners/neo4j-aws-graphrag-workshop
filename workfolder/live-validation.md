@@ -41,13 +41,11 @@ Amenities, and 1,632 amenity assertions.
 | Module | Notebook | Result |
 | --- | --- | --- |
 | 4 | `4.1_agentcore_gateway.ipynb` | passed |
-| 4 | `4.2_agentcore_memory.ipynb` | passed |
 | 5 | `5.1_deploy.ipynb` | passed |
 | 6 | `6.1_neo4j_memory.ipynb` | passed |
 
-The Modules 4--5 gate reported 3 passed, 0 failed, and 0 skipped. Module 4.1
-created and called both Lambda-backed Gateway tools. Module 4.2 recalled a
-preference in a new session. Module 5 deployed the Runtime, returned grounded
+The Modules 4--5 gate reported all notebooks passed. Module 4.1 created and
+called both Lambda-backed Gateway tools. Module 5 deployed the Runtime, returned grounded
 hotel facts, refused an ungrounded hotel ID, abstained on live availability,
 enforced the 10-guest rule, wrote one accepted reservation request, and returned
 `duplicate=true` when that request was replayed.

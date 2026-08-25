@@ -55,11 +55,6 @@ Resources:
               - bedrock-agentcore:UpdateGatewayTarget
               - bedrock-agentcore:DeleteGatewayTarget
               - bedrock-agentcore:ListGatewayTargets
-              - bedrock-agentcore:CreateMemory
-              - bedrock-agentcore:GetMemory
-              - bedrock-agentcore:UpdateMemory
-              - bedrock-agentcore:DeleteMemory
-              - bedrock-agentcore:ListMemories
               - bedrock-agentcore:CreateAgentRuntime
               - bedrock-agentcore:GetAgentRuntime
               - bedrock-agentcore:UpdateAgentRuntime
@@ -77,14 +72,6 @@ Resources:
             Action:
               - bedrock-agentcore:InvokeGateway
               - bedrock-agentcore:InvokeAgentRuntime
-              - bedrock-agentcore:CreateEvent
-              - bedrock-agentcore:GetEvent
-              - bedrock-agentcore:ListEvents
-              - bedrock-agentcore:DeleteEvent
-              - bedrock-agentcore:ListSessions
-              - bedrock-agentcore:RetrieveMemoryRecords
-              - bedrock-agentcore:GetMemoryRecord
-              - bedrock-agentcore:ListMemoryRecords
               - bedrock-agentcore:GetWorkloadAccessToken
               - bedrock-agentcore:GetWorkloadAccessTokenForJWT
             Resource: "*"

@@ -107,7 +107,7 @@ all 300 hotels and unrelated resources untouched.
 
 ## Known gaps
 
-Modules 4.1 and 4.2 have no teardown path. That affects only participants
+Modules 4.1 and 5 have no teardown path. That affects only participants
 running outside Workshop Studio, which reclaims the account when the event ends,
 so fixing it is out of scope here.
 

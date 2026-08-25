@@ -5,7 +5,7 @@ weight: 70
 
 ## Add Inspectable Memory with Neo4j
 
-:link[AgentCore Memory]{href="https://aws.amazon.com/bedrock/agentcore/" external=true} provides managed extraction and recall. Neo4j graph memory gives the application direct access to each stored preference, its source message, and the hotel it describes. You can inspect and correct a preference such as "near the elevator" when the guest asked to stay away from it.
+This is the workshop's hands-on cross-session memory lab. Neo4j graph memory gives the application direct access to each stored preference, its source message, and the hotel it describes. You can inspect and correct a preference such as "near the elevator" when the guest asked to stay away from it.
 
 :image[AgentCore Memory vs Neo4j Memory: managed extraction compared with explicit graph provenance]{src="../../images/04-memory-comparison.png" width=800}
 
@@ -48,16 +48,20 @@ Correct the preference directly with `SET p.preference = "high floor, away from 
 
 ---
 
-## AgentCore vs Neo4j Memory
+## Conceptual Comparison: AgentCore vs Neo4j Memory
 
-| | :link[Neo4j]{href="https://neo4j.com/" external=true} | AgentCore |
+:link[AgentCore Memory]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}
+is a managed alternative for extraction and recall. The workshop implements
+the Neo4j path so you can inspect its provenance and domain relationships.
+
+| | AgentCore Memory | :link[Neo4j graph memory]{href="https://neo4j.com/" external=true} |
 |---|---|---|
-| Write timing | Synchronous | Asynchronous, from seconds to minutes |
-| Extraction | Explicit writes | LLM-driven |
-| Auditability | Full graph provenance | Memory API and :link[Amazon CloudWatch]{href="https://aws.amazon.com/cloudwatch/" external=true} operational logs, without a source-message link |
-| Correction | `SET` | No in-place workflow in this workshop |
-| Domain link | `[:ABOUT_HOTEL]→Hotel` | Separate from domain data |
-| Operations | You own it | AWS manages it |
+| Write timing | Asynchronous, from seconds to minutes | Synchronous |
+| Extraction | LLM-driven | Explicit writes |
+| Auditability | Memory API and :link[Amazon CloudWatch]{href="https://aws.amazon.com/cloudwatch/" external=true} operational logs, without a source-message link | Full graph provenance |
+| Correction path | Managed through the Memory service API | `SET` on one property |
+| Domain link | Separate from domain data | `[:ABOUT_HOTEL]→Hotel` |
+| Operations | AWS manages it | You own it |
 
 ## Next
 

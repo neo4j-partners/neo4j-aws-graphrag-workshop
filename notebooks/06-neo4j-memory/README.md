@@ -2,7 +2,7 @@
 
 # Module 6: Inspectable Neo4j Memory
 
-Module 4 Part 2 stores memory in a managed service. This module stores one preference as an inspectable graph record in Neo4j. The same actor recalls it in a new session, while a second actor receives no result. A Cypher query traces the preference to its source message and the `Hotel` node it describes.
+This is the workshop's cross-session memory lab. It stores one preference as an inspectable graph record in Neo4j. The same actor recalls it in a new session, while a second actor receives no result. A Cypher query traces the preference to its source message and the `Hotel` node it describes.
 
 The preference connects to its source and hotel through graph relationships. Those relationships provide the audit trail.
 
@@ -26,16 +26,18 @@ Every actor and session identifier includes a short run ID, which separates each
 The notebook can be launched from the repository root, `notebooks/`, or this
 module directory. It resolves `memory_helpers.py` to this folder in every case.
 
-## Compare Managed and Graph Memory
+## Conceptual Comparison: Managed and Graph Memory
 
-Module 4 Part 2 introduces managed memory. This module shows how explicit graph writes add immediate recall, direct correction, source provenance, and relationships to domain data.
+AgentCore Memory is included here as a conceptual alternative. This module's
+hands-on path shows how explicit graph writes provide immediate recall, direct
+correction, source provenance, and relationships to domain data.
 
 | | AgentCore Memory | Neo4j graph memory |
 |---|---|---|
 | How it is written | Managed extraction | Explicit application writes |
 | When it is recallable | After asynchronous extraction | Immediately |
 | Inspectability | A service API | A Cypher query returning the source message |
-| Correction | No in-place workflow in this workshop | `SET` on one property |
+| Correction path | Managed through the Memory service API | `SET` on one property |
 | Domain link | Separate from domain data | An edge to the real `Hotel` node |
 | Operations | AWS runs it | You run Neo4j and the embedding contract |
 

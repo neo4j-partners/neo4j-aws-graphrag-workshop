@@ -23,19 +23,23 @@ This workshop runs in **us-east-1 (N. Virginia)**. Your AWS account arrives pre-
 | **Module 1: Build the Graph** | Extract five held-out hotel documents into the graph, pin the extraction schema, create both retrieval indexes |
 | **Module 2: From Similarity Search to Connected Context** | Semantic retrieval, exact-term search, and connected graph context |
 | **Module 3: Build the Grounded Booking Agent** | Grounded answers, abstention, and protected reservation writes |
-| **Module 4: Production Agent with AgentCore** | AgentCore Gateway, IAM-authenticated MCP, cross-session memory |
+| **Module 4: Production Agent with AgentCore** | AgentCore Gateway, IAM-authenticated MCP, and a Strands agent over remote tools |
 | **Module 5: Deploy to AgentCore Runtime** | Containerize the agent, launch it on Runtime, correlate one request end to end |
-| **Module 6: Inspectable Neo4j Memory** | Graph-backed preferences, full provenance, AgentCore comparison |
+| **Module 6: Inspectable Neo4j Memory** | Cross-session graph memory, actor-scoped recall, full provenance, and a conceptual AgentCore comparison |
 | **Summary and Wrap-up** | The argument end to end, the two decision tables, and where to take it next |
 
 ---
 
-## Architecture
+## Module 4 Tool Architecture
 
-:image[Production agent architecture: Strands Agent in AgentCore Runtime calls Lambda tools via AgentCore Gateway, stores memory in AgentCore Memory, and queries Neo4j AuraDB]{src="../images/03-agentcore-architecture.png" width=800}
+:image[Production agent architecture: a Strands agent calls Neo4j retrieval Lambdas through AgentCore Gateway]{src="../images/03-agentcore-architecture.png" width=800}
+
+Module 5 demonstrates a separate deployment pattern: a packaged agent on
+AgentCore Runtime that connects directly to Neo4j. Module 6 then adds
+cross-session graph memory.
 
 **Neo4j owns:** hotel knowledge, retrieval indexes, business rules, reservation writes, and graph memory.
-**Amazon Bedrock owns:** reasoning over retrieved evidence, embeddings, and managed memory.
+**Amazon Bedrock owns:** reasoning over retrieved evidence and embeddings.
 
 ---
 

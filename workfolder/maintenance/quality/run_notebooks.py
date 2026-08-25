@@ -117,11 +117,6 @@ NOTEBOOKS_REGISTRY: tuple[Notebook, ...] = (
         creates_resources=True,
     ),
     Notebook(
-        "4",
-        NOTEBOOKS / "04-production-agent" / "4.2_agentcore_memory.ipynb",
-        creates_resources=True,
-    ),
-    Notebook(
         "5",
         NOTEBOOKS / "05-agentcore-deploy" / "5.1_deploy.ipynb",
         creates_resources=True,

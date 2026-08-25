@@ -1,6 +1,6 @@
-"""Workshop utility helpers shared by Module 4's notebooks.
+"""Workshop utility helpers shared by the agent notebooks.
 
-Four concerns live here, each used by more than one Module 4 notebook:
+Four concerns live here for the workshop's agent notebooks:
 
 - log suppression (`quiet_logs`), which quiets verbose third-party SDK
   loggers so notebook output stays readable;
@@ -76,10 +76,9 @@ def _truncate(value: object, limit: int = TRACE_VALUE_CHARS) -> str:
 class ToolTraceHook(HookProvider):
     """Print each tool call as the agent makes it.
 
-    Module 4 Part 2 is about watching a Gateway tool call and a memory retrieval
-    interleave in one turn. Without a trace the participant sees only the final
-    answer and has to take on faith that a tool ran at all, which is exactly the
-    claim the module is trying to demonstrate.
+    Module 4 uses this hook to show that a Strands agent calls a retrieval tool
+    through the Gateway. Without a trace the participant sees only the final
+    answer and has to take on faith that a remote tool ran at all.
 
     Registered as `Agent(hooks=[ToolTraceHook()])`. It only reads the events, it
     never sets `cancel_tool` or `retry`, so adding it cannot change what the

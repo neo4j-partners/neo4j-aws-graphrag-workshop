@@ -165,7 +165,7 @@ workshop runs in front of participants. Modules 4 and 5 create real AWS
 resources, so this item carries a cost and a cleanup obligation that Item 2 does
 not.
 
-The last full attempt was 2026-08-20. It failed on Modules 4.1, 4.2, and 5.1 for
+The last full attempt was 2026-08-20. It failed on Modules 4 and 5 for
 three root causes, and all three are now fixed in tracked source. Confirming
 those fixes live is the point of this item.
 
@@ -195,7 +195,6 @@ nothing in AWS.
 | Module | Notebook | Creates AWS resources | Status | Commit | Date | Note |
 | --- | --- | --- | --- | --- | --- | --- |
 | 4 | `4.1_agentcore_gateway.ipynb` | yes | passed | `6e06c32` | 2026-08-23 | Both Lambda tools and both Gateway targets passed live. |
-| 4 | `4.2_agentcore_memory.ipynb` | yes | passed | `6e06c32` | Cross-session preference recall passed live. |
 | 5 | `5.1_deploy.ipynb` | yes | passed | `6e06c32` | Deploy, grounding, refusal, policy, write, and idempotency checks passed. |
 | 6 | `6.1_neo4j_memory.ipynb` | no | passed | `6e06c32` | Wrote real memory data; isolation, recall, provenance, and tagging passed. |
 
@@ -205,8 +204,6 @@ nothing in AWS.
   positive-control smoke test failed with `AccessDeniedException` before the
   role gained `bedrock:InvokeModel` on the embedding model and on inference
   profiles. That grant is now in the notebook's role cell.
-- [x] Module 4.2 reaches its own cells. It failed last time only because 4.1 died
-  before creating the Gateway.
 - [x] Module 6 does real work rather than skipping every live cell.
   `memory_helpers.load_config()` reached `notebooks/` instead of the repo root, so
   it never found `NEO4J_PASSWORD` and the harness reported a pass on a notebook
@@ -220,7 +217,7 @@ Modules 4 and 5 leave resources running. Nothing tears them down automatically.
 - [x] Module 5: find its resources by the `WorkshopResource` tag it applies, then
   delete the Runtime, the ECR repository, the CodeBuild project, and the
   execution role.
-- [x] Module 4: delete by name. Neither 4.1 nor 4.2 tags or deletes anything, so
+- [x] Module 4: delete by name. Its notebook does not tag or delete anything, so
   this list is the only record. The 2026-08-20 run created Lambda functions
   `hotel-booking-search-hotel-knowledge` and `hotel-booking-graph-query`, IAM role
   `workshop-hotel-lambda-role`, and secret `neo4j-ws-retrieval`.

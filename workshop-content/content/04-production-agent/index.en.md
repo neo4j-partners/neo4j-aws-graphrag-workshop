@@ -3,23 +3,23 @@ title: "Module 4: Production Agent with AgentCore"
 weight: 50
 ---
 
-## Deploy the Agent Tools and Memory
+## Deploy the Agent Tools
 
-The Module 3 booking agent calls tools in the notebook process and stores state only for the current session. Module 4 adds three production capabilities:
+The Module 3 booking agent calls tools in the notebook process. Module 4 adds two production capabilities:
 
 | Gap | Fix |
 |---|---|
 | Tools as in-process functions | :link[Bedrock AgentCore]{href="https://aws.amazon.com/bedrock/agentcore/" external=true} Gateway and :link[AWS Lambda]{href="https://aws.amazon.com/lambda/" external=true}: managed MCP endpoints |
 | Tool authentication | **IAM SigV4**: requests signed with AWS credentials |
-| State limited to one session | **AgentCore Memory**: extracted records available across sessions |
 
-Part 1 closes the first two gaps with a Gateway in front of two retrieval Lambdas, and Part 2 closes the third with AgentCore Memory.
+The Gateway places two retrieval Lambdas behind a managed MCP endpoint. A
+compact Strands example then passes the resolved remote tools to an agent.
 
-:image[Module 4 architecture: a notebook agent uses AgentCore Memory and calls two Neo4j retrieval Lambdas through an IAM-authenticated Gateway]{src="../../images/03-agentcore-architecture.png" width=800}
+:image[Module 4 architecture: a Strands agent calls Neo4j retrieval Lambdas through an IAM-authenticated AgentCore Gateway]{src="../../images/03-agentcore-architecture.png" width=800}
 
 ---
 
-## Part 1: Deploy the Gateway and Retrieval Lambdas
+## Deploy the Gateway and Retrieval Lambdas
 
 Open `notebooks/04-production-agent/4.1_agentcore_gateway.ipynb`.
 
@@ -87,38 +87,16 @@ positive control verifies that retrieval can reach populated graph data.
 
 ---
 
-## Part 2: Add AgentCore Memory
+## Connect a Strands Agent
 
-Open `notebooks/04-production-agent/4.2_agentcore_memory.ipynb`.
+After the direct MCP checks, the notebook passes the resolved Gateway tools to
+a Strands agent. The agent answers a hotel question from remote tool evidence,
+and a trace shows which Gateway tool it selected. The tool interface stays the
+same even though the implementation now runs in Lambda.
 
-:::alert{type="warning" header="AWS resources created"}
-This notebook creates one AgentCore Memory resource. The resource can incur charges until you delete it.
-:::
-
-**Session 1:** A guest provides a name, loyalty number, and room preference.
-
-AgentCore extracts these records asynchronously. The notebook polls the service and shows the extracted records:
-
-:::code{language=bash}
-🧠 Preferences extracted (1 record(s)):
-  • Prefers high floor, away from elevator
-
-🧠 Facts extracted (2 record(s)):
-  • Name is Alice Chen
-  • Loyalty number LY-88421
-:::
-
-Extraction is LLM-driven, so the exact record count and wording can vary
-between runs. The output above shows a typical result.
-
-**Session 2:** The agent uses a new `session_id` and the same `actor_id`. It
-recalls the room preference without receiving it again.
-
-:::alert{type="info" header="Memory limitations"}
-Extraction runs asynchronously. Recalled records do not link to their source
-messages or related graph entities. Module 6 shows how graph-based memory
-preserves those connections.
-:::
+Module 5 next deploys a separate runtime-oriented agent. Module 6 later provides
+the workshop's hands-on cross-session memory lab, storing each preference in
+Neo4j with links to its source message and hotel.
 
 ## Next
 

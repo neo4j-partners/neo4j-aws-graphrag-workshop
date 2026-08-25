@@ -19,9 +19,9 @@ A hands-on workshop in six modules. You build a hotel knowledge graph, compare s
 | [01: Build the Graph](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/01-build-graph) | `1.1_build_graph.ipynb` | Live extraction of five held-out hotels, deterministic amenities, both retrieval indexes |
 | [02: From Similarity Search to Connected Context](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/02-connected-context) | `2.1_connected_context.ipynb` | Semantic, exact-term, graph-enriched, and structured retrieval evidence |
 | [03: Build the Grounded Booking Agent](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/03-grounded-booking-agent) | `3.1_grounded_booking_agent.ipynb` | Grounded answers, abstention, and a protected reservation command |
-| [04: Production Agent with AgentCore](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/04-production-agent) | `4.1_agentcore_gateway.ipynb` + `4.2_agentcore_memory.ipynb` | Gateway Lambda tools, IAM-authenticated MCP, cross-session memory |
+| [04: Production Agent with AgentCore](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/04-production-agent) | `4.1_agentcore_gateway.ipynb` | Gateway Lambda tools, IAM-authenticated MCP, and a Strands agent over the Gateway |
 | [05: Deploy to AgentCore Runtime](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/05-agentcore-deploy) | `5.1_deploy.ipynb` | Containerized agent on AgentCore Runtime, one request correlated end to end |
-| [06: Inspectable Neo4j Memory](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/06-neo4j-memory) | `6.1_neo4j_memory.ipynb` | Graph-backed preference storage with full provenance tracing |
+| [06: Inspectable Neo4j Memory](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/workshop-content/content/06-neo4j-memory) | `6.1_neo4j_memory.ipynb` | Cross-session graph memory with actor-scoped recall and full provenance tracing |
 
 Each module folder under `notebooks/` carries its own `README.md`: an At a Glance summary, what the module proves, and what every file in the folder is for.
 
@@ -196,7 +196,7 @@ Prerequisites for this path are Python 3.11+, [`uv`](https://docs.astral.sh/uv/)
 
 `prepare_graph.py` wipes and rebuilds. Module 1's notebook uses the additive path instead, so it extends a restored graph without deleting anything a participant has already built.
 
-Module 5 leaves running AWS resources behind on this path, and the workshop does not delete them for you. The Module 5 notebook tags each one with `WorkshopResource`, so you can find them by that tag. When you finish, remove the AgentCore Runtime, the ECR repository holding its container image, the CodeBuild project that built the image, the IAM execution role the Runtime uses, and the Secrets Manager secret and Lambda function Module 4 created. Then delete the AuraDB Free instance from the Aura console if you no longer need the graph.
+Modules 4 and 5 leave running AWS resources behind on this path, and the workshop does not delete them for you. Module 4 resources are not tagged, so remove the `hotel-booking-gateway` Gateway, both `hotel-booking-*` Lambda functions, the `workshop-hotel-lambda-role` and `workshop-hotel-gateway-role` IAM roles, and the Secrets Manager secret whose name begins with `neo4j-ws-retrieval`. The Module 5 notebook tags its resources with `WorkshopResource`; use that tag to find and remove the AgentCore Runtime, ECR repository, CodeBuild project, and Runtime execution role. Then delete the AuraDB Free instance from the Aura console if you no longer need the graph.
 
 ---
 
@@ -228,3 +228,24 @@ If you discover a potential security issue in this project, notify AWS/Amazon Se
 ## License
 
 This library is licensed under the MIT-0 License. See the [LICENSE](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/blob/main/LICENSE) file for details.
+
+---
+
+## Updating and Maintaining the Workshop Site
+
+The published workshop site is available at [neo4j-partners.github.io/neo4j-aws-graphrag-workshop](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/). Its source content lives in `workshop-content/`; do not edit the generated files under `site/modules/` or `site/build/`.
+
+To update a lesson, edit the relevant page in `workshop-content/content/`. Add or replace diagrams in `workshop-content/images/`, then reference them from the page using the existing `:image[...]` directive. The site build converts this Markdown and its workshop directives into the published Antora site.
+
+Preview changes locally before opening a pull request:
+
+```bash
+cd site
+npm ci
+npm run build
+npm run serve
+```
+
+This requires Node.js and [Pandoc](https://pandoc.org/). Open http://localhost:8080 and check the edited page, navigation, links, and images. `npm run build` regenerates the ignored `site/modules/` directory and writes the static output to the ignored `site/build/` directory.
+
+Pushing changes to `main` that affect `workshop-content/`, `site/`, or `.github/workflows/deploy-site.yml` automatically deploys the site through GitHub Pages. Check deployment progress in the [Deploy workshop site workflow](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/actions/workflows/deploy-site.yml).

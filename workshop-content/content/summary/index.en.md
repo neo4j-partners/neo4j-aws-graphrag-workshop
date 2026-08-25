@@ -18,9 +18,9 @@ GraphRAG combines these signals instead of treating one as universally best. The
 | **1. Build the Graph** | Extraction is only queryable if the schema was pinned when the data was written | You extracted five held-out documents under the same pinned schema as the rest of the corpus, then created both retrieval indexes against your own vectors |
 | **2. From Similarity Search to Connected Context** | Different question shapes need different retrieval signals | You compared semantic, exact-term, graph-enriched, and structured evidence before generating an answer |
 | **3. Build the Grounded Booking Agent** | A fixed retrieval contract gives the agent a stable evidence boundary | You applied the selected retriever, declined unsupported requests, and protected a reservation write inside one transaction |
-| **4. Production Agent** | Tools and memory move out of the notebook without changing the agent | Retrieval behind an :link[AgentCore]{href="https://aws.amazon.com/bedrock/agentcore/" external=true} Gateway over IAM-authenticated MCP, plus managed cross-session memory |
-| **5. Deploy to AgentCore Runtime** | The same agent runs as a service | The agent containerized, launched on Runtime, and one request correlated end to end |
-| **6. Inspectable Neo4j Memory** | Memory you cannot audit is memory you cannot correct | A preference traced back to its source message and forward to the real `Hotel` node, then corrected with a single `SET` |
+| **4. Production Agent** | Tools move out of the notebook without changing their agent interface | Retrieval behind an :link[AgentCore]{href="https://aws.amazon.com/bedrock/agentcore/" external=true} Gateway over IAM-authenticated MCP, then passed to a Strands agent |
+| **5. Deploy to AgentCore Runtime** | A deployment-oriented agent runs as a service | The agent containerized, launched on Runtime, and one request correlated end to end |
+| **6. Inspectable Neo4j Memory** | Cross-session memory should be actor-scoped, auditable, and correctable | The same actor recalled a preference in a new session, then traced it back to its source message and forward to the real `Hotel` node |
 
 ---
 
@@ -59,12 +59,16 @@ grant the surrounding application only the IAM permissions it needs.
 
 ## Choosing a Memory Store
 
+Module 6 implements the Neo4j path. AgentCore Memory remains a conceptual
+managed alternative for teams that prefer automatic extraction and AWS-run
+operations.
+
 | | AgentCore Memory | Neo4j graph memory |
 |---|---|---|
 | How it is written | Managed extraction from the transcript | Explicit application writes |
 | When it is recallable | After asynchronous extraction | Immediately |
 | Auditability | Retrieved through a service API | A Cypher query returning the source message |
-| Correcting a wrong record | Delete and re-extract | `SET` on one property |
+| Correction path | Managed through the Memory service API | `SET` on one property |
 | Link to domain data | Separate from it | An edge to the real `Hotel` node |
 | Operations | AWS runs it | You run it |
 

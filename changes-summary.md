@@ -43,7 +43,7 @@ the connection details into `CONFIG.txt`. Four changes make that work.
 
 ## Still To Do
 
-- **Run Modules 4, 4.2, and 5 in a live lab:** This is the only way to prove the new
+- **Run Modules 4 and 5 in a live lab:** This is the only way to prove the new
   permissions work. Vocareum blocks the API call that would let a script check them.
 - **Bump the release pin:** Run `uv run vocareum/bump_pin.py` and commit the result. The
   README changed, and the README ships to students, so the pin must move.
