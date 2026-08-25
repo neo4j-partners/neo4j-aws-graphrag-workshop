@@ -63,7 +63,7 @@ BEDROCK_CONFIG = Config(
 # an extraction LLM reads it from here rather than restating the literal, so a
 # participant who has enabled a different model in their region changes one
 # line. `MODEL_ID` overrides it for a module that needs to.
-DEFAULT_MODEL_ID = "us.anthropic.claude-sonnet-5"
+DEFAULT_MODEL_ID = "us.anthropic.claude-sonnet-4-6"
 
 
 def default_model_id() -> str:
@@ -200,8 +200,9 @@ class BedrockLLM(LLMInterface):
 
         inference_config = {"maxTokens": self.max_tokens}
 
-        # Sonnet 5 rejects `temperature` outright ("deprecated for this model"),
-        # so only send it when a caller explicitly asks for one.
+        # Keep optional inference settings out of the request unless a caller
+        # explicitly asks for them, so every workshop path uses the same
+        # minimal Converse request measured by Setup.
         if self.temperature is not None:
             inference_config["temperature"] = self.temperature
 
@@ -217,8 +218,8 @@ class BedrockLLM(LLMInterface):
         response = self.client.converse(**kwargs)
         blocks = response["output"]["message"]["content"]
 
-        # Sonnet 5 puts a reasoningContent block before the answer, so take the
-        # first block that actually carries text instead of assuming index 0.
+        # A Claude response can put a non-text block before the answer, so take
+        # the first block that actually carries text instead of assuming index 0.
         content = next((b["text"] for b in blocks if "text" in b), None)
         if content is None:
             raise ValueError(f"No text block in Bedrock response: {[list(b) for b in blocks]}")

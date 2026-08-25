@@ -21,6 +21,9 @@ static/iam_policy.json
 notebooks/.env
 CONFIG.txt
 
+# Standalone Code Editor access URLs contain bearer tokens.
+standalone/*-roster.csv
+
 # Python
 __pycache__/
 *.py[cod]

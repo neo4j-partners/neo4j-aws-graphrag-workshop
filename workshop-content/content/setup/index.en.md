@@ -28,7 +28,7 @@ Both paths end at the same place\: a terminal, four Neo4j settings in `CONFIG.tx
 
 | Model | Used by |
 |---|---|
-| `us.anthropic.claude-sonnet-5` | Extraction in Module 1, every agent from Module 2 onward |
+| `us.anthropic.claude-sonnet-4-6` | Extraction in Module 1, every agent from Module 2 onward |
 | `amazon.nova-2-multimodal-embeddings-v1:0` | Chunk embeddings written in Module 1 and queried after |
 | `amazon.titan-embed-text-v2:0` | Memory embeddings in Module 6 |
 

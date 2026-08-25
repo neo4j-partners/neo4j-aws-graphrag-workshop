@@ -2,6 +2,8 @@
 
 **[Open the workshop microsite](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/)**
 
+**[Run the workshop in your own AWS account](standalone/README.md)**
+
 [![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Amazon Bedrock](https://img.shields.io/badge/Amazon-Bedrock-FF9900.svg?style=flat&logo=amazon-aws)](https://aws.amazon.com/bedrock/)
 [![Neo4j](https://img.shields.io/badge/Neo4j-Graph--RAG-4581C3.svg?style=flat&logo=neo4j)](https://neo4j.com)
@@ -174,7 +176,38 @@ Open `notebooks/01-build-graph/1.1_build_graph.ipynb` and work forward through t
 
 ### Self-paced, in your own AWS account
 
-You supply the AWS account and run the notebooks locally. The database is the same AuraDB Free instance the hosted path uses, so Steps 1 through 3 above apply unchanged. You also enable the three models yourself in the Bedrock console under **Model access** in `us-east-1`: `us.anthropic.claude-sonnet-5`, `amazon.nova-2-multimodal-embeddings-v1:0`, and `amazon.titan-embed-text-v2:0`.
+You can provision a browser-based workshop environment in your AWS account or
+run JupyterLab locally. Both paths use the same AuraDB Free instance as the
+hosted workshop, so Steps 1 through 3 above apply unchanged. You also enable the
+three models yourself in the Bedrock console under **Model access** in
+`us-east-1`: `us.anthropic.claude-sonnet-4-6`,
+`amazon.nova-2-multimodal-embeddings-v1:0`, and
+`amazon.titan-embed-text-v2:0`.
+
+#### Option A: Browser-based AWS Code Editor
+
+The standalone deployment creates an EC2 development environment behind
+CloudFront, clones this repository, installs its dependencies, and configures
+the workshop Jupyter kernel:
+
+```bash
+cd standalone
+./deploy.py
+```
+
+Use an AWS account intended for workshop experimentation. The deployment needs
+AWS credentials, `uv`, a default VPC with a public subnet, and permission to
+create the documented CloudFormation and IAM resources. The generated IDE URL
+is a bearer credential and must not be shared publicly.
+
+See [standalone/README.md](standalone/README.md) for prerequisites,
+configuration overrides, security considerations, troubleshooting, and
+cleanup.
+
+#### Option B: Local JupyterLab
+
+Use your AWS credentials from the local shell and run the notebooks on your
+computer.
 
 To run the notebooks against a Neo4j instance you already have:
 
@@ -211,6 +244,7 @@ The workshop is hosted on [Vocareum](https://www.vocareum.com/). The `workshop-c
 | `workshop-content/content/` | Workshop markdown pages |
 | `workshop-content/images/` | Diagram images referenced by the workshop pages |
 | `notebooks/` | Jupyter notebooks (one or two per module) |
+| `standalone/` | Browser-based Code Editor deployment for a student's AWS account |
 | `static/` | Architecture diagrams (PNG exports and drawio sources) |
 
 ---

@@ -569,7 +569,7 @@ async def ingest(pipeline: SimpleKGPipeline, paths: list[Path]) -> list[Path]:
                 print(f"{prefix}... ⏰ timeout", flush=True)
                 return True
             except Exception as exc:  # noqa: BLE001 - isolate one bad document
-                print(f"{prefix}... ❌ {str(exc)[:80]}", flush=True)
+                print(f"{prefix}... ❌ {exc}", flush=True)
                 return True
 
     failed = await asyncio.gather(

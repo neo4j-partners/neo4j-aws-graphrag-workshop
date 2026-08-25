@@ -1,4 +1,6 @@
-FROM ghcr.io/astral-sh/uv:python3.13-bookworm-slim
+FROM public.ecr.aws/docker/library/python:3.13-slim-bookworm
+RUN pip install --no-cache-dir uv
+
 WORKDIR /app
 
 # AWS_REGION and AWS_DEFAULT_REGION are both set, and to the same value.
