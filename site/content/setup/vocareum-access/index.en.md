@@ -15,7 +15,7 @@ When VS Code opens, select the **Python 3.10** interpreter shown below before
 you run a notebook. Click the kernel or interpreter picker in the upper-right
 corner of the notebook, then select that Python version.
 
-::image[VS Code's Python interpreter picker with Python 3.10 selected]{src="../../../images/python-310.png" width=643}
+:image[VS Code's Python interpreter picker with Python 3.10 selected]{src="../../../images/python-310.png" width=643}
 
 :::alert{type="info" header="Where your AWS credentials come from"}
 The lab environment carries the AWS credentials the notebooks use. You do not run `aws configure` and you do not paste an access key anywhere. Modules 4, 5, and 6 create AWS resources under that lab account, and everything lands in **us-east-1**.
@@ -29,7 +29,7 @@ The lab already contains the workshop files. In the VS Code Explorer, open
 `CONFIG.txt` at the workshop root, then open the `notebooks/` folder. You do
 not need to clone the repository or install dependencies.
 
-::image[VS Code Explorer with CONFIG.txt open in the preconfigured Vocareum workshop]{src="../../../images/vocareum-config.png" width=900}
+:image[VS Code Explorer with CONFIG.txt open in the preconfigured Vocareum workshop]{src="../../../images/vocareum-config.png" width=900}
 
 ---
 

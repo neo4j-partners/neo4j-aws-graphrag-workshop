@@ -34,7 +34,7 @@ function titleAndBody(markdown) {
 function normaliseInline(markdown, sourcePath, replacements) {
   let value = markdown.replace(/\\:/g, ':')
   value = value.replace(/:link\[([^\]]+)]\{href="([^"]+)"[^}]*}/g, '[$1]($2)')
-  value = value.replace(/:image\[([^\]]*)]\{src="([^"]+)"(?:\s+width=(\d+))?[^}]*}/g, (_, alt, source, width) => {
+  value = value.replace(/:{1,2}image\[([^\]]*)]\{src="([^"]+)"(?:\s+width=(\d+))?[^}]*}/g, (_, alt, source, width) => {
     const token = `SITETOKENIMAGE${replacements.length}END`
     replacements.push({ token, value: `image::${path.basename(source)}[alt="${alt}"${width ? `,width=${width}` : ''}]` })
     return token
