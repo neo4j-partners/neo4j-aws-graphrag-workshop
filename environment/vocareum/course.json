@@ -8,7 +8,7 @@
   },
   "startercode": {
     "repository": "https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop.git",
-    "commit": "2958c4f71333e0d575124639f77d32a1f3fe22e4",
+    "commit": "c91675f22e4ee86895f06481ad1920e96a708bf9",
     "source": "../..",
     "paths": [
       "CONFIG.txt",
