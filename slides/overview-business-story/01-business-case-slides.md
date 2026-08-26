@@ -282,7 +282,7 @@ and the numbers.
 
 See the finished build answer the hero question live.
 
-Then we set up your Aura instance and your AWS environment.
+Then we look at what a knowledge graph actually is, and set up your Aura instance and your AWS environment.
 
 <!--
 Instructor run instructions:

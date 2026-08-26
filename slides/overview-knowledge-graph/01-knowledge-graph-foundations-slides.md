@@ -32,9 +32,10 @@ ol > li {
 What a property graph is, and where this one runs
 
 <!--
-Two movements. Slides 2 through 12 are the concept: nodes, relationships,
-Cypher, and why the hotel schema looks the way it does. Slides 13 through 15
-are the product: Neo4j Aura, the tools you get, and what the Free tier omits.
+Two movements. The first runs from "What Is a Graph Database" through "Beyond
+Hotels": nodes, relationships, Cypher, and why the hotel schema looks the way
+it does. The second is "Neo4j Aura" and "Aura Developer Tools": the product,
+the tools you get, and what the Free tier omits.
 
 Announce the split. Attendees who already know graphs can relax through the
 first half, and the ones who do not will not think the whole day is theory.
@@ -47,7 +48,7 @@ retrievers. This deck only has to make the graph feel like a normal database.
 
 ## Where We Left Off
 
-Deck 2 named the six controls and who owns each one. Neo4j owns three of them, so this deck is what the graph actually is.
+Deck 1 named a question that no single passage of text answers. The answer lives in the connections between facts, so this deck is what a graph actually is.
 
 <!--
 One line, said quickly. This is the recall slide.
@@ -268,34 +269,15 @@ works for retrieval. Search finds a Chunk by meaning. The traversal crosses
 into the domain layer and returns structured facts. The same edge run backward
 is the provenance answer.
 
-Deck 5 will put a retrieval path on top of this exact picture.
--->
-
----
-
-## Relationships in the Graph
-
-```text
-   (:Document) <--[:FROM_DOCUMENT]-- (:Chunk)
-                                        ^
-                                   [:FROM_CHUNK]
-                                        |
-   (:Room) <--[:HAS_ROOM]--(:Hotel)--[:OFFERS_AMENITY]--> (:Amenity)
-                          /      \
-             [:HAS_POLICY]        [:PROVIDES_SERVICE]
-                    /                  \
-             (:Policy)              (:Service)
-```
-
-`Hotel` is the hub. Every domain fact about a stay is one hop away.
-
-<!--
-This shape is deliberate, not incidental. A retrieval query that lands anywhere
-near a hotel can reach everything a guest might ask about in a single hop,
-which keeps the traversal in Module 2 short and its returned context small.
+Hotel is the hub, and every domain fact about a stay is one hop away. That
+shape is deliberate. A retrieval query that lands anywhere near a hotel reaches
+everything a guest might ask about in a single hop, which keeps the traversal
+in Module 2 short and its returned context small.
 
 Ask the room what happens if you also want to answer "which hotels are near
 this attraction." You add a node type and an edge. You do not migrate a schema.
+
+Deck 5 will put a retrieval path on top of this exact picture.
 -->
 
 ---
@@ -418,5 +400,6 @@ This is the forward pointer. It also answers the question people are holding:
 whether they are about to accumulate a pile of infrastructure. They are not.
 One Aura instance and one AWS account carry the entire day.
 
-Next up is Module 1, which turns the documents into the graph.
+Next up is the dataset and the environment, and then you build the instance
+this deck has been describing.
 -->

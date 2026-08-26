@@ -33,12 +33,13 @@ Eight ways to search the graph, and how to choose one
 
 <!--
 The longest deck of the day, and the one the whole workshop turns on. Its hinge
-is slide 10, how graph-enriched retrieval works. Everything before it builds
+is "How Graph-Enriched Retrieval Works." Everything before it builds
 the case that similarity alone is not enough. Everything after it is a tour of
 the eight patterns and a decision framework.
 
 The pacing trap is spending too long on embeddings. The room mostly knows what
-an embedding is. Get to slide 7, where vector search fails on this corpus, and
+an embedding is. Get to "Where Vector Search Stops," where vector search fails
+on this corpus, and
 spend your time there.
 
 This deck owns retrieval vocabulary for the whole workshop. Later decks assume
@@ -65,34 +66,9 @@ Do not restate Module 1 beyond the first line.
 
 ---
 
-## What Is RAG
-
-```text
-  Question
-     |
-     v
-  Retrieve  ->  relevant source text from your data
-     |
-     v
-  Augment   ->  paste that text into the prompt
-     |
-     v
-  Generate  ->  the model answers from what it was given
-```
-
-The model contributes language. Your data contributes facts.
-
-<!--
-Keep this fast. Most of the room has built one of these.
-
-The line worth saying is the last one. RAG does not make the model know your
-business. It puts your business in front of the model for the length of one
-call. Everything interesting is in the first box.
--->
-
----
-
 ## Embeddings
+
+The model contributes language. Your data contributes facts. Retrieval is what puts your facts in front of it, and it starts here.
 
 A model turns text into a list of numbers that positions it in meaning space.
 
@@ -104,7 +80,15 @@ A model turns text into a list of numbers that positions it in meaning space.
 A mismatched embedder returns wrong rows while reporting success.
 
 <!--
-The last line is the one to dwell on. Nothing errors. The index accepts the
+RAG is three boxes. Retrieve source text from your data, augment the prompt
+with it, generate an answer from what you gave the model. Most of the room has
+built one, so name the boxes and move. Everything interesting is in the first
+one, and this deck is about that box.
+
+RAG does not make the model know your business. It puts your business in front
+of the model for the length of one call.
+
+The last line of the slide is the one to dwell on. Nothing errors. The index accepts the
 query, returns the requested number of results, and reports scores. They are
 just comparisons between vectors from two different spaces.
 
@@ -375,7 +359,7 @@ straight to the traversal that produced it.
 
 ---
 
-## 3. Full-Text Search
+## 3 and 4. Full-Text Search
 
 The `60611` fix. Apache Lucene over `Chunk.text`.
 
@@ -388,7 +372,7 @@ YIELD node, score
 - **Fuzzy terms:** A misspelled `Winward~` still matches the correctly spelled `Windward`
 - **Boolean terms:** `spa AND pool` requires both, in the same chunk
 
-Rare tokens score high, which is the opposite of how embeddings treat them.
+Rare tokens score high, which is the opposite of how embeddings treat them. Continue the same procedure into the traversal from pattern 2 and you have pattern 4, exact-term entry with a graph-enriched exit.
 
 <!--
 Say plainly that the graph is not the hero of this slide. A full-text index is
@@ -398,35 +382,16 @@ graph genuinely is the answer.
 
 Note the limit of the boolean form. "spa AND pool" requires both terms in the
 same chunk, which is not the same as requiring both amenities on the same
-hotel. Slide 20 has the real fix.
+hotel. "Cypher Templates" has the real fix.
 
 This runs through a Cypher procedure. There is no FulltextRetriever class in
-the workshop's neo4j-graphrag version.
--->
+the workshop's neo4j-graphrag version, and there is no class for pattern 4
+either. An application writes that one as a reviewed parameterized query or a
+small custom retriever. Say so before anyone hunts for a class name.
 
----
-
-## 4. Full-Text Plus Traversal
-
-The same procedure, continued into the domain graph in one statement:
-
-```cypher
-CALL db.index.fulltext.queryNodes('hotel_chunk_fulltext', $query_text, {limit: $top_k})
-YIELD node, score
-MATCH (node)-[:FROM_DOCUMENT]->(document:Document)
-OPTIONAL MATCH (hotel:Hotel)-[:FROM_CHUNK]->(node)
-```
-
-Exact-term entry, graph-enriched exit. Same shape as pattern 2, different index.
-
-<!--
-This is the point in the deck where the structure should click: the entry
-search and the traversal are independent choices. Any of the three searches can
-feed the same enrichment.
-
-The workshop's Python dependency does not expose this combination as its own
-retriever class, so an application writes it as a reviewed parameterized query
-or a small custom retriever. Say that so nobody hunts for the class name.
+Pattern 4 is where the structure should click. The entry search and the
+traversal are independent choices, and any of the three searches can feed the
+same enrichment.
 -->
 
 ---
@@ -500,7 +465,7 @@ Walk the grid one cell at a time. Rows are the entry search,
 vector or vector-plus-full-text. Columns are what happens next, return the
 chunk or run the traversal. Four classes, four cells.
 
-This is the one the booking application uses, and slide 24 says why.
+This is the one the booking application uses, and the closing slide says why.
 -->
 
 ---

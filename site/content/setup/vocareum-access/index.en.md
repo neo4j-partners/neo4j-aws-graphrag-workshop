@@ -7,9 +7,15 @@ weight: 2
 
 1. Sign into Vocareum using the link from your event invitation
 2. Open the workshop lab and start it
-3. Launch the hosted **JupyterLab** environment from the lab page
+3. Launch the hosted **Visual Studio Code** environment from the lab page
 
 Vocareum provisions an AWS account for you and supplies its credentials to the lab environment.
+
+When VS Code opens, select the **Python 3.10** interpreter shown below before
+you run a notebook. Click the kernel or interpreter picker in the upper-right
+corner of the notebook, then select that Python version.
+
+::image[VS Code's Python interpreter picker with Python 3.10 selected]{src="../../../images/python-310.png" width=643}
 
 :::alert{type="info" header="Where your AWS credentials come from"}
 The lab environment carries the AWS credentials the notebooks use. You do not run `aws configure` and you do not paste an access key anywhere. Modules 4, 5, and 6 create AWS resources under that lab account, and everything lands in **us-east-1**.
@@ -17,18 +23,13 @@ The lab environment carries the AWS credentials the notebooks use. You do not ru
 
 ---
 
-## Step 2: Find the Workshop Files
+## Step 2: Open CONFIG.txt and the Notebooks
 
-The lab starts you with the workshop files already in place\: the `notebooks/` directory, `environment/verify.py`, `CONFIG.txt`, and the repository `README.md`. Open the JupyterLab file browser and confirm you can see them.
+The lab already contains the workshop files. In the VS Code Explorer, open
+`CONFIG.txt` at the workshop root, then open the `notebooks/` folder. You do
+not need to clone the repository or install dependencies.
 
-Every path on this page is relative to the directory holding those files. This page calls it the workshop root. Open a terminal there with **File → New → Terminal**.
-
-If the files are not there, clone the repository yourself and work from that checkout instead\:
-
-:::code{language=bash showCopyAction=true}
-git clone https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop.git
-cd neo4j-aws-graphrag-workshop
-:::
+::image[VS Code Explorer with CONFIG.txt open in the preconfigured Vocareum workshop]{src="../../../images/vocareum-config.png" width=900}
 
 ---
 
@@ -40,7 +41,7 @@ The Vocareum lab does not include Neo4j. If you have not done it already, follow
 
 ## Step 4: Fill In CONFIG.txt
 
-`CONFIG.txt` at the workshop root holds every setting the notebooks read. Open it from the JupyterLab file browser, or edit it in the terminal. Replace the placeholder URI and password with the ones from your Aura instance\:
+`CONFIG.txt` at the workshop root holds every setting the notebooks read. Replace the placeholder URI and password with the ones from your Aura instance\:
 
 :::code{language=text}
 NEO4J_URI=neo4j+s://xxxxxxxx.databases.neo4j.io
@@ -53,41 +54,17 @@ The username and the database name are already `neo4j`, which is what every Aura
 
 ---
 
-## Step 5: Install the Dependencies
+## Step 5: Verify the Environment
 
-From the workshop root\:
+In the `notebooks/01-build-graph/` folder, open
+`1.0_verify_environment.ipynb`. Confirm its kernel is still **Python 3.10** as
+shown above, then run every cell. This notebook checks that the supplied
+Vocareum credentials can reach the Bedrock models the workshop uses. It does
+not create any resources.
 
-:::code{language=bash showCopyAction=true}
-cd notebooks
-uv venv && uv pip install -r requirements.txt
-:::
-
----
-
-## Step 6: Verify Everything Works
-
-One command checks the interpreter, the installed packages, the Neo4j settings, the AWS credentials, the restored graph, and all three Bedrock models. Run it from the same `notebooks/` directory you just installed into\:
-
-:::code{language=bash showCopyAction=true}
-uv run python ../environment/verify.py
-:::
-
-**Expected output\:**
-:::code{language=text}
-      loaded CONFIG.txt
-ok    python interpreter is supported
-ok    workshop dependencies import
-ok    neo4j settings are present
-ok    aws credentials resolve
-ok    neo4j returns the hero hotel
-ok    bedrock chat model answers
-ok    bedrock chunk embeddings are 1024-wide
-ok    bedrock memory embeddings are 1024-wide
-
-Your environment is ready. Open the Module 1 notebook.
-:::
-
-Any line that is not `ok` names what failed and what to do about it. The [Setup](../) page lists the failures worth expanding on.
+When `1.0` completes successfully, stay in the same folder and open
+`1.1_build_graph.ipynb` to begin Module 1. Run each later notebook with the
+same **Python 3.10** interpreter selected.
 
 :::alert{type="success" header="Ready"}
 Proceed to [Module 1](../../01-build-graph/).

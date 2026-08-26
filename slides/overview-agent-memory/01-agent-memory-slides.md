@@ -332,7 +332,7 @@ Every module today was one design: the layer that can enforce a rule is the laye
 <!--
 Close on the synthesis, not a recap.
 
-The takeaway that transfers is the control-ownership table from deck 2, now
+The takeaway that transfers is the control-ownership table from deck 3, now
 with six modules of implementation behind it. The schema was hotels. The
 separation was the lesson.
 

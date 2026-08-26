@@ -40,20 +40,20 @@ const DECKS = [
     page: null,
   },
   {
-    key: 'overview-architecture',
-    source: '01-architecture-roadmap-slides.md',
-    title: 'The Hotel Booking Assistant',
-    covers: 'The dataset, the environment, and who owns which control',
-    pairsWith: 'Setup',
-    page: 'setup/index.adoc',
-  },
-  {
     key: 'overview-knowledge-graph',
     source: '01-knowledge-graph-foundations-slides.md',
     title: 'Knowledge Graphs and AuraDB',
     covers: 'The property graph model, Cypher, and Neo4j Aura',
     pairsWith: 'Foundations',
     page: 'foundations/index.adoc',
+  },
+  {
+    key: 'overview-architecture',
+    source: '01-architecture-roadmap-slides.md',
+    title: 'The Hotel Booking Assistant',
+    covers: 'The dataset, the environment, and who owns which control',
+    pairsWith: 'Setup',
+    page: 'setup/index.adoc',
   },
   {
     key: 'overview-documents-to-graph',

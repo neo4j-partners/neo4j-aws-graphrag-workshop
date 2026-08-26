@@ -38,9 +38,9 @@ notebook calls these names directly.
   outcomes. An operator reads it to find which search result produced an
   answer. It writes `ReasoningTrace` and `ReasoningStep` nodes.
 
-This module writes long-term preference memory. It also writes two short-term
-messages, because a preference needs a source to point at. It writes no
-reasoning traces.
+This module writes long-term preference memory. It also writes four short-term
+messages. Two of them give the preference a source to point at, and two drive
+the actor-isolation check. It writes no reasoning traces.
 
 Each layer carries different risk. A transcript and a reasoning trace hold far
 more personal detail than a single stored preference. Decide how long you keep

@@ -9,8 +9,8 @@ the slide holds the fragments and the note holds what you say.
 | # | Deck | Covers | Pairs with |
 |---|---|---|---|
 | 1 | `overview-business-story` | Why retrieval alone is not grounding, and the hero question | Opening |
-| 2 | `overview-architecture` | The dataset, the environment, and who owns which control | Setup |
-| 3 | `overview-knowledge-graph` | The property graph model, Cypher, and Neo4j Aura | Foundations |
+| 2 | `overview-knowledge-graph` | The property graph model, Cypher, and Neo4j Aura | Foundations |
+| 3 | `overview-architecture` | The dataset, the environment, and who owns which control | Setup |
 | 4 | `overview-documents-to-graph` | Extraction, schema drift, and the indexes that power search | Module 1 |
 | 5 | `overview-graphrag` | Vector, full-text, hybrid, and graph-enriched retrieval | Module 2 |
 | 6 | `overview-agent` | Strands, one fixed tool, abstention, and the write path | Module 3 |

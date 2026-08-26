@@ -97,7 +97,6 @@ transaction.
 - **Session isolation:** each session gets its own microVM, with its own CPU, memory, and file system
 - **Session lifetime:** a session ends after 15 idle minutes or 8 total hours
 - **Scaling:** AWS starts and stops containers, picks the instance size, and patches the hosts
-- **Invocation API:** clients call `InvokeAgentRuntime` with an ARN, a session ID, and a JSON payload
 - **Access control:** IAM decides who may invoke. Runtime also accepts OAuth 2.0 bearer tokens
 - **Versions:** each update creates a new version, and the `DEFAULT` endpoint moves to it
 

@@ -42,6 +42,16 @@ stated once, early, so the later modules can point back at it.
 
 ---
 
+## Where We Left Off
+
+Deck 2 showed what a property graph is and where one runs. This deck is the data you put in it, and who owns which control over that data.
+
+<!--
+One line, said quickly. This is the recall slide.
+-->
+
+---
+
 ## What You Will Build
 
 Six modules, six verbs:
@@ -54,7 +64,8 @@ Six modules, six verbs:
 6. **Remember** guest preferences in the same graph, with provenance
 
 <!--
-Recall from deck 1: the model does not get smarter across these six steps.
+Deck 1's thesis, restated: the model does not get smarter across these six
+steps.
 What changes is what it can see and what it is allowed to do.
 
 Modules 4 and 5 are two different deployments of the same design, not a
@@ -120,7 +131,7 @@ Cairo, Chicago, Paris, Tokyo, Sydney, Rio de Janeiro, Cape Town, Prague.
 Amenity is the row to point at. It is unique across the graph, so two hotels
 offering a spa connect through one Amenity node. That single modeling choice
 is what makes "which hotels share this amenity" a one-hop traversal instead
-of a scan, and it comes back in deck 3.
+of a scan. Deck 2 made the same point from the schema side.
 
 The hero hotel, AnyCompany Cairo Nile View, appears in the environment check,
 in Module 3's grounded answer, and in the Module 5 smoke tests. If someone

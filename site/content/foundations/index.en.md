@@ -28,7 +28,7 @@ The pattern below says that a hotel offers an amenity:
 :::code{language=cypher}
 (:Hotel {name: "AnyCompany Cairo Nile View"})
     -[:OFFERS_AMENITY]->
-(:Amenity {name: "Spa"})
+(:Amenity {name: "Full-Service Spa"})
 :::
 
 Cypher is Neo4j's graph query language. Its pattern syntax follows the same

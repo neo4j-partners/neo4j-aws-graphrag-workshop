@@ -357,7 +357,7 @@ section { font-size: 25px; }
 Each rule sits in the layer that can actually enforce it.
 
 <!--
-This is deck 2's control-ownership table, now with an implementation behind
+This is deck 3's control-ownership table, now with an implementation behind
 every row. Say that connection out loud.
 
 The row people argue with is the first one. Proposing sounds weak for something
