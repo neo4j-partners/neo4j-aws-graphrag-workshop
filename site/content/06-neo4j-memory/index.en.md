@@ -285,6 +285,8 @@ on the workshop fixtures, so memory cleanup cannot reach them.
 The memory vector indexes stay in place. They are shared infrastructure, they
 cost nothing while empty, and the workshop's setup check expects them.
 
+Slides for this module\: [Agent Memory with Neo4j](../slides/overview-agent-memory/)
+
 ## Next
 
 Head to [Summary](../summary/).

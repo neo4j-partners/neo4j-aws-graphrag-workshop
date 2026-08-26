@@ -159,6 +159,8 @@ Bedrock can throttle extraction calls, so the build retries them automatically. 
 
 At the end, the notebook confirms the build by comparing document and hotel counts from before and after extraction. It then lists the extracted hotels with their addresses, ratings, and amenity counts and walks the lexical graph and the domain graph for one hotel.
 
+Slides for this module\: [From Documents to a Knowledge Graph](../slides/overview-documents-to-graph/)
+
 ## Next
 
 Head to [Module 2](../02-connected-context/).

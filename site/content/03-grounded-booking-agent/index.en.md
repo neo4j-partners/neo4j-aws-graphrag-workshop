@@ -172,6 +172,8 @@ try to create the same `request_id`, Neo4j accepts one node and rolls back the
 other transaction. The command then reads the accepted node and returns it as
 the duplicate result.
 
+Slides for this module\: [The Grounded Booking Agent](../slides/overview-agent/)
+
 ## Next
 
 Head to [Module 4](../04-production-agent/).

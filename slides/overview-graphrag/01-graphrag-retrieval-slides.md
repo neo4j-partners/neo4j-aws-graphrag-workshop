@@ -51,8 +51,16 @@ the room has seen these class names.
 
 You have a two-layer graph and two indexes. Now the question is how to search it.
 
+> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
+
+This deck answers the first two clauses. Module 3 answers the third.
+
 <!--
-One line. Do not restate Module 1.
+Put the hero question back on the screen. Deck 1 promised it decomposes into
+three mechanisms, and this deck delivers two of them: the Cypher template for
+the spa and the pool, hybrid retrieval plus traversal for the policy.
+
+Do not restate Module 1 beyond the first line.
 -->
 
 ---

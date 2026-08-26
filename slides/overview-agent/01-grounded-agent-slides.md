@@ -77,7 +77,7 @@ Slide 11 is where that gets resolved.
 
 ## The ReAct Loop
 
-Against the hero question, "which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?":
+> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
 
 1. **Reason:** I need hotel facts. I have one tool that returns them
 2. **Act:** call `search_hotel_knowledge_tool` with the question

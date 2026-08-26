@@ -127,6 +127,8 @@ Each control belongs to a layer that can enforce it:
 
 You can reuse this separation of layers with a different graph schema and domain.
 
+Slides for this module\: [Knowledge Graphs and AuraDB](../slides/overview-knowledge-graph/)
+
 ## Next
 
 Head to [Setup](../setup/).

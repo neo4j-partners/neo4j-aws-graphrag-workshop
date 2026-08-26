@@ -284,6 +284,8 @@ The failure log records only the exception type. This rule keeps connection
 details and credentials from exception messages out of CloudWatch. The handler
 then raises the exception so AgentCore can report the invocation failure.
 
+Slides for this module\: [Deploying to AgentCore Runtime](../slides/overview-agentcore-runtime/)
+
 ## Next
 
 Head to [Module 6](../06-neo4j-memory/).

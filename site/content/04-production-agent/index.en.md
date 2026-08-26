@@ -468,6 +468,8 @@ Module 5 packages a separate version of the agent for AgentCore Runtime. Module
 6 adds cross-session memory by storing each preference in Neo4j and linking it
 to its source message and hotel.
 
+Slides for this module\: [MCP and AgentCore Gateway](../slides/overview-mcp-gateway/)
+
 ## Next
 
 Head to [Module 5](../05-agentcore-deploy/).

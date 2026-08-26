@@ -336,7 +336,9 @@ agent = Agent(tools=gateway_mcp.list_tools_sync(), ...)
 
 One line changes from Module 3. Strands sees a name, a JSON schema, and a callable operation in both cases.
 
-The model picks a remote tool, answers from the returned context, and records the tool it chose in the trace.
+> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
+
+Same question, same answer, and the tool now runs in Lambda.
 
 <!--
 This is the payoff, and it is deliberately anticlimactic. Everything hard in
@@ -344,6 +346,10 @@ this module was deployment and identity. The agent code barely moved.
 
 That is the point of a protocol. The agent does not know or care that its tool
 is now a Lambda behind a signed HTTPS endpoint.
+
+Run the hero question here if you are demonstrating live. The model picks a
+remote tool, answers from the returned context, and records the tool it chose
+in the trace, which is the thing worth showing.
 -->
 
 ---

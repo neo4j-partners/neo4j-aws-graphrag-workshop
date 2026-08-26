@@ -77,6 +77,8 @@ cross-session graph memory.
 - **Neo4j Aura:** Create a free account during the first Setup step.
 - **Hosted environment:** Run the notebooks in Vocareum's JupyterLab environment.
 
+Presenter slides for the opening\: [The Business Case for Grounded Agents](./slides/overview-business-story/)
+
 :::alert{type="warning" header="Cost"}
 This workshop creates AWS resources that incur charges. Follow the cleanup instructions at the end. Estimated cost\: under $2.
 :::

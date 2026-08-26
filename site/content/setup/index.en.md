@@ -134,6 +134,8 @@ The terminal has no AWS credentials. On the Vocareum path they come from the lab
 
 ---
 
+Slides for this module\: [The Hotel Booking Assistant](../slides/overview-architecture/)
+
 ## Next
 
 With every line reporting `ok`, head to [Module 1](../01-build-graph/).

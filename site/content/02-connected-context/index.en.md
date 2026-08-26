@@ -325,6 +325,8 @@ If the readiness check fails, complete Module 1 and restart this notebook. Modul
 Configure one Neo4j connection because every module uses the same credentials. The optional Text2Cypher cell reuses that connection with a read-only session and a 15-second statement timeout.
 :::
 
+Slides for this module\: [GraphRAG Retrieval](../slides/overview-graphrag/)
+
 ## Next
 
 Head to [Module 3](../03-grounded-booking-agent/).
