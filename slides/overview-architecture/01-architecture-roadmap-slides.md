@@ -35,22 +35,21 @@ The dataset, the environment, and who owns which control
 This deck runs immediately before Setup, and its job is to make the room
 confident about what they are about to build and what they own.
 
-Two halves. First the dataset and the environment, which is orientation.
-Then the control-ownership table, which is the workshop's actual argument
-stated once, early, so the later modules can point back at it.
+The shape is one roadmap slide, then the data and the one modeling choice that
+makes the data worth having, then the request flow, then the control-ownership
+table. That last slide is the workshop's actual argument, stated once, early,
+so the later modules can point back at it.
+
+Everything before the control table is orientation. Do not spend the deck
+there.
 -->
 
 ---
 
-## Where We Left Off
-
-Deck 2 showed what a property graph is and where one runs. This deck is the data you put in it, and who owns which control over that data.
-
-<!--
-One line, said quickly. This is the recall slide.
--->
-
----
+<style scoped>
+/* A numbered list of six plus two closing lines. */
+section { font-size: 24px; }
+</style>
 
 ## What You Will Build
 
@@ -63,14 +62,31 @@ Six modules, six verbs:
 5. **Deploy** the whole agent to AgentCore Runtime as a container
 6. **Remember** guest preferences in the same graph, with provenance
 
+Modules 3, 4, and 5 are three deployments of one design, not three designs.
+
+To start you need an Aura instance, an AWS account with Bedrock access in **us-east-1**, a filled-in `CONFIG.txt`, and a passing `environment/verify.py`. Setup has the steps.
+
 <!--
 Deck 1's thesis, restated: the model does not get smarter across these six
-steps.
-What changes is what it can see and what it is allowed to do.
+steps. What changes is what it can see and what it is allowed to do.
 
-Modules 4 and 5 are two different deployments of the same design, not a
-progression. Say that now so nobody spends Module 5 wondering why the Gateway
-disappeared.
+Say the grouping out loud, because it saves questions later. Modules 1 and 2
+are where the day's understanding gets built. Modules 3, 4, and 5 are the same
+design deployed three ways, so nobody should spend Module 5 wondering why the
+Gateway disappeared. If you fall behind, 4 and 5 are the ones to demonstrate
+rather than have everyone run.
+
+Do not read the setup line out. It is on the screen so people know what is
+coming, and the setup pages have the actual steps. Two things are worth saying
+about it anyway.
+
+First, everyone gets their own database. Resist the temptation to hand out a
+shared one. When everyone reads the same graph, one person's mistake is
+invisible to them and every later module appears to work.
+
+Second, verify.py runs eight checks before Module 1: Python version, imports,
+settings, AWS credentials, the hero hotel in the graph, and each of the three
+Bedrock models. Tell the room to read the first failure rather than the last.
 -->
 
 ---
@@ -89,24 +105,29 @@ section { font-size: 26px; }
 | **Strands Agents** | Gives the model its tools and runs the agent loop |
 | **AgentCore** | Exposes remote tools through Gateway and runs the deployed agent on Runtime |
 
-Four roles. The graph and the models are in every module. The two agent layers arrive as the day goes on.
+The graph holds more than the retrieval corpus. Business rules and reservation requests live there too, and that is what makes the write path in Module 3 enforceable.
 
 <!--
-Give the two platforms parallel treatment here. Neo4j is not a bolt-on to
-Bedrock and Bedrock is not a bolt-on to Neo4j. The graph holds the facts and
-the rules; Bedrock holds the reasoning and the embeddings; neither can do the
-other's job.
+Give the two platforms parallel treatment. Neo4j is not a bolt-on to Bedrock
+and Bedrock is not a bolt-on to Neo4j. The graph holds the facts and the rules,
+Bedrock holds the reasoning and the embeddings, and neither can do the other's
+job.
 
-The row that surprises people is the first one. Business rules and reservation
-requests live in the graph too, not just the retrieval corpus. That is what
-makes the write path in Module 3 enforceable.
+The closing line is the one that is worth slowing down for. Most agents keep
+their business rules in a system prompt, where the rule and the reasoning share
+one surface and the model can talk itself past either. Here a rule is data in
+the same database as the booking, so Module 3 can check it inside the
+transaction that writes.
+
+The two agent layers arrive as the day goes on. The graph and the models are in
+every module.
 -->
 
 ---
 
 <style scoped>
-/* Seven rows of examples need room. */
-section { font-size: 24px; }
+/* Seven rows of examples plus two closing paragraphs. */
+section { font-size: 23px; }
 </style>
 
 ## The Hotel Dataset
@@ -123,32 +144,9 @@ A fictional chain of AnyCompany hotels, one FAQ document per property.
 | `Document` | `source_filename` | The FAQ file |
 | `Chunk` | `text`, `embedding` | The searchable passage |
 
-Hundreds of properties worldwide. These eight carry the workshop:
+Hundreds of properties worldwide. These eight carry the workshop: Cairo, Chicago, Paris, Tokyo, Sydney, Rio de Janeiro, Cape Town, Prague.
 
-Cairo, Chicago, Paris, Tokyo, Sydney, Rio de Janeiro, Cape Town, Prague.
-
-<!--
-Amenity is the row to point at. It is unique across the graph, so two hotels
-offering a spa connect through one Amenity node. That single modeling choice
-is what makes "which hotels share this amenity" a one-hop traversal instead
-of a scan. Deck 2 made the same point from the schema side.
-
-The hero hotel, AnyCompany Cairo Nile View, appears in the environment check,
-in Module 3's grounded answer, and in the Module 5 smoke tests. If someone
-sees it three times and asks, that is why.
--->
-
----
-
-## Workshop Infrastructure: Shared
-
-Provisioned before the event. You never touch these:
-
-- **Amazon Bedrock models** in **us-east-1**, three of them
-- **The prebuilt graph dump**, a release artifact you restore rather than build
-- **The Vocareum lab definition**, if you are at a hosted event
-
-The dump deliberately ships with no vector index, no full-text index, and five hotels missing.
+You restore this from a prebuilt dump, and the dump deliberately ships with no vector index, no full-text index, and five hotels missing. Module 1 is where all three arrive.
 
 <!--
 The last line is the setup for Module 1. Participants often assume a prebuilt
@@ -156,31 +154,58 @@ graph means there is nothing to build. There is: the two indexes that every
 later retrieval depends on, and five held-out documents to extract.
 
 Cairo is deliberately not one of the five. Module 2's comparison has to work
-identically for everyone, so it cannot depend on a participant's own
-extraction run.
+identically for everyone, so it cannot depend on a participant's own extraction
+run. The hero hotel, AnyCompany Cairo Nile View, also appears in the
+environment check, in Module 3's grounded answer, and in the Module 5 smoke
+tests. If someone sees it three times and asks, that is why.
+
+Read the Amenity row out and stop there. The next slide is why it is written
+that way.
 -->
 
 ---
 
-## Workshop Infrastructure: Personal
+<style scoped>
+/* Two code blocks and a closing comparison. */
+section { font-size: 24px; }
+</style>
 
-If you want to deploy this using your own account:
+## Amenity Is a Node, Not a Column
 
-- **A Neo4j AuraDB Free instance** you create and restore yourself
-- **An AWS account** with Bedrock model access in us-east-1
-- **`CONFIG.txt`**, four Neo4j settings and a region
+`Full-Service Spa` exists once. Every hotel that offers it points at that one node.
 
-A broken restore shows up in Module 1 as an empty result. That is the point.
+```cypher
+MATCH (:Amenity {name: "Full-Service Spa"})<-[:OFFERS_AMENITY]-(h:Hotel)
+RETURN h.name
+```
+
+Store the same fact as a list on each hotel and the question changes shape.
+
+```cypher
+MATCH (h:Hotel)
+WHERE "Full-Service Spa" IN h.amenities
+RETURN h.name
+```
+
+The first query reads the relationships of one node you are already standing on. The second reads every hotel in the chain and compares a list on each one. The first stays the same size as the chain grows. The second does not.
 
 <!--
-Resist the temptation to hand out a shared database. When everyone reads the
-same graph, one person's mistake is invisible to them and every later module
-appears to work. Here it does not, and they find out immediately.
+Do not run these. They are on the screen to be read side by side.
 
-Eight checks in environment/verify.py gate the first module: Python version,
-imports, settings, AWS credentials, the hero hotel in the graph, and each of
-the three Bedrock models. Tell the room to run it before Module 1 and to read
-the first failure rather than the last.
+The second query is the instinct most of the room brings in, because it is what
+a column or a JSON array gets you, and it is not wrong. It is a scan. At eight
+hotels nobody can measure the difference. At a real chain, or at the point
+where this becomes a filter inside a retrieval query that runs on every
+request, the difference is the whole design.
+
+Uniqueness is created at write time, not query time. Module 1's amenity parser
+does MERGE on the name, which is the line of code that produces this shape. If
+that MERGE created a fresh node per hotel instead, both queries above would be
+scans and the label would be decoration.
+
+This is also why the traversal in Module 2 stays short. A retrieval query that
+lands anywhere near a hotel reaches everything a guest might ask about in one
+hop.
 -->
 
 ---
@@ -208,58 +233,46 @@ once.
 ---
 
 <style scoped>
-/* Six rows of two-column prose. */
-section { font-size: 25px; }
+/* Six rows of three-column prose. */
+section { font-size: 21px; }
 </style>
 
-## Who Owns Which Control
+## The Model Owns One Row
 
-Each control belongs to the layer that can actually enforce it:
+| Control | Enforced by | If the model owned it instead |
+|---|---|---|
+| Which retriever runs | The application, chosen once in code | Eight retrievers described in a prompt, re-picked on every request |
+| What the traversal returns | A fixed `retrieval_query` the model cannot edit | Cypher written by a text generator, against your live database |
+| Rejecting an invalid or duplicate write | Neo4j, inside the transaction | You ask it nicely in the system prompt not to book a room that does not exist |
+| Who can call AWS services | IAM, on the execution role | A credential handed to the model as a tool argument |
+| Whose memory comes back | Cypher anchored at one guest | A prompt line asking it to ignore the other guests it can see |
+| Answer or abstain | The model, from returned context only | Correct as it stands. Judging whether context answers a question is a language task |
 
-| Control | Owner |
-|---|---|
-| Which retriever runs | The **application**, chosen once |
-| Answer or abstain | The **model**, from returned context only |
-| What the traversal returns | The fixed **`retrieval_query`** |
-| Rejecting an invalid or duplicate write | **Neo4j**, in the transaction |
-| Who can call AWS services | **IAM** |
-| Whose memory comes back | **Cypher scoped to one guest** |
+In most agents shipped today, four of these six live in the right-hand column. Here, one does.
 
 <!--
 This is the workshop's signature slide. Everything after it is an
-implementation of one of these six rows.
+implementation of one row.
 
-Notice what the model owns: one row, and it is the narrowest one. It answers
-from context, or it says it cannot. It does not choose the retriever, write
-the traversal, or touch the database.
+Ask the room where these controls live in their current agent, and wait. The
+usual honest answer is the right-hand column, in a prompt, which is why that
+column is written the way it is. None of those are straw men. Every one of them
+ships.
 
-Ask the room where these controls live in their current agent. The usual
-honest answer is that the model owns four of the six, in a prompt.
+The right-hand column is what makes the left one mean something. Ownership
+without an alternative is just a description of the system.
 
-This table reuses cleanly with a different schema and a different domain,
-which is the takeaway to name out loud.
--->
+Row two is the one to defend if someone pushes back. A fixed retrieval_query is
+a security boundary, not a convenience. The alternative is not slower or
+sloppier retrieval, it is arbitrary Cypher from a text generator running
+against a live database, and no prompt makes that safe.
 
----
+The model's row is the narrowest one and it is the one it is genuinely good at.
+It answers from context, or it says it cannot. It does not choose the
+retriever, write the traversal, or touch the database.
 
-## Workshop Roadmap
-
-**Foundations and Setup**
-Property graph model, Cypher, Aura instance, verified Bedrock access
-
-**Modules 1 and 2: the graph and the retrieval**
-Extract five documents, create both indexes, compare eight retrieval patterns
-
-**Modules 3, 4, and 5: three deployments of one design**
-Local agent, remote tools through Gateway, whole agent on Runtime
-
-**Module 6: memory**
-Preference memory with provenance, in the same graph
-
-<!--
-The middle group is where the day's understanding is built and the last two
-groups are where it gets deployed. If you fall behind, Modules 4 and 5 are
-the ones to demonstrate rather than have everyone run.
+This table reuses cleanly with a different schema and a different domain, which
+is the takeaway to name out loud.
 
 Head to Setup. Every path ends in the same place: a terminal, four Neo4j
 settings in CONFIG.txt, AWS credentials in us-east-1, and eight passing checks.
