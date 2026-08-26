@@ -43,24 +43,6 @@ not name it, half the room will assume you skipped a step.
 
 ---
 
-## Where We Left Off
-
-The tools ran in Lambda. The agent still ran in your notebook. Now the agent moves too.
-
-> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
-
-Third deployment, same question, same answer.
-
-<!--
-Recall line, plus the one-sentence framing of the module.
-
-The hero question has now crossed three boundaries: a notebook process, a
-Gateway and a Lambda, and a container invoked over an API. The answer has not
-changed once, and that is the claim this module has to earn.
--->
-
----
-
 <style scoped>
 /* Four rows of two-column prose. */
 section { font-size: 25px; }
@@ -78,6 +60,12 @@ section { font-size: 25px; }
 Same retrieval, same reservation rule. Only the request handling is new.
 
 <!--
+The hero question, which Chicago hotel has both a spa and a swimming pool,
+what is its cancellation policy, and can I hold it for four guests, has now
+crossed three boundaries: a notebook process, a Gateway and a Lambda, and a
+container invoked over an API. The answer has not changed once, and that is
+the claim this module has to earn.
+
 Row four is the interesting one and it comes back on "Sessions and Request
 IDs." In a notebook the conversation lives in your kernel because there is
 exactly one caller. A

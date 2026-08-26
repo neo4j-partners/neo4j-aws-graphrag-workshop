@@ -46,25 +46,12 @@ again at the end.
 
 ---
 
-## Where We Left Off
-
-The retriever, the driver, and the tool all live inside your notebook process.
-
-That works on a laptop and nowhere else.
-
-<!--
-Recall plus motivation in two lines.
-
-Name the three problems without dwelling: the credential is in the process,
-nothing checks who is calling, and the only way to share the tool is to share
-the notebook.
--->
-
----
-
 ## Model Context Protocol
 
-One standard, so an agent can use tools it was never built against.
+The retriever, the driver, and the tool all live inside your notebook process.
+That works on a laptop and nowhere else.
+
+MCP is one standard, so an agent can use tools it was never built against.
 
 - **`tools/list`:** the client asks what exists. Each tool comes back as a name, a description, and a JSON Schema for its input
 - **`tools/call`:** the client sends a tool name and arguments. The server runs it and returns the result
@@ -74,6 +61,10 @@ Strands calls these as `list_tools_sync()` and `call_tool_sync()`. The Gateway a
 An MCP tool is three things: a name, an input schema, and something callable.
 
 <!--
+Name the three problems with the notebook process without dwelling: the
+credential is in the process, nothing checks who is calling, and the only way
+to share the tool is to share the notebook.
+
 The last line is the one that makes MCP feel small rather than mysterious. A
 local Python function decorated with @tool is exactly those same three things.
 That is why the agent code at the end of this module looks almost identical to

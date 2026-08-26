@@ -44,16 +44,6 @@ write path.
 
 ---
 
-## Where We Left Off
-
-You chose `HybridCypherRetriever`. Now an agent decides when to call it.
-
-<!--
-Recall line. Move.
--->
-
----
-
 ## What Is an Agent
 
 A model with tools and a loop:

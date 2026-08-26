@@ -31,11 +31,20 @@ ol > li {
 
 Eight ways to search the graph, and how to choose one
 
+> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
+
+This deck answers the first two clauses. Module 3 answers the third.
+
 <!--
 The longest deck of the day, and the one the whole workshop turns on. Its hinge
 is "How Graph-Enriched Retrieval Works." Everything before it builds
 the case that similarity alone is not enough. Everything after it is a tour of
 the eight patterns and a decision framework.
+
+Put the hero question on the screen and leave it there for a beat. Deck 1
+promised it decomposes into three mechanisms, and this deck delivers two of
+them: the Cypher template for the spa and the pool, hybrid retrieval plus
+traversal for the policy.
 
 The pacing trap is spending too long on embeddings. The room mostly knows what
 an embedding is. Get to "Where Vector Search Stops," where vector search fails
@@ -44,24 +53,6 @@ spend your time there.
 
 This deck owns retrieval vocabulary for the whole workshop. Later decks assume
 the room has seen these class names.
--->
-
----
-
-## Where We Left Off
-
-You have a two-layer graph and two indexes. Now the question is how to search it.
-
-> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
-
-This deck answers the first two clauses. Module 3 answers the third.
-
-<!--
-Put the hero question back on the screen. Deck 1 promised it decomposes into
-three mechanisms, and this deck delivers two of them: the Cypher template for
-the spa and the pool, hybrid retrieval plus traversal for the policy.
-
-Do not restate Module 1 beyond the first line.
 -->
 
 ---

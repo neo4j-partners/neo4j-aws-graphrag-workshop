@@ -32,6 +32,10 @@ ol > li {
 What a property graph is, and where this one runs
 
 <!--
+Open with the question deck 1 named, the one no single passage of text
+answers. The answer lives in the connections between facts, and this deck is
+what those connections actually are.
+
 Two movements. The first runs from "What Is a Graph Database" through "Beyond
 Hotels": nodes, relationships, Cypher, and why the hotel schema looks the way
 it does. The second is "Neo4j Aura" and "Aura Developer Tools": the product,
@@ -42,16 +46,6 @@ first half, and the ones who do not will not think the whole day is theory.
 
 Do not explain retrieval here. Deck 5 owns vectors, hybrid search, and
 retrievers. This deck only has to make the graph feel like a normal database.
--->
-
----
-
-## Where We Left Off
-
-Deck 1 named a question that no single passage of text answers. The answer lives in the connections between facts, so this deck is what a graph actually is.
-
-<!--
-One line, said quickly. This is the recall slide.
 -->
 
 ---

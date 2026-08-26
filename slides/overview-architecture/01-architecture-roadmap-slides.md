@@ -164,10 +164,10 @@ extraction run.
 
 ## Workshop Infrastructure: Personal
 
-Yours, and yours alone:
+If you want to deploy this using your own account:
 
 - **A Neo4j AuraDB Free instance** you create and restore yourself
-- **An AWS account**, either a Vocareum seat or your own
+- **An AWS account** with Bedrock model access in us-east-1
 - **`CONFIG.txt`**, four Neo4j settings and a region
 
 A broken restore shows up in Module 1 as an empty result. That is the point.

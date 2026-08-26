@@ -43,16 +43,6 @@ amenities are parsed rather than extracted.
 
 ---
 
-## Where We Left Off
-
-You have a restored graph with no indexes and five hotels missing. This module creates the indexes and extracts the five.
-
-<!--
-One line, said quickly. This is the recall slide.
--->
-
----
-
 ## The Two-Layer Graph
 
 Every document produces structure in two layers:
