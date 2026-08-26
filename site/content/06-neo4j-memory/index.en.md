@@ -10,7 +10,7 @@ a preference across sessions. Each stored preference links to its actor, source
 message, session, and hotel. These relationships make the memory inspectable and
 allow you to trace or correct it directly.
 
-:image[AgentCore Memory vs Neo4j Memory: managed extraction compared with explicit graph provenance]{src="../../images/04-memory-comparison.png" width=800}
+:image[AgentCore Memory and Neo4j graph memory: two approaches to long-term preference memory]{src="../../images/04-memory-comparison.svg" width=800}
 
 ---
 

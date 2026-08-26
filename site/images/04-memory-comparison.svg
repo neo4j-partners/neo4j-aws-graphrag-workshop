@@ -1,0 +1,162 @@
+<svg viewBox="0 0 1650 820" xmlns="http://www.w3.org/2000/svg" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <defs>
+    <filter id="shM6" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1a1a1a" flood-opacity="0.18"/>
+    </filter>
+
+    <marker id="arrowBlueDashedM6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#1A73E8"/>
+    </marker>
+    <marker id="arrowOrangeM6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#ED7100"/>
+    </marker>
+    <marker id="arrowSteelM6" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4581C3"/>
+    </marker>
+
+    <symbol id="icon-agentcore" viewBox="0 0 80 80">
+      <rect width="80" height="80" fill="#01A88D"/>
+      <path d="M67.3721 28.0727L64.1777 26.792L62.9326 23.6338C62.7812 23.2519 62.4121 23.001 62.0019 23.001C61.5908 23.0014 61.2217 23.2529 61.0713 23.6357L59.8144 26.8379L56.6377 28.0708C56.2529 28.2202 55.999 28.5918 56 29.0054C56.001 29.4189 56.2568 29.7895 56.6426 29.937L59.8896 31.1777L61.0625 34.3481C61.2051 34.7353 61.5722 34.9946 61.9853 35.001H62C62.4072 35.001 62.7744 34.7539 62.9277 34.375L64.2314 31.1416L67.3603 29.9341C67.7431 29.7861 67.9971 29.4184 68 29.0073C68.0029 28.5967 67.7539 28.2256 67.3721 28.0727ZM63.1064 29.4316C62.8486 29.5317 62.6426 29.7339 62.5391 29.9907L62.0401 31.2275L61.6074 30.0581C61.5078 29.7881 61.2959 29.5742 61.0274 29.4712L59.7822 28.9956L60.9473 28.5434C61.207 28.4424 61.4141 28.2368 61.5156 27.9765L62.0039 26.7319L62.4346 27.8222C62.5225 28.1421 62.7666 28.3984 63.0791 28.5058L64.2686 28.9834L63.1064 29.4316ZM64.0527 38.6001L54.9141 34.9345L51.3506 25.9018C51.123 25.3252 50.5752 24.9531 49.9551 24.9531C49.335 24.9536 48.7861 25.3271 48.5596 25.9048L44.958 35.0825L42 36.2304V16C42 15.5693 41.7246 15.1875 41.3164 15.0512L32.3164 12.0512C32.042 11.9609 31.7441 11.9907 31.4961 12.1362L19.4961 19.1362C19.1885 19.3154 19 19.6445 19 20V29.4199L12.5039 33.1318C12.1924 33.3095 12 33.6411 12 34V46C12 46.3589 12.1924 46.6904 12.5039 46.8681L19 50.58V60C19 60.3554 19.1885 60.6845 19.4961 60.8637L31.4961 67.8637C31.6504 67.9541 31.8252 68 32 68C32.1064 68 32.2129 67.9829 32.3164 67.9487L41.3164 64.9487C41.7246 64.8125 42 64.4306 42 64V43.7384L45.2002 44.9614L48.5606 54.0458C48.7774 54.6318 49.3203 55.0165 49.9453 55.0263H49.9688C50.584 55.0263 51.1279 54.6596 51.3594 54.0874L55.0889 44.8452L64.0352 41.3916C64.6143 41.1679 64.9912 40.6225 64.9951 40.0014C64.999 39.3808 64.6289 38.831 64.0527 38.6001ZM32.1133 65.9082L28.8654 64.0136L35.5303 59.8481L34.4697 58.1518L26.913 62.8748L21 59.4257V50.5351L26.5547 46.832L25.4453 45.1679L19.9595 48.8252L14 45.4199V40.5802L20.4961 36.8681L19.5039 35.1318L14 38.2769V34.5801L20 31.1516L26 34.5802V38.4336L21.4853 41.1425L22.5147 42.8574L27 40.1662L31.4853 42.8574L32.5147 41.1425L28 38.4337V34.5351L33.5547 30.832C33.833 30.6465 34 30.3344 34 30V23H32V29.4648L26.9595 32.8252L21 29.4198V20.5742L26 17.6577V26H28V16.4911L32.1133 14.0918L40 16.7207V45.4338L25.4853 54.1426L26.5147 55.8574L40 47.7662V63.2793L32.1133 65.9082ZM53.9639 43.1352C53.7061 43.2353 53.501 43.4375 53.3965 43.6943L49.9883 52.1401L46.918 43.8423C46.8184 43.5722 46.6065 43.3584 46.3379 43.2553L42 41.5971V38.3752L46.0899 36.7881C46.3506 36.687 46.5576 36.4814 46.6592 36.2212L49.957 27.8183L53.1397 35.8862C53.209 36.2524 53.4863 36.5483 53.8399 36.6587L62.1289 39.9834L53.9639 43.1352Z" fill="white"/>
+    </symbol>
+
+    <symbol id="icon-lambda" viewBox="0 0 80 80">
+      <rect x="0" y="0" width="80" height="80" fill="#ED7100"/>
+      <path d="M28.0075352,66 L15.5907274,66 L29.3235885,37.296 L35.5460249,50.106 L28.0075352,66 Z M30.2196674,34.553 C30.0512768,34.208 29.7004629,33.989 29.3175745,33.989 L29.3145676,33.989 C28.9286723,33.99 28.5778583,34.211 28.4124746,34.558 L13.097944,66.569 C12.9495999,66.879 12.9706487,67.243 13.1550766,67.534 C13.3374998,67.824 13.6582439,68 14.0020416,68 L28.6420072,68 C29.0299071,68 29.3817234,67.777 29.5481094,67.428 L37.563706,50.528 C37.693006,50.254 37.6920037,49.937 37.5586944,49.665 L30.2196674,34.553 Z M64.9953491,66 L52.6587274,66 L32.866809,24.57 C32.7014253,24.222 32.3486067,24 31.9617091,24 L23.8899822,24 L23.8990031,14 L39.7197081,14 L59.4204149,55.429 C59.5857986,55.777 59.9386172,56 60.3255148,56 L64.9953491,56 L64.9953491,66 Z M65.9976745,54 L60.9599868,54 L41.25928,12.571 C41.0938963,12.223 40.7410777,12 40.3531778,12 L22.89768,12 C22.3453987,12 21.8963569,12.447 21.8953545,12.999 L21.884329,24.999 C21.884329,25.265 21.9885708,25.519 22.1780103,25.707 C22.3654452,25.895 22.6200358,26 22.8866544,26 L31.3292417,26 L51.1221625,67.43 C51.2885485,67.778 51.6393624,68 52.02626,68 L65.9976745,68 C66.5519605,68 67,67.552 67,67 L67,55 C67,54.448 66.5519605,54 65.9976745,54 L65.9976745,54 Z" fill="#FFFFFF"/>
+    </symbol>
+
+    <symbol id="icon-user" viewBox="0 0 48 48">
+      <path d="M6.025,44 C6.524,34.085 14.395,26.178 24,26.178 C27.248,26.178 30.43,27.092 33.205,28.822 C38.354,32.033 41.653,37.783 41.974,44 L6.025,44 Z M14.192,13.878 C14.192,8.432 18.592,4 24.001,4 C29.408,4 33.807,8.432 33.807,13.878 C33.807,19.325 29.408,23.757 24.001,23.757 C18.592,23.757 14.192,19.325 14.192,13.878 L14.192,13.878 Z M34.263,27.125 C32.53,26.044 30.65,25.26 28.698,24.771 C32.877,22.939 35.807,18.749 35.807,13.878 C35.807,7.329 30.51,2 24.001,2 C17.489,2 12.192,7.329 12.192,13.878 C12.192,18.755 15.13,22.95 19.317,24.778 C10.545,26.981 4,35.2 4,45 C4,45.552 4.447,46 5,46 L43,46 C43.552,46 44,45.552 44,45 C44,37.719 40.269,30.87 34.263,27.125 L34.263,27.125 Z"/>
+    </symbol>
+
+    <symbol id="icon-neo4j-mark" viewBox="0 0 260 260">
+      <path d="M145 37.6c-3.5.7-10.1 3.1-14.5 5.2-14.7 7.1-24.6 18.7-30.2 35.7-2.6 7.6-2.7 9.1-3.1 33.4l-.4 25.4 2.4-.7c5.3-1.6 15.3-1.8 19.6-.3l4.2 1.5v-19.7c0-27.7 2.6-37.7 12.1-47.2 11.2-11.2 33.7-14.1 49.5-6.4 8 3.9 15 12.5 18.7 23 .7 1.9 1.3 19.2 1.7 46l.5 43h26l-.1-43c0-48.5-.2-50.2-7.4-65.2-7.6-15.6-22.2-26.6-40.7-30.7-8.9-2-29.2-2-38.3 0z"/>
+      <path d="M41.5 100.1c-1.6.4-4.7 2.3-6.9 4.1-9.9 8.1-10.3 24.1-.9 33 6.1 5.8 16.9 7.6 24.1 3.9l3.7-1.9 13.2 9.7c8.2 5.9 13.1 10.1 12.8 10.9-.3.8-.5 3.9-.5 7l-.1 5.7-12.1 8.2-12.1 8.2-3.1-2.2c-4.4-3.2-14.9-3.6-20.2-.9-8.7 4.5-12.8 11.5-12.2 21.3.5 8.9 3.9 14.2 11.7 18.2 9.3 4.7 17.9 3.2 25.2-4.2 4.9-5.1 7.3-11.3 6.7-17.4-.3-3.5-.2-3.6 12.1-12.1l12.3-8.4 3.1 1.9c8.1 4.8 18.5 3.2 25.8-4.1 7.9-7.9 8.9-18.4 2.6-27.7-5.8-8.6-17.9-12.1-27-7.8-2 .9-4 1.5-4.5 1.3-.4-.1-6.3-4.3-13-9.3l-12.2-9 .6-4.6c1.7-12.7-9.2-25.1-21.8-24.8-2.4 0-5.6.5-7.3 1z"/>
+    </symbol>
+  </defs>
+
+  <!-- Header -->
+  <rect x="30" y="20" width="1590" height="62" rx="8" fill="#F5F5F5" stroke="#D6D6D6"/>
+  <text x="825" y="46" text-anchor="middle" font-size="20" font-weight="700" fill="#1A1A1A">Module 6: Two Approaches to Long-Term Preference Memory</text>
+  <text x="825" y="68" text-anchor="middle" font-size="12.5" fill="#555555">AgentCore Memory and Neo4j graph memory both extend a Bedrock AgentCore agent. They differ in where facts live and how you inspect them.</text>
+
+  <!-- AWS Cloud outline -->
+  <rect x="50" y="100" width="1380" height="620" rx="12" fill="none" stroke="#232F3E" stroke-width="1.5" stroke-dasharray="6 4"/>
+  <text x="66" y="122" font-size="12" font-weight="700" fill="#232F3E" letter-spacing="0.5">AWS CLOUD &#183; US-EAST-1</text>
+
+  <!-- Left container: AgentCore Memory -->
+  <rect x="80" y="140" width="650" height="560" rx="10" fill="#F6FDFC" stroke="#01A88D" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="405" y="165" text-anchor="middle" font-size="13" font-weight="700" fill="#01A88D" letter-spacing="0.5">WITH AGENTCORE MEMORY</text>
+
+  <!-- Right container: Neo4j graph memory -->
+  <rect x="760" y="140" width="650" height="560" rx="10" fill="#EFF5FB" stroke="#4581C3" stroke-width="1.5" stroke-dasharray="5 4"/>
+  <text x="1085" y="165" text-anchor="middle" font-size="13" font-weight="700" fill="#4581C3" letter-spacing="0.5">WITH NEO4J GRAPH MEMORY</text>
+
+  <!-- Left: User -->
+  <rect x="115" y="185" width="90" height="90" rx="8" fill="#232F3E" filter="url(#shM6)"/>
+  <use href="#icon-user" x="137" y="205" width="46" height="46" fill="#FFFFFF"/>
+  <text x="160" y="301" text-anchor="middle" font-size="12" font-weight="700" fill="#232F3E">User</text>
+
+  <!-- Left: Runtime -->
+  <rect x="250" y="180" width="190" height="100" rx="8" fill="#FFFFFF" stroke="#01A88D" stroke-width="1.5" filter="url(#shM6)"/>
+  <use href="#icon-agentcore" x="330" y="192" width="30" height="30"/>
+  <text x="345" y="238" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1A1A1A">Amazon Bedrock</text>
+  <text x="345" y="254" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1A1A1A">AgentCore Runtime</text>
+
+  <!-- Left: Memory -->
+  <rect x="490" y="180" width="190" height="100" rx="8" fill="#FFFFFF" stroke="#01A88D" stroke-width="1.5" filter="url(#shM6)"/>
+  <use href="#icon-agentcore" x="570" y="192" width="30" height="30"/>
+  <text x="585" y="245" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1A1A1A">AgentCore Memory</text>
+
+  <!-- Left arrows -->
+  <line x1="205" y1="230" x2="248" y2="230" stroke="#1A73E8" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrowBlueDashedM6)"/>
+  <text x="227" y="222" text-anchor="middle" font-size="10.5" fill="#1A73E8" stroke="#FFFFFF" stroke-width="3" paint-order="stroke">invoke</text>
+
+  <line x1="440" y1="230" x2="488" y2="230" stroke="#ED7100" stroke-width="2" marker-end="url(#arrowOrangeM6)"/>
+  <text x="464" y="222" text-anchor="middle" font-size="10.5" fill="#ED7100" stroke="#FFFFFF" stroke-width="3" paint-order="stroke">store preference</text>
+
+  <line x1="585" y1="280" x2="585" y2="328" stroke="#01A88D" stroke-width="2" marker-end="url(#arrowOrangeM6)"/>
+
+  <!-- Left: managed extraction description -->
+  <rect x="115" y="330" width="580" height="320" rx="10" fill="#FFF6EA" stroke="#B7791F" stroke-width="1.5"/>
+  <text x="405" y="368" text-anchor="middle" font-size="15" font-weight="700" fill="#8A5A12">Managed extraction</text>
+  <text x="405" y="404" text-anchor="middle" font-size="12.5" fill="#3A3A3A">An LLM extracts preferences from the conversation</text>
+  <text x="405" y="424" text-anchor="middle" font-size="12.5" fill="#3A3A3A">asynchronously, on the order of seconds to minutes.</text>
+  <text x="405" y="460" text-anchor="middle" font-size="12.5" fill="#3A3A3A">Recall and correction go through the Memory API,</text>
+  <text x="405" y="480" text-anchor="middle" font-size="12.5" fill="#3A3A3A">and provenance is available in CloudWatch operational logs.</text>
+  <text x="405" y="516" text-anchor="middle" font-size="12.5" fill="#3A3A3A">Preferences are stored inside the managed service,</text>
+  <text x="405" y="536" text-anchor="middle" font-size="12.5" fill="#3A3A3A">separate from the rest of the domain graph.</text>
+
+  <!-- Right: User -->
+  <rect x="795" y="185" width="90" height="90" rx="8" fill="#232F3E" filter="url(#shM6)"/>
+  <use href="#icon-user" x="817" y="205" width="46" height="46" fill="#FFFFFF"/>
+  <text x="840" y="301" text-anchor="middle" font-size="12" font-weight="700" fill="#232F3E">User</text>
+
+  <!-- Right: Runtime -->
+  <rect x="930" y="180" width="190" height="100" rx="8" fill="#FFFFFF" stroke="#01A88D" stroke-width="1.5" filter="url(#shM6)"/>
+  <use href="#icon-agentcore" x="1010" y="192" width="30" height="30"/>
+  <text x="1025" y="238" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1A1A1A">Amazon Bedrock</text>
+  <text x="1025" y="254" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1A1A1A">AgentCore Runtime</text>
+
+  <!-- Right: Lambda -->
+  <rect x="1170" y="180" width="190" height="100" rx="8" fill="#FFFFFF" stroke="#ED7100" stroke-width="1.5" filter="url(#shM6)"/>
+  <use href="#icon-lambda" x="1250" y="192" width="30" height="30"/>
+  <text x="1265" y="238" text-anchor="middle" font-size="12.5" font-weight="700" fill="#1A1A1A">AWS Lambda</text>
+  <text x="1265" y="254" text-anchor="middle" font-size="11.5" font-family="'SFMono-Regular', Consolas, monospace" fill="#555555">memory_writer</text>
+
+  <!-- Right arrows -->
+  <line x1="885" y1="230" x2="928" y2="230" stroke="#1A73E8" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#arrowBlueDashedM6)"/>
+  <text x="907" y="222" text-anchor="middle" font-size="10.5" fill="#1A73E8" stroke="#FFFFFF" stroke-width="3" paint-order="stroke">invoke</text>
+
+  <line x1="1120" y1="230" x2="1168" y2="230" stroke="#ED7100" stroke-width="2" marker-end="url(#arrowOrangeM6)"/>
+  <text x="1144" y="222" text-anchor="middle" font-size="10.5" fill="#ED7100" stroke="#FFFFFF" stroke-width="3" paint-order="stroke">store preference</text>
+
+  <!-- Right: graph excerpt -->
+  <line x1="1085" y1="388" x2="955" y2="432" stroke="#5E35B1" stroke-width="2"/>
+  <text x="1000" y="404" text-anchor="middle" font-size="10" font-family="'SFMono-Regular', Consolas, monospace" fill="#5E35B1" stroke="#EFF5FB" stroke-width="3" paint-order="stroke">DERIVED_FROM</text>
+
+  <line x1="1085" y1="388" x2="1215" y2="432" stroke="#5E35B1" stroke-width="2"/>
+  <text x="1170" y="404" text-anchor="middle" font-size="10" font-family="'SFMono-Regular', Consolas, monospace" fill="#5E35B1" stroke="#EFF5FB" stroke-width="3" paint-order="stroke">ABOUT_HOTEL</text>
+
+  <circle cx="1085" cy="360" r="30" fill="#EDE7F6" stroke="#5E35B1" stroke-width="1.5"/>
+  <text x="1085" y="365" text-anchor="middle" font-size="11.5" font-weight="700" fill="#4527A0">Preference</text>
+
+  <circle cx="955" cy="460" r="30" fill="#F0F0F0" stroke="#757575" stroke-width="1.5"/>
+  <text x="955" y="465" text-anchor="middle" font-size="11.5" font-weight="700" fill="#3A3A3A">Message</text>
+
+  <circle cx="1215" cy="460" r="30" fill="#FFF3E0" stroke="#EF6C00" stroke-width="1.5"/>
+  <text x="1215" y="465" text-anchor="middle" font-size="11.5" font-weight="700" fill="#8A4A00">Hotel</text>
+
+  <!-- Right: explicit graph writes description -->
+  <rect x="795" y="505" width="580" height="145" rx="10" fill="#EEF4FB" stroke="#2E6DB4" stroke-width="1.5"/>
+  <text x="1085" y="533" text-anchor="middle" font-size="15" font-weight="700" fill="#1F4E7A">Explicit graph writes</text>
+  <text x="1085" y="562" text-anchor="middle" font-size="12.5" fill="#3A3A3A">The Lambda writes each preference synchronously, as a graph</text>
+  <text x="1085" y="582" text-anchor="middle" font-size="12.5" fill="#3A3A3A">node connected to its source message and the hotel it concerns.</text>
+  <text x="1085" y="612" text-anchor="middle" font-size="12.5" fill="#3A3A3A">Recall is a Cypher match; correction is a direct SET on the</text>
+  <text x="1085" y="632" text-anchor="middle" font-size="12.5" fill="#3A3A3A">property, alongside the rest of the domain data.</text>
+
+  <!-- Neo4j Aura (outside AWS Cloud) -->
+  <path d="M1450,360 a90,18 0 0,0 180,0 v140 a90,18 0 0,1 -180,0 z" fill="#DAE8FC" stroke="#4581C3" stroke-width="2"/>
+  <ellipse cx="1540" cy="360" rx="90" ry="18" fill="#DAE8FC" stroke="#4581C3" stroke-width="2"/>
+  <use href="#icon-neo4j-mark" x="1526" y="388" width="28" height="28" fill="#4581C3"/>
+  <text x="1540" y="438" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E7A">Neo4j AuraDB</text>
+  <text x="1540" y="456" text-anchor="middle" font-size="11" fill="#3A3A3A">Graph memory</text>
+
+  <!-- Connector: Lambda -> Neo4j Aura -->
+  <path d="M1360,230 L1420,230 L1420,420 L1448,420" fill="none" stroke="#4581C3" stroke-width="2" marker-end="url(#arrowSteelM6)"/>
+  <text x="1390" y="222" text-anchor="middle" font-size="10.5" fill="#4581C3" stroke="#FFFFFF" stroke-width="3" paint-order="stroke">Cypher MERGE</text>
+
+  <!-- Legend -->
+  <text x="66" y="748" font-size="11.5" font-weight="700" fill="#555555">LINE COLORS</text>
+
+  <line x1="66" y1="770" x2="106" y2="770" stroke="#1A73E8" stroke-width="2" stroke-dasharray="5 4"/>
+  <text x="112" y="774" font-size="11.5" fill="#3A3A3A">User invoke</text>
+
+  <line x1="230" y1="770" x2="270" y2="770" stroke="#ED7100" stroke-width="2"/>
+  <text x="276" y="774" font-size="11.5" fill="#3A3A3A">Internal AWS call</text>
+
+  <line x1="430" y1="770" x2="470" y2="770" stroke="#4581C3" stroke-width="2"/>
+  <text x="476" y="774" font-size="11.5" fill="#3A3A3A">Cypher write to Neo4j</text>
+
+  <line x1="620" y1="770" x2="660" y2="770" stroke="#5E35B1" stroke-width="2"/>
+  <text x="666" y="774" font-size="11.5" fill="#3A3A3A">Graph relationship</text>
+</svg>
