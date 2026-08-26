@@ -187,25 +187,28 @@ WHERE "Full-Service Spa" IN h.amenities
 RETURN h.name
 ```
 
-The first query reads the relationships of one node you are already standing on. The second reads every hotel in the chain and compares a list on each one. The first stays the same size as the chain grows. The second does not.
+The second query can only ever answer "which hotels have this." The first can be walked in either direction: from a hotel to what it offers, or from an amenity to who offers it, and onward to whatever those hotels are connected to. Module 2's retrieval query depends on walking outward from whatever the search matched. That path does not exist in the second model.
 
 <!--
 Do not run these. They are on the screen to be read side by side.
 
 The second query is the instinct most of the room brings in, because it is what
-a column or a JSON array gets you, and it is not wrong. It is a scan. At eight
-hotels nobody can measure the difference. At a real chain, or at the point
-where this becomes a filter inside a retrieval query that runs on every
-request, the difference is the whole design.
+a column or a JSON array gets you, and it is not wrong. Do not argue it on
+speed. At eight hotels, or at nine thousand, an index makes that scan fast
+enough and someone in the room knows it. The argument is direction. A string in
+a list is not addressable. Nothing attaches to it and nothing traverses out of
+it, so the only question it can answer is the one it was written for.
 
 Uniqueness is created at write time, not query time. Module 1's amenity parser
-does MERGE on the name, which is the line of code that produces this shape. If
-that MERGE created a fresh node per hotel instead, both queries above would be
-scans and the label would be decoration.
+does MERGE on the name, which is the line of code that produces this shape. It
+is also what collapses "Full-Service Spa," "Full Service Spa," and "Spa
+(Full-Service)" into one node. Extraction produces all three spellings, and a
+list column keeps all three, so every later query silently misses two of them.
 
 This is also why the traversal in Module 2 stays short. A retrieval query that
 lands anywhere near a hotel reaches everything a guest might ask about in one
-hop.
+hop. The hero question stacks four constraints, and here each one is another
+hop that composes with the last.
 -->
 
 ---
