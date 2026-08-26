@@ -3,24 +3,50 @@ title: "Module 4: Production Agent with AgentCore"
 weight: 50
 ---
 
-Module 4 moves the booking agent's retrieval tools from the notebook process to
-AWS-managed services. AWS Lambda runs each tool, and Bedrock AgentCore Gateway
-presents both tools through one managed Model Context Protocol endpoint. IAM
-Signature Version 4 authenticates each request with the caller's AWS identity.
+Module 3's tools run as Python functions inside the notebook process, where
+the model calls a local function that already holds an open Neo4j driver
+session. Module 4 moves those retrieval tools to AWS-managed services instead,
+so a caller can reach them over a network with its identity checked on every
+call, never holding the Neo4j credentials itself. AWS Lambda runs each tool,
+and Bedrock AgentCore Gateway presents both tools through one managed Model
+Context Protocol endpoint. IAM Signature Version 4 authenticates each request
+with the caller's AWS identity.
 
-**Brief overview**
+**What this module introduces**
 
 * **Model Context Protocol, or MCP:** A standard interface for listing and
-  calling tools from an AI application.
-* **AWS Lambda:** Runs one Python handler for each retrieval tool.
-* **AgentCore Gateway:** Maps each MCP tool name and input schema to its Lambda
-  target.
-* **IAM SigV4:** Signs each request so the Gateway can verify the caller's AWS
-  identity and request contents.
+  calling tools from an AI application. Because Strands and the Gateway both
+  speak MCP, the agent can discover and call the Lambda-backed tools without
+  any tool-specific integration code.
+* **AWS Lambda:** Runs one Python handler for each retrieval tool. On its own,
+  a Lambda function only exposes an AWS API for invoking that code directly;
+  it does not speak MCP.
+* **AgentCore Gateway:** Publishes one MCP endpoint that lists every
+  registered Lambda's tool name and input schema, and translates each MCP
+  tool call into the matching Lambda invocation. This is what turns a set of
+  Lambda functions into tools an MCP client can discover and call.
+* **IAM SigV4:** AWS's request-signing scheme. The caller signs each request
+  with its AWS credentials, and the Gateway verifies that signature against
+  IAM to confirm the caller's identity, so no separate API key is required.
 * **AWS Secrets Manager:** Stores the Neo4j connection outside the Lambda
-  package and limits access through IAM.
+  package and limits access through IAM, so the credential is not baked into
+  deployed code.
 
 :image[Module 4 architecture: a Strands agent calls Neo4j retrieval Lambdas through an IAM-authenticated AgentCore Gateway]{src="../../images/03-agentcore-architecture.svg" width=800}
+
+The diagram traces one request through the deployed system. On the left, a
+user's question reaches the Strands agent, which runs in the notebook process
+on Claude via Amazon Bedrock. The agent's MCP tool call crosses into the AWS
+Cloud boundary to the AgentCore Gateway, shown as the MCP server that
+authenticates each call with IAM SigV4. The Gateway invokes whichever Lambda
+backs the requested tool, `search_hotel_knowledge` or `graph_query`. Each
+Lambda reads its Neo4j credential from AWS Secrets Manager at cold start, then
+sends EXPLAIN-checked Cypher to Neo4j Aura, which sits outside the AWS Cloud
+boundary because it is a separately managed database. The arrow colors mark
+three kinds of traffic: the dashed blue arrow is the user's interaction with
+the agent, the orange arrows are the MCP call, the Lambda invocation, and the
+secret read, and the solid blue arrow is the retrieval Cypher that reaches
+Neo4j.
 
 ## The Managed Tool Flow
 
@@ -104,7 +130,7 @@ Configure the client with the proxy:
 gateway_mcp = MCPClient(
     lambda: stdio_client(StdioServerParameters(
         command="uvx",
-        args=["mcp-proxy-for-aws@latest", GATEWAY_ENDPOINT_URL, "--region", "us-east-1"],
+        args=["mcp-proxy-for-aws@latest", GATEWAY_URL, "--region", "us-east-1"],
         env=os.environ.copy(),
     ))
 )

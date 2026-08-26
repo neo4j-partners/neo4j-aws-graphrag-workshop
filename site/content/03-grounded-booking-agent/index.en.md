@@ -28,8 +28,8 @@ knowledge and enforces the rules\: the hotel graph, the vector and full-text
 indexes, `HybridCypherRetriever`, the maximum-guests rule, and the reservation
 write. Amazon Bedrock, on the right, only reasons\: it embeds the question,
 runs the model, and lets the model call one tool, `search_hotel_knowledge_tool`.
-Two arrows cross between the zones\: retrieval sends bounded context JSON up
-from Neo4j to the model, and once the model decides to make a reservation, the
+Two arrows cross between the zones. Retrieval sends bounded context JSON up
+from Neo4j to the model. Once the model decides to make a reservation, the
 reservation command sends validated command input back down to Neo4j. The
 model itself never touches the write path.
 
@@ -45,7 +45,7 @@ what happens next, not the developer.
   conversation so far, then decides which tool to call and when it has enough
   information to answer.
 * **The agent loop:** Strands runs a loop similar to the common "ReAct"
-  (Reason plus Act) pattern used by most agent frameworks\: the model reasons
+  (Reason plus Act) pattern used by most agent frameworks. The model reasons
   about what it needs, acts by calling a tool, observes the tool's result, and
   repeats until it can answer. Each turn of the loop is one round trip to the
   model.

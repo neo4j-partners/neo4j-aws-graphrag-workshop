@@ -7,7 +7,7 @@ This module adds five hotel documents to Neo4j. The build stores each document a
 
 The two structures answer different parts of a question such as "Which Cairo hotels have a spa that costs extra?" Search finds text with similar meaning. Graph relationships connect the hotel, spa, and fee so one Cypher query can match all three facts.
 
-**Brief overview**
+**What this module builds**
 
 * **Searchable text:** `Document` and `Chunk` nodes store source text and embeddings.
 * **Structured facts:** `Hotel`, `Room`, `Amenity`, `Policy`, and `Service` nodes store properties and relationships.
@@ -109,7 +109,7 @@ Each source document contains a `## Hotel Amenities` bullet list. An LLM can rew
 1. The extraction schema covers prose facts and leaves amenities to the parser.
 2. The parser reads bullets under `## Hotel Amenities` and stops at the next heading.
 3. The trimmed bullet text becomes `Amenity.name`.
-4. Neo4j merges that exact name into one shared node and connects it to the source hotel.
+4. Neo4j merges that exact name into one shared node and connects it to the source hotel with `OFFERS_AMENITY`.
 
 The section rule also prevents a sentence such as "Pool facilities are not available at this property" from creating a Pool relationship. The parser reads only the authoritative amenity list.
 

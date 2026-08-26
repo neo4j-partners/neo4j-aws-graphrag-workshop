@@ -7,7 +7,7 @@ Module 5 moves the grounded booking agent from JupyterLab to a managed
 container. Amazon Bedrock AgentCore Runtime starts the container and gives
 authorized AWS clients an API for invoking the agent.
 
-**Brief overview**
+**What this module deploys**
 
 * **AgentCore Runtime:** Runs the packaged agent outside the notebook.
 * **Deployment package:** Reuses the Module 3 retrieval code, system prompt,
@@ -54,9 +54,17 @@ finish.
 
 :image[Module 5 architecture: an authorized AWS client invokes the packaged agent on AgentCore Runtime, which calls Neo4j and Bedrock from the Runtime container]{src="../../images/05-agentcore-runtime-architecture.svg" width=800}
 
-Both tools connect to Neo4j from the deployed process. Neo4j checks
-the maximum-guests rule in the transaction that writes a reservation request.
-This design applies the same rule to every write from the deployed agent.
+The diagram traces one invocation through the container. An authorized AWS
+client calls `InvokeAgentRuntime`, reaching the AgentCore Runtime box that runs
+as `GraphRagBookingAgent`. Inside, `booking_agent.py` holds three parts: the
+`search_hotel_knowledge` tool, the `create_reservation` tool, and the
+`BedrockModel` connection. Both tools call Neo4j directly from inside the
+container: `search_hotel_knowledge` reaches the hybrid retriever, and
+`create_reservation` reaches the write that enforces the guest-limit rule
+inside its own transaction. The `BedrockModel` connection calls Claude on
+Amazon Bedrock, which reasons over the context the tools returned. No
+component here calls out to a Gateway or an MCP server; both tools reach
+Neo4j from the same process that received the request.
 
 ## How Runtime Requests Work
 
@@ -65,12 +73,18 @@ payload. The Runtime entry point reads `prompt` and `request_id` from the
 payload, then sends the prompt to the Strands agent. Hooks capture the tools'
 structured results and return them beside the model response.
 
-The container separates reusable resources from request state:
+AgentCore keeps the container's microVM running between invocations instead of
+restarting it for each one. The entry point splits its code to take advantage
+of that:
 
 * **Warm container resources:** Cached Neo4j drivers and the hybrid retriever
-  keep their connection pools available for later invocations.
+  keep their connection pools available for later invocations, instead of
+  opening a new pool on every request.
 * **Per-request state:** A new Strands `Agent` and message history are created
-  for every invocation. Each request gets an isolated conversation.
+  for every invocation. A Strands `Agent` accumulates conversation state as it
+  runs, so a single `Agent` shared across callers would leak one caller's
+  messages into another caller's conversation. Rebuilding it per request keeps
+  every invocation isolated.
 * **Caller request ID:** A hook requires the reservation tool to use the exact
   UUID supplied by the caller. Reusing that UUID makes a retry return the first
   result and keeps the graph at one reservation node.
