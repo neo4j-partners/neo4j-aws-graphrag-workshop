@@ -247,7 +247,7 @@ By the end of the workshop you will have built and deployed exactly this:
 - The **agent itself deployed to AgentCore Runtime** as an arm64 container
 - **Preference memory** written back into the same graph, with provenance
 
-Built on your own Aura instance and your own AWS account, not a shared demo.
+Fully isolated: your own Aura instance and a workshop AWS account.
 
 <!--
 Five bullets, six modules. Module 2 is missing from this list on purpose,

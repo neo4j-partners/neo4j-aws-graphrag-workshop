@@ -8,7 +8,12 @@ version = "0.1.0"
 requires-python = ">=3.11"
 dependencies = [
     "neo4j>=5.24.0",
-    "neo4j-graphrag>=1.6.0",
+    # 1.16.0 is the first neo4j-graphrag whose Text2CypherRetriever plans
+    # the generated Cypher with EXPLAIN and refuses anything the planner
+    # does not report as read-only. An agent calls that retriever directly
+    # in Module 3, so an older version would run model-generated Cypher
+    # with no read-only check. 1.18.0 is the locked version.
+    "neo4j-graphrag>=1.18.0",
     "numpy>=2.0.0",
     # 1.39.0 is the first botocore that reads AWS_BEARER_TOKEN_BEDROCK.
     # Anything older ignores the Bedrock API key and signs with SigV4.

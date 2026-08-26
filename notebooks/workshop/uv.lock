@@ -1401,7 +1401,7 @@ requires-dist = [
     { name = "boto3", specifier = ">=1.39.0" },
     { name = "botocore", specifier = ">=1.39.0" },
     { name = "neo4j", specifier = ">=5.24.0" },
-    { name = "neo4j-graphrag", specifier = ">=1.6.0" },
+    { name = "neo4j-graphrag", specifier = ">=1.18.0" },
     { name = "numpy", specifier = ">=2.0.0" },
     { name = "python-dotenv", specifier = ">=1.0.0" },
     { name = "strands-agents", specifier = ">=1.27.0" },
