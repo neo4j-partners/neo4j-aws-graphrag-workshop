@@ -3,7 +3,7 @@ Description: GraphRAG uses Vocareum Notebook with required Bedrock access
 
 Metadata:
   SourceRepository: https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop.git
-  SourceCommit: 2651158a6e7242b6e4f2c6c5eb9bccd20f76685a
+  SourceCommit: 7e96cd2170b2afa088aa44db3f3b52b2953ea745
 
 Resources:
   LaunchSentinel:
