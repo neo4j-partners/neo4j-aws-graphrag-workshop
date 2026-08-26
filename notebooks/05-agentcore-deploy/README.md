@@ -8,7 +8,7 @@ The grounded booking agent from Module 3.1 runs in your JupyterLab notebook kern
 
 - **Goal:** run the booking agent outside Jupyter and invoke it through an AWS API.
 - **Neo4j:** The deployed container reads hotel data and writes reservation requests. Neo4j checks the maximum-guests rule in the write transaction. A uniqueness constraint on `request_id` prevents duplicate reservation nodes.
-- **AWS:** the deployment uses one IAM execution role, one ECR repository, one CodeBuild project, and one AgentCore Runtime. The agent invokes Claude on Amazon Bedrock through a cross-region inference profile.
+- **AWS:** the deployment uses one IAM execution role, one ECR repository, one CodeBuild project, and one AgentCore Runtime. The agent invokes Claude on Amazon Bedrock through a cross-region inference profile. The execution role authorizes that call when the container has no Bedrock API key. A key authenticates the call in place of the role.
 - **Result:** a running AgentCore Runtime named `GraphRagBookingAgent`, available through `InvokeAgentRuntime` and tagged for cleanup.
 
 ---

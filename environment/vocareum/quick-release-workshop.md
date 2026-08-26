@@ -54,9 +54,15 @@ touch them.
 cd /Users/ryanknight/projects/aws/neo4j-aws-graphrag-workshop
 git status --porcelain      # must be empty before the bump
 git add -A && git commit -m "..."
+git push
 ```
 
 The bump refuses a dirty tree. Committing first is not optional.
+
+The release itself builds from this local checkout, not from GitHub, so the
+push is not load-bearing for the build. Push anyway: this repository is
+public, and an unpushed `main` leaves collaborators unable to see the pin
+bump until you do.
 
 ### 2. Inspect and update the pin
 
@@ -73,6 +79,7 @@ Exit codes: `0` the pin is current, `1` a bump is needed, `2` a refusal.
 uv run environment/vocareum/bump_pin.py
 git add environment/vocareum/course.json environment/vocareum/lab.template
 git commit -m "Bump the Vocareum starter-code pin"
+git push
 ```
 
 Pass `--commit REV` to pin a revision other than `HEAD`. The bump refuses a
@@ -166,6 +173,7 @@ git add -A && git commit -m "..."
 uv run environment/vocareum/bump_pin.py
 git add environment/vocareum/course.json environment/vocareum/lab.template
 git commit -m "Bump the Vocareum starter-code pin"
+git push
 
 cd /Users/ryanknight/projects/aws/aws-vocareum
 ./scripts/validate_all.py

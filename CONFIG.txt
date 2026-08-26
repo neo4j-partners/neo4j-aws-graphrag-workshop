@@ -1,6 +1,8 @@
 # Workshop Configuration
 #
-# IMPORTANT: You only need to fill in the Neo4j credentials below.
+# Fill in the Neo4j credentials below.
+# Fill in the Bedrock API key at the bottom of this file if your instructor
+# gives you one.
 # Every other setting has a working default and does not need to be modified.
 
 # =============================================================================

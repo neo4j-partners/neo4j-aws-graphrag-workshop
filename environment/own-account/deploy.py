@@ -2,7 +2,7 @@
 # /// script
 # requires-python = ">=3.12"
 # dependencies = [
-#     "boto3>=1.35.0",
+#     "boto3>=1.39.0",
 #     "python-dotenv>=1.0.1",
 # ]
 # ///

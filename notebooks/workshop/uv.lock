@@ -1398,8 +1398,8 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
-    { name = "boto3", specifier = ">=1.38.0" },
-    { name = "botocore", specifier = ">=1.38.0" },
+    { name = "boto3", specifier = ">=1.39.0" },
+    { name = "botocore", specifier = ">=1.39.0" },
     { name = "neo4j", specifier = ">=5.24.0" },
     { name = "neo4j-graphrag", specifier = ">=1.6.0" },
     { name = "numpy", specifier = ">=2.0.0" },
