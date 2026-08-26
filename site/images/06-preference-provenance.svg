@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <title>A stored preference and the message it came from</title>
+  <defs>
+    <filter id="sh" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#1a1a1a" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrowBlue" markerWidth="9" markerHeight="9" refX="7.5" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#2E6DB4"/>
+    </marker>
+    <marker id="arrowGray" markerWidth="9" markerHeight="9" refX="7.5" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#8A8A8A"/>
+    </marker>
+  </defs>
+
+  <!-- White card -->
+  <rect x="40" y="32" width="880" height="484" rx="16" fill="#FFFFFF" stroke="#E7E4DB" filter="url(#sh)"/>
+
+  <!-- ============ HEADER ============ -->
+  <text x="64" y="62" fill="#16233A" font-size="20" font-weight="700">A preference points back at the message it came from</text>
+  <text x="64" y="82" fill="#16233A" font-size="10.5">The library writes the memory nodes. Two workshop relationships are what make one preference traceable.</text>
+
+  <!-- ============ BAND A: THE RECORD ============ -->
+  <rect x="64" y="96" width="832" height="154" rx="12" fill="#EEF4FB" stroke="#6E86CF"/>
+  <text x="80" y="116" fill="#1F4E86" font-size="7.5" font-weight="700" letter-spacing="0.4">WHAT THE AGENT REMEMBERS</text>
+  <text x="880" y="116" fill="#5C6470" font-size="7.5" text-anchor="end">the record a new session reads back</text>
+
+  <!-- User -->
+  <rect x="88" y="158" width="180" height="56" rx="10" fill="#FFFFFF" stroke="#2E6DB4" stroke-width="1.6"/>
+  <text x="178" y="181" fill="#1F4E86" font-size="11" font-weight="700" text-anchor="middle">(:User)</text>
+  <text x="178" y="197" fill="#5C6470" font-size="7.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">identifier</text>
+
+  <!-- Preference, the hub -->
+  <rect x="350" y="150" width="260" height="72" rx="10" fill="#DEEAF6" stroke="#2E6DB4" stroke-width="1.8"/>
+  <text x="480" y="175" fill="#1F4E86" font-size="12" font-weight="700" text-anchor="middle">(:Preference)</text>
+  <text x="480" y="192" fill="#5C6470" font-size="7.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">preference · category · id</text>
+  <text x="480" y="207" fill="#5C6470" font-size="7.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">"…a high floor away from the elevator"</text>
+
+  <!-- Hotel, the domain node from Module 1 -->
+  <rect x="692" y="158" width="180" height="56" rx="10" fill="#2E6DB4" stroke="#1F4E86" stroke-width="1.6"/>
+  <text x="782" y="181" fill="#FFFFFF" font-size="11" font-weight="700" text-anchor="middle">(:Hotel)</text>
+  <text x="782" y="197" fill="#DEEAF6" font-size="7.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">name</text>
+  <text x="782" y="230" fill="#5C6470" font-size="7.5" text-anchor="middle">the same node Module 1 created</text>
+
+  <!-- HAS_PREFERENCE -->
+  <line x1="270" y1="186" x2="348" y2="186" stroke="#8A8A8A" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+  <text x="309" y="180" fill="#5C6470" font-size="7.5" font-weight="700" letter-spacing="0.2" text-anchor="middle">HAS_PREFERENCE</text>
+
+  <!-- ABOUT_HOTEL -->
+  <line x1="612" y1="186" x2="690" y2="186" stroke="#2E6DB4" stroke-width="1.8" marker-end="url(#arrowBlue)"/>
+  <text x="651" y="180" fill="#5C6470" font-size="7.5" font-weight="700" letter-spacing="0.2" text-anchor="middle">ABOUT_HOTEL</text>
+
+  <!-- ============ BAND B: THE EVIDENCE ============ -->
+  <rect x="64" y="300" width="832" height="144" rx="12" fill="#EEF4FB" stroke="#6E86CF"/>
+  <text x="80" y="320" fill="#1F4E86" font-size="7.5" font-weight="700" letter-spacing="0.4">THE EVIDENCE IT CAME FROM</text>
+  <text x="880" y="320" fill="#5C6470" font-size="7.5" text-anchor="end">returned by the same query, in the same row</text>
+
+  <!-- Conversation -->
+  <rect x="88" y="353" width="180" height="52" rx="10" fill="#FFFFFF" stroke="#2E6DB4" stroke-width="1.6"/>
+  <text x="178" y="375" fill="#1F4E86" font-size="11" font-weight="700" text-anchor="middle">(:Conversation)</text>
+  <text x="178" y="391" fill="#5C6470" font-size="7.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">session_id</text>
+
+  <!-- Message -->
+  <rect x="330" y="344" width="300" height="70" rx="10" fill="#FFFFFF" stroke="#2E6DB4" stroke-width="1.6"/>
+  <text x="480" y="369" fill="#1F4E86" font-size="11" font-weight="700" text-anchor="middle">(:Message)</text>
+  <text x="480" y="386" fill="#5C6470" font-size="7.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">content · id</text>
+  <text x="480" y="401" fill="#5C6470" font-size="7.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">"…a room on a high floor away from the elevator…"</text>
+
+  <!-- HAS_MESSAGE -->
+  <line x1="270" y1="379" x2="328" y2="379" stroke="#8A8A8A" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+  <text x="299" y="373" fill="#5C6470" font-size="7.5" font-weight="700" letter-spacing="0.2" text-anchor="middle">HAS_MESSAGE</text>
+
+  <!-- What one query returns -->
+  <rect x="672" y="344" width="200" height="70" rx="10" fill="#F1F1EE" stroke="#DAD7CE"/>
+  <text x="688" y="366" fill="#1F4E86" font-size="7.5" font-weight="700" letter-spacing="0.4">ONE QUERY RETURNS</text>
+  <text x="688" y="384" fill="#16233A" font-size="8">actor · preference · hotel</text>
+  <text x="688" y="399" fill="#16233A" font-size="8">source_message · source_session</text>
+
+  <!-- ============ THE TWO CROSSINGS ============ -->
+  <line x1="230" y1="216" x2="230" y2="351" stroke="#8A8A8A" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+  <text x="242" y="286" fill="#5C6470" font-size="7.5" font-weight="700" letter-spacing="0.2">HAS_CONVERSATION</text>
+
+  <line x1="480" y1="224" x2="480" y2="342" stroke="#2E6DB4" stroke-width="1.8" marker-end="url(#arrowBlue)"/>
+  <text x="492" y="286" fill="#5C6470" font-size="7.5" font-weight="700" letter-spacing="0.2">DERIVED_FROM</text>
+
+  <!-- ============ LEGEND ============ -->
+  <line x1="64" y1="470" x2="94" y2="470" stroke="#8A8A8A" stroke-width="1.5" marker-end="url(#arrowGray)"/>
+  <text x="104" y="473" fill="#16233A" font-size="8">written by the neo4j-agent-memory library</text>
+  <line x1="320" y1="470" x2="350" y2="470" stroke="#2E6DB4" stroke-width="1.8" marker-end="url(#arrowBlue)"/>
+  <text x="360" y="473" fill="#16233A" font-size="8">written by memory_helpers.py, and what makes a preference traceable</text>
+</svg>

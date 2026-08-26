@@ -84,6 +84,82 @@ boxes, teal for the tool, dark navy for the outcome bar.
 
 ---
 
+## Diagram 5: The Retrieval Substrate
+**Filename:** `retrieval-substrate.svg`
+**Editable source:** the SVG itself
+**Dimensions:** 960 x 540 viewBox, rendered at `width=800`
+
+Hand-authored SVG in the style of `01-graph-structure.svg`, and deliberately so.
+That diagram shows the build writing the two layers. This one shows retrieval
+crossing the same two layers in the opposite direction, so the band labels and
+the palette are reused on purpose.
+
+**Design contract:**
+```
+TITLE: "Retrieval crosses the same graph in reverse"
+SUBTITLE: "The build wrote FROM_CHUNK out of Hotel. Search enters at Chunk and
+follows that relationship back."
+
+A neutral question pill sits above the bands, inside the card and outside the
+graph: "cancellation policy for the hotel at 60611".
+
+TOP BAND, "THE LEXICAL LAYER: THE TEXT": the two named indexes,
+hotel_chunk_embeddings and hotel_chunk_fulltext, both arrowing into (:Chunk).
+(:Document) sits above (:Chunk) with FROM_DOCUMENT pointing up, the direction
+it was written. A side panel gives both Cypher patterns: BUILD WROTE
+(:Hotel)-[:FROM_CHUNK]->(:Chunk), SEARCH READS (node)<-[:FROM_CHUNK]-(hotel:Hotel).
+
+THE CROSSING: one heavy arrow down from (:Chunk) to (:Hotel), badged
+"FROM_CHUNK, FOLLOWED IN REVERSE".
+
+BOTTOM BAND, "THE DOMAIN LAYER: THE FACTS": (:Hotel) as a filled hub with all
+four typed edges. OFFERS_AMENITY and (:Amenity) are solid because the shipped
+traversal collects them. HAS_ROOM, HAS_POLICY, and PROVIDES_SERVICE are dashed
+and gray, one hop away but not collected.
+
+FOOTER: the returned record from the Module 2 teaching retrieval_query, in
+order, ending at field_provenance.
+
+Style: white card, Helvetica stack, the blue family from 01-graph-structure.svg
+and nothing outside it.
+```
+
+---
+
+## Diagram 6: Preference Provenance
+**Filename:** `06-preference-provenance.svg`
+**Editable source:** the SVG itself
+**Dimensions:** 960 x 540 viewBox, rendered at `width=800`
+
+Hand-authored SVG. Its job is to separate what the memory library writes from
+what `memory_helpers.py` writes, because that split is the module's argument.
+
+**Design contract:**
+```
+TITLE: "A preference points back at the message it came from"
+SUBTITLE: "The library writes the memory nodes. Two workshop relationships are
+what make one preference traceable."
+
+TOP BAND, "WHAT THE AGENT REMEMBERS": (:User {identifier}) -[:HAS_PREFERENCE]->
+(:Preference {preference, category, id}), and (:Preference)-[:ABOUT_HOTEL]->
+(:Hotel {name}), noted as the same node Module 1 created.
+
+BOTTOM BAND, "THE EVIDENCE IT CAME FROM": (:Conversation {session_id})
+-[:HAS_MESSAGE]-> (:Message {content}), with (:Preference)-[:DERIVED_FROM]->
+(:Message) crossing between the bands.
+
+DERIVED_FROM and ABOUT_HOTEL are the two edges drawn in blue, because they are
+the two that memory_helpers.py writes. Everything else is the library's.
+
+PANEL, "ONE QUERY RETURNS": actor, preference, hotel, source_message,
+source_session, the aliases from the module's recall query.
+
+Style: white card, Helvetica stack, the palette from 01-graph-structure.svg,
+(:Preference) and (:Hotel) as filled hubs.
+```
+
+---
+
 ## Usage Notes
 
 - Set canvas to **1600 × 900 px (landscape 16:9)** before generating. This locks the horizontal format.

@@ -85,6 +85,8 @@ from.
 One query then returns the preference, the message behind it, the session that
 message belongs to, and the hotel, all in a single row.
 
+:image[A stored preference and the message it came from: the User owns a Preference, DERIVED_FROM links it to the Message in its Conversation, and ABOUT_HOTEL links it to the Hotel]{src="../../images/06-preference-provenance.svg" width=800}
+
 These are the nodes and relationships that make up the memory half of the
 graph.
 

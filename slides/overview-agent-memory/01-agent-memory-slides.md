@@ -108,25 +108,12 @@ session, and it does not leak to the wrong person.
 
 ---
 
-## A Preference Is Not a String
-
-```text
-  (:User {identifier})
-        |
-   [:HAS_PREFERENCE]
-        |
-   (:Preference {preference, category})
-        |                       \
-  [:DERIVED_FROM]            [:ABOUT_HOTEL]
-        |                          \
-   (:Message {content})          (:Hotel)
-        |
-  [:HAS_MESSAGE] from (:Conversation {session_id})
-```
-
-One query returns the preference, the message behind it, the session, and the hotel, in a single row.
+![bg contain](../images/06-preference-provenance.svg)
 
 <!--
+Say the payoff line out loud: one query returns the preference, the message
+behind it, the session, and the hotel, in a single row.
+
 Read the shape as a sentence: this actor prefers this, it came from that
 message in that session, and it is about this hotel.
 

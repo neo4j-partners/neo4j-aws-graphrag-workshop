@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <title>Retrieval enters at Chunk and follows FROM_CHUNK back to the hotel facts.</title>
+  <defs>
+    <filter id="sh" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#1a1a1a" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrowBlue" markerWidth="9" markerHeight="9" refX="7.5" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#2E6DB4"/>
+    </marker>
+    <marker id="arrowBlueBig" markerWidth="13" markerHeight="13" refX="10.5" refY="5.5" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L11,5.5 L0,11 Z" fill="#2E6DB4"/>
+    </marker>
+    <marker id="arrowGray" markerWidth="9" markerHeight="9" refX="7.5" refY="4" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L8,4 L0,8 Z" fill="#8A8A8A"/>
+    </marker>
+  </defs>
+
+  <!-- White card -->
+  <rect x="40" y="32" width="880" height="484" rx="16" fill="#FFFFFF" stroke="#E7E4DB" filter="url(#sh)"/>
+
+  <!-- ============ HEADER ============ -->
+  <text x="64" y="62" fill="#16233A" font-size="20" font-weight="700">Retrieval crosses the same graph in reverse</text>
+  <text x="64" y="82" fill="#16233A" font-size="10.5">The build wrote FROM_CHUNK out of Hotel. Search enters at Chunk and follows that relationship back.</text>
+
+  <!-- ============ THE QUESTION, FROM OUTSIDE THE GRAPH ============ -->
+  <rect x="64" y="90" width="330" height="36" rx="9" fill="#F1F1EE" stroke="#DAD7CE"/>
+  <text x="229" y="108" fill="#16233A" font-size="9.5" font-weight="700" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">“cancellation policy for the hotel at 60611”</text>
+  <text x="229" y="121" fill="#5C6470" font-size="7.5" text-anchor="middle">one question, arriving from outside the graph</text>
+
+  <!-- ============ LEXICAL LAYER ============ -->
+  <rect x="64" y="140" width="832" height="146" rx="12" fill="#EEF4FB" stroke="#6E86CF"/>
+  <text x="80" y="157" fill="#1F4E86" font-size="7.5" font-weight="700" letter-spacing="0.4">THE LEXICAL LAYER: THE TEXT</text>
+  <text x="880" y="157" fill="#5C6470" font-size="7.5" text-anchor="end">search enters here, through one of two indexes on (:Chunk)</text>
+
+  <line x1="229" y1="126" x2="229" y2="168" stroke="#8A8A8A" stroke-width="1.6" marker-end="url(#arrowGray)"/>
+  <text x="241" y="152" fill="#5C6470" font-size="7.5">one query text, two ways to match</text>
+
+  <!-- the two entry indexes -->
+  <rect x="84" y="172" width="250" height="34" rx="9" fill="#FFFFFF" stroke="#2E6DB4" stroke-width="1.4"/>
+  <text x="96" y="187" fill="#1F4E86" font-size="8.5" font-weight="700" font-family="'SF Mono',Menlo,monospace">hotel_chunk_embeddings</text>
+  <text x="96" y="199" fill="#5C6470" font-size="7.5">vector index, cosine over 1024 floats</text>
+
+  <rect x="84" y="216" width="250" height="34" rx="9" fill="#FFFFFF" stroke="#2E6DB4" stroke-width="1.4"/>
+  <text x="96" y="231" fill="#1F4E86" font-size="8.5" font-weight="700" font-family="'SF Mono',Menlo,monospace">hotel_chunk_fulltext</text>
+  <text x="96" y="243" fill="#5C6470" font-size="7.5">full-text index, Lucene over Chunk.text</text>
+
+  <text x="84" y="266" fill="#5C6470" font-size="7.5">Both indexes are built on the same (:Chunk) node.</text>
+  <text x="84" y="278" fill="#5C6470" font-size="7.5">Hybrid search runs both arms and fuses the ranked lists.</text>
+
+  <line x1="336" y1="189" x2="367" y2="248" stroke="#2E6DB4" stroke-width="1.6" marker-end="url(#arrowBlue)"/>
+  <line x1="336" y1="233" x2="367" y2="262" stroke="#2E6DB4" stroke-width="1.6" marker-end="url(#arrowBlue)"/>
+
+  <!-- document and chunk -->
+  <rect x="380" y="170" width="200" height="40" rx="10" fill="#FFFFFF" stroke="#2E6DB4" stroke-width="1.6"/>
+  <text x="480" y="188" fill="#1F4E86" font-size="11" font-weight="700" text-anchor="middle">(:Document)</text>
+  <text x="480" y="202" fill="#5C6470" font-size="7.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">source_filename</text>
+
+  <line x1="480" y1="234" x2="480" y2="212" stroke="#2E6DB4" stroke-width="1.8" marker-end="url(#arrowBlue)"/>
+  <text x="492" y="228" fill="#5C6470" font-size="7.5" font-weight="700" letter-spacing="0.2">FROM_DOCUMENT</text>
+
+  <rect x="370" y="234" width="220" height="46" rx="10" fill="#FFFFFF" stroke="#2E6DB4" stroke-width="2.2"/>
+  <text x="480" y="254" fill="#1F4E86" font-size="11" font-weight="700" text-anchor="middle">(:Chunk)</text>
+  <text x="480" y="269" fill="#5C6470" font-size="7.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">text · embedding: 1024 floats</text>
+
+  <!-- the two provenance notes -->
+  <text x="606" y="177" fill="#1F4E86" font-size="7.5" font-weight="700" letter-spacing="0.4">TEXT PROVENANCE, UNCHANGED</text>
+  <text x="606" y="190" fill="#5C6470" font-size="7.5" font-family="'SF Mono',Menlo,monospace">(node)-[:FROM_DOCUMENT]-&gt;(:Document)</text>
+  <text x="606" y="202" fill="#5C6470" font-size="7.5">Followed forward. It names the source file.</text>
+
+  <text x="606" y="248" fill="#1F4E86" font-size="7.5" font-weight="700" letter-spacing="0.4">ENTITY PROVENANCE, REVERSED</text>
+  <text x="606" y="261" fill="#5C6470" font-size="7.5" font-weight="700">BUILD WROTE</text>
+  <text x="676" y="261" fill="#5C6470" font-size="7.5" font-family="'SF Mono',Menlo,monospace">(:Hotel)-[:FROM_CHUNK]-&gt;(:Chunk)</text>
+  <text x="606" y="273" fill="#16233A" font-size="7.5" font-weight="700">SEARCH READS</text>
+  <text x="676" y="273" fill="#16233A" font-size="7.5" font-family="'SF Mono',Menlo,monospace">(node)&lt;-[:FROM_CHUNK]-(hotel:Hotel)</text>
+
+  <!-- ============ DOMAIN LAYER ============ -->
+  <rect x="64" y="294" width="832" height="150" rx="12" fill="#EEF4FB" stroke="#6E86CF"/>
+  <text x="80" y="311" fill="#1F4E86" font-size="7.5" font-weight="700" letter-spacing="0.4">THE DOMAIN LAYER: THE FACTS</text>
+  <text x="880" y="311" fill="#5C6470" font-size="7.5" text-anchor="end">this traversal collects amenities, the other three stay one hop away</text>
+
+  <!-- ============ THE CROSSING ============ -->
+  <line x1="480" y1="282" x2="480" y2="318" stroke="#2E6DB4" stroke-width="3.2" marker-end="url(#arrowBlueBig)"/>
+  <line x1="470" y1="297" x2="479" y2="297" stroke="#2E6DB4" stroke-width="1.4"/>
+  <rect x="292" y="288" width="180" height="18" rx="9" fill="#FFFFFF" stroke="#2E6DB4" stroke-width="1.4"/>
+  <text x="382" y="300" fill="#1F4E86" font-size="7.5" font-weight="700" letter-spacing="0.2" text-anchor="middle">FROM_CHUNK, FOLLOWED IN REVERSE</text>
+
+  <rect x="330" y="320" width="300" height="42" rx="10" fill="#2E6DB4" stroke="#1F4E86" stroke-width="1.6"/>
+  <text x="480" y="338" fill="#FFFFFF" font-size="12" font-weight="700" text-anchor="middle">(:Hotel)</text>
+  <text x="480" y="353" fill="#DEEAF6" font-size="7.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">hotel_id · name · address · guest_rating</text>
+
+  <!-- the one-hop star, with the collected branch emphasised -->
+  <g fill="none">
+    <line x1="480" y1="362" x2="177" y2="394" stroke="#8A8A8A" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrowGray)"/>
+    <line x1="480" y1="362" x2="581" y2="394" stroke="#8A8A8A" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrowGray)"/>
+    <line x1="480" y1="362" x2="783" y2="394" stroke="#8A8A8A" stroke-width="1.2" stroke-dasharray="4 3" marker-end="url(#arrowGray)"/>
+    <line x1="480" y1="362" x2="379" y2="394" stroke="#2E6DB4" stroke-width="2.4" marker-end="url(#arrowBlue)"/>
+  </g>
+
+  <g>
+    <rect x="84" y="396" width="186" height="42" rx="10" fill="#FFFFFF" stroke="#8A8A8A" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="177" y="414" fill="#8A8A8A" font-size="7.5" font-weight="700" letter-spacing="0.3" text-anchor="middle">HAS_ROOM</text>
+    <text x="177" y="430" fill="#5C6470" font-size="11" font-weight="700" text-anchor="middle">(:Room)</text>
+  </g>
+  <g>
+    <rect x="286" y="396" width="186" height="42" rx="10" fill="#DEEAF6" stroke="#2E6DB4" stroke-width="1.6"/>
+    <text x="379" y="414" fill="#5C6470" font-size="7.5" font-weight="700" letter-spacing="0.3" text-anchor="middle">OFFERS_AMENITY</text>
+    <text x="379" y="430" fill="#1F4E86" font-size="11" font-weight="700" text-anchor="middle">(:Amenity)</text>
+  </g>
+  <g>
+    <rect x="488" y="396" width="186" height="42" rx="10" fill="#FFFFFF" stroke="#8A8A8A" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="581" y="414" fill="#8A8A8A" font-size="7.5" font-weight="700" letter-spacing="0.3" text-anchor="middle">HAS_POLICY</text>
+    <text x="581" y="430" fill="#5C6470" font-size="11" font-weight="700" text-anchor="middle">(:Policy)</text>
+  </g>
+  <g>
+    <rect x="690" y="396" width="186" height="42" rx="10" fill="#FFFFFF" stroke="#8A8A8A" stroke-width="1.2" stroke-dasharray="4 3"/>
+    <text x="783" y="414" fill="#8A8A8A" font-size="7.5" font-weight="700" letter-spacing="0.3" text-anchor="middle">PROVIDES_SERVICE</text>
+    <text x="783" y="430" fill="#5C6470" font-size="11" font-weight="700" text-anchor="middle">(:Service)</text>
+  </g>
+
+  <!-- ============ WHAT COMES BACK ============ -->
+  <rect x="64" y="456" width="832" height="46" rx="12" fill="#F1F1EE" stroke="#DAD7CE"/>
+  <text x="80" y="474" fill="#1F4E86" font-size="7.5" font-weight="700" letter-spacing="0.4">WHAT COMES BACK: ONE RECORD FOR EACH MATCHED CHUNK</text>
+  <text x="880" y="474" fill="#5C6470" font-size="7.5" text-anchor="end">field_provenance maps each field back to the graph path that produced it</text>
+  <text x="80" y="492" fill="#16233A" font-size="7.5" font-family="'SF Mono',Menlo,monospace">hotel_name · hotel_id · guest_rating · source_filename · amenities · source_chunk · semantic_score · graph_enrichment_status · field_provenance</text>
+</svg>

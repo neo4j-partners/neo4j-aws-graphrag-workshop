@@ -201,25 +201,15 @@ are.
 
 ---
 
-## What Retrieval Searches Across
-
-```text
-   [lexical]                          [domain]
-
-   Document                           Room
-      ^                                 ^
-      | FROM_DOCUMENT                   | HAS_ROOM
-      |                                 |
-    Chunk  <----[FROM_CHUNK]----      Hotel ----[OFFERS_AMENITY]--> Amenity
-   text + embedding                     |
-                                        | HAS_POLICY
-                                        v
-                                     Policy
-```
-
-Search enters at `Chunk`. The traversal crosses `FROM_CHUNK` and returns facts.
+![bg contain](../images/retrieval-substrate.svg)
 
 <!--
+Say the payoff line out loud: search enters at Chunk, the traversal crosses
+FROM_CHUNK, and what comes back is facts.
+
+This is the same two-layer picture from deck 4, entered from the other end.
+Point at the band labels and say so.
+
 Note the direction. Extraction wrote (:Hotel)-[:FROM_CHUNK]->(:Chunk). Retrieval
 follows it in reverse, as (node)<-[:FROM_CHUNK]-(hotel:Hotel), because it starts
 from the chunk it just matched.
