@@ -3,6 +3,10 @@ title: "Own Account Setup"
 weight: 3
 ---
 
+:::alert{type="info" header="Hosted workshop? You don't need this page"}
+If you are at a hosted workshop event, follow [Vocareum Access](../vocareum-access/) instead. This page is only for running the workshop self-paced against your own AWS account.
+:::
+
 ## Prerequisites
 
 - An AWS account with admin or PowerUser access in **us-east-1**
@@ -50,6 +54,8 @@ NEO4J_DATABASE=neo4j
 :::
 
 The username and the database name are already `neo4j`, which is what every Aura instance uses. Nothing below the Neo4j block needs changing either.
+
+`CONFIG.txt` is tracked, so it ships as a placeholder and your filled-in values should stay uncommitted. If you would rather not risk that, create a `.env` file at the repository root (or in `notebooks/`) with the same four settings instead. `.env` is in `.gitignore`, and `environment/verify.py` and the notebooks load it ahead of `CONFIG.txt`, so it is only needed if you want your real credentials to never touch a tracked file at all.
 
 ---
 

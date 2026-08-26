@@ -3,18 +3,22 @@ title: "Module 2: From Vector Search to Graph-Enriched Retrieval"
 weight: 30
 ---
 
-This module compares four retrieval patterns over the Module 1 graph. Each pattern solves a different type of question.
+This module walks through the retrieval strategies below, then compares four patterns your application can call directly. Each pattern answers a different kind of question well.
 
-"Which Chicago hotels offer both a spa and a swimming pool?" requires two amenity checks on the same `Hotel` node. Similarity search ranks passages by relevance, while a Cypher query tests both relationships as exact conditions.
+Take the question "Which Chicago hotels offer both a spa and a swimming pool?" This question needs two amenity checks on the same `Hotel` node. A similarity search only ranks passages by how closely they match the question's meaning, so it cannot test two exact conditions at once. A Cypher query tests both relationships as exact conditions instead.
 
-**Brief overview**
+**Retrieval strategies in this module**
 
-* **Vector search:** Finds chunks with similar meaning.
-* **Hybrid search:** Combines vector search with exact-term full-text search.
-* **Graph-enriched search:** Finds a chunk and follows relationships to hotel properties.
-* **Fixed Cypher filter:** Tests known property and relationship conditions in Neo4j.
+| Strategy | What it does | Best for |
+|----------|---------------|----------|
+| Vector search | Turns the question into numbers and finds chunks with similar meaning. | Questions phrased differently than the source text. |
+| Full-text search | Matches exact words using the Lucene search engine. | Questions needing an exact term: postal codes, IDs, names. |
+| Hybrid search | Runs vector search and full-text search together, then merges the two scores into one ranked list. | Questions that need both meaning and an exact term. |
+| Graph-enriched search | Finds a matching chunk, then follows graph relationships to add hotel properties. | Questions that need facts connected to the matched text. |
+| Fixed Cypher query | Tests known property and relationship conditions directly in Neo4j. | Questions with known, structured conditions. |
+| Text2Cypher (optional) | Asks the model to write a Cypher query from the graph schema. | Flexible structured questions with no fixed query. |
 
-The notebook compares the context returned by each pattern. Module 3 uses that context for answer generation.
+Four of these strategies are patterns your application can call directly: vector search, hybrid search, graph-enriched search, and a fixed Cypher query. The notebook runs each one and compares the context it returns. Module 3 uses that context to generate answers.
 
 ## The Lexical Graph and the Domain Graph
 
@@ -25,36 +29,60 @@ Module 1 wrote two connected graph structures.
 * **Entity provenance:** Extraction writes `(:Hotel)-[:FROM_CHUNK]->(:Chunk)`. Retrieval starts at the chunk and follows this relationship in reverse as `(node)<-[:FROM_CHUNK]-(hotel:Hotel)`.
 * **Text provenance:** `(node)-[:FROM_DOCUMENT]->(:Document)` connects the chunk to its source file.
 
-Graph-enriched search crosses from the lexical graph to the domain graph. This traversal turns a text match into hotel properties and source provenance.
+Graph-enriched search moves from the lexical graph to the domain graph. This step turns a matched chunk of text into hotel properties and source provenance.
 
 :image[Two connected structures: the source file becomes a Document and Chunk in the lexical graph, and a Hotel node with typed Room, Amenity, Policy, and Service relationships in the domain graph]{src="../../images/01-graph-structure.svg" width=800}
 
-## Chunks, Embeddings, and Vector Search
+## The neo4j-graphrag Retriever Library
 
-Vector search turns text into numbers and compares those numbers.
+The :link[neo4j-graphrag]{href="https://neo4j.com/docs/neo4j-graphrag-python/current/" external=true} library provides every retriever this module uses. Module 1 used the same library for `SimpleKGPipeline`. Module 2 imports its retriever classes\:
+
+:::code{language=python}
+from neo4j_graphrag.retrievers import HybridRetriever, VectorCypherRetriever, VectorRetriever
+from neo4j_graphrag.types import RetrieverResultItem
+:::
+
+Every retriever in this library exposes one method: `search()`. The three retrievers imported above all run `search()` the same way\:
+
+1. Embed the question with Amazon Nova.
+2. Query `hotel_chunk_embeddings`. A hybrid retriever also queries `hotel_chunk_fulltext` and merges both results.
+3. Run the supplied `retrieval_query` for each matched chunk, if the retriever is a Cypher retriever.
+4. Map each result to a `RetrieverResultItem`.
+
+* **`content`:** Holds the chunk text. The LLM reads this as context.
+* **`metadata`:** Holds hotel properties for application checks, such as `metadata['hotel_id']`.
+* **`result_formatter`:** Maps each query record into the `content` and `metadata` fields.
+
+`Text2CypherRetriever` shares the same `search()` method and returns the same `RetrieverResultItem`, but it skips embedding the question. It asks the model to write Cypher from the graph schema instead, which the "Optional Model-Generated Cypher" section below covers.
+
+Module 4 places this same `search()` call inside a Lambda function behind an AgentCore Gateway.
+
+## Vector Search: Chunks and Embeddings
+
+`VectorRetriever` turns text into numbers and compares those numbers.
 
 * **Chunk:** A searchable slice of source text. The 12000-character setting is larger than the biggest 7,442-byte document, so each hotel FAQ becomes one chunk.
 * **Embedding:** A numeric representation of meaning. Amazon Nova model `amazon.nova-2-multimodal-embeddings-v1:0` creates 1024 floats for each chunk.
 * **Vector search:** Embeds the question and uses cosine similarity to find the closest vectors in `hotel_chunk_embeddings`.
 * **`top_k`:** Sets the number of chunks returned. The notebook uses 3 for the arrival question and 5 for the vector and hybrid postal-code comparison.
 
-One large chunk keeps the complete hotel in a single extraction prompt, but it also returns a whole document during search. `workshop/hybrid_retrieval.py` limits returned chunk text to 1,200 characters. A production design can use large extraction chunks and smaller retrieval chunks.
+A large chunk keeps the complete hotel in a single extraction prompt, but it also returns a whole document during search. `workshop/hybrid_retrieval.py` limits returned chunk text to 1,200 characters. A production design can use large extraction chunks and smaller retrieval chunks.
 
-The first question asks when "standard arrival processing" begins at AnyCompany Cairo Nile View. The source says "Standard check-in time," yet vector search still finds the Cairo chunk because both phrases have similar meaning. The result includes `3:00 PM`.
+The first question asks when "standard arrival processing" begins at AnyCompany Cairo Nile View. The source text says "Standard check-in time." Vector search still finds the Cairo chunk, because both phrases carry the same meaning. The result includes `3:00 PM`.
 
-The query embedder must match the build settings: the same model, 1024 dimensions, and `GENERIC_INDEX` purpose. Both paths import these values from `workshop/retrieval_contract.py`. A mismatched configuration can return incorrect rows while reporting success.
+The query embedder must match the build settings: the same model, 1024 dimensions, and `GENERIC_INDEX` purpose. Both paths import these values from `workshop/retrieval_contract.py`. A mismatched configuration can return incorrect rows while it still reports success.
 
 ## The Exact-Term Problem
 
-The second question asks for the cancellation policy of the hotel at `60611`. A five-digit token carries little semantic meaning, so its embedding sits near many other numbers. The notebook runs a `top_k=30` diagnostic scan and prints the Chicago chunk's vector rank.
+The second question asks for the cancellation policy of the hotel at `60611`. A five-digit token carries little meaning on its own, so its embedding lands near many unrelated numbers. The notebook runs a `top_k=30` diagnostic scan and prints the Chicago chunk's vector rank to show how far down the list it falls.
 
-Full-text search uses the Apache Lucene index `hotel_chunk_fulltext` over `Chunk.text`. Lucene tokenizes the text, matches literal terms, and assigns a relevance score based on term frequency and rarity. The rare token `60611` receives a strong score in the chunk that contains it.
+Full-text search fixes this problem. It uses the Apache Lucene index `hotel_chunk_fulltext` over `Chunk.text`. Lucene breaks the text into tokens, matches literal terms, and scores each match by how often the term appears and how rare it is. The rare token `60611` gets a strong score in the chunk that contains it.
 
 * **Exact term:** `60611` matches the same literal token in the source.
 * **Fuzzy term:** `Winward~` can match the misspelled hotel name `Windward`.
 * **Boolean terms:** `spa AND pool` requires both terms. `OR` accepts either term, and `NOT` excludes a term.
 
-A hybrid retriever runs a vector arm and a full-text arm. The call can send different inputs to each arm\:
+`HybridRetriever` runs a vector arm and a full-text arm together. You can send different input to each arm\:
 
 :::code{language=python}
 hybrid_identifier_result = hybrid_retriever.search(
@@ -66,44 +94,22 @@ hybrid_identifier_result = hybrid_retriever.search(
 )
 :::
 
-* **`query_text`:** Sends only `60611` to the full-text arm, which creates a focused exact-term match.
-* **`query_vector`:** Reuses the complete question's existing vector, which avoids a second Bedrock call and keeps the vector comparison identical.
+* **`query_text`:** Sends only `60611` to the full-text arm. This creates a focused exact-term match.
+* **`query_vector`:** Reuses the vector already computed for the full question. This avoids a second Bedrock call and keeps the vector comparison identical.
 
 ## Hybrid Fusion: Normalization, Rankers, and Alpha
 
-Cosine similarity is roughly 0 to 1. Lucene relevance scores use a different scale, so the library normalizes the two result sets before merging them. It divides every score by the maximum score from its own index, which makes each arm's best result 1.0.
+Cosine similarity scores range from roughly 0 to 1. Lucene relevance scores use a different scale. The library normalizes both result sets to the same scale before it merges them: it divides every score by the highest score in its own index, so each arm's best result becomes 1.0.
 
 * **`HybridSearchRanker.NAIVE`:** Uses the larger normalized score for each chunk. This is the library default.
 * **`HybridSearchRanker.LINEAR`:** Calculates `alpha * vector + (1 - alpha) * fulltext` for each chunk.
 * **`alpha`:** Sets the vector weight from 0 to 1. The full-text weight is `1 - alpha`.
 
-The notebook sets `ranker='linear'` and `alpha=0.2` for the postal-code question. This gives the exact-term arm 80 percent of the weight because `60611` identifies the hotel more clearly than the surrounding prose. The result finds Windward Mile Tower and its 24-hour cancellation policy.
-
-## The neo4j-graphrag Library
-
-The :link[neo4j-graphrag]{href="https://neo4j.com/docs/neo4j-graphrag-python/current/" external=true} library includes the retrievers on this page. Module 1 used the same package for `SimpleKGPipeline`. Module 2 imports its retrieval classes\:
-
-:::code{language=python}
-from neo4j_graphrag.retrievers import HybridRetriever, VectorCypherRetriever, VectorRetriever
-from neo4j_graphrag.types import RetrieverResultItem
-:::
-
-Each retriever exposes `search()`. The method runs these steps\:
-
-1. Embed the question with Amazon Nova.
-2. Query `hotel_chunk_embeddings`. A hybrid retriever also queries `hotel_chunk_fulltext` and merges both results.
-3. Run the supplied `retrieval_query` for each matched chunk when using a Cypher retriever.
-4. Map each record to a `RetrieverResultItem`.
-
-* **`content`:** Holds the chunk text that becomes LLM context.
-* **`metadata`:** Holds hotel properties for application checks, such as `metadata['hotel_id']`.
-* **`result_formatter`:** Maps the query record into the `content` and `metadata` fields.
-
-Module 4 places this same `search()` call inside a Lambda function behind an AgentCore Gateway.
+The notebook sets `ranker='linear'` and `alpha=0.2` for the postal-code question. This gives the full-text arm 80 percent of the weight, because `60611` identifies the hotel more clearly than the surrounding prose does. The result finds Windward Mile Tower and its 24-hour cancellation policy.
 
 ## Graph-Enhanced Vector Search
 
-`VectorCypherRetriever` runs vector search and then executes a fixed `retrieval_query` for each matched chunk. The notebook uses this core query\:
+`VectorCypherRetriever` runs vector search first, then runs a fixed `retrieval_query` for every matched chunk. The notebook uses this core query\:
 
 :::code{language=cypher}
 MATCH (node)-[:FROM_DOCUMENT]->(document:Document)
@@ -124,13 +130,13 @@ RETURN hotel.name AS hotel_name,
 ORDER BY semantic_score DESC, CASE WHEN hotel_id IS NULL THEN 1 ELSE 0 END, hotel_id
 :::
 
-The retriever supplies `node` and `score` before the query runs. `node` is the matched chunk, and `score` is its vector score. A hybrid retriever supplies the fused score, which the shipped query names `combined_score`.
+The retriever hands `node` and `score` to the query before it runs. `node` is the matched chunk. `score` is its vector score. A hybrid retriever hands over the fused score instead, which the shipped query names `combined_score`.
 
 * **`OPTIONAL MATCH`:** Keeps a strong chunk even when hotel extraction failed. `graph_enrichment_status` then reports the missing hotel.
 * **`field_provenance`:** Maps each returned field to its graph path. For example, `amenities` comes from `(:Hotel)-[:OFFERS_AMENITY]->(:Amenity)`.
-* **`source_filename`:** Names the source document so a reviewer can check an extracted value against the authored text.
+* **`source_filename`:** Names the source document, so a reviewer can check an extracted value against the authored text.
 
-Multiple relationship lists need separate scopes. Matching 12 amenities, 4 room types, and 5 policies in one top-level pattern creates 240 path combinations for one chunk. The shipped query collects each list in its own subquery\:
+A single top-level pattern cannot hold multiple relationship lists safely. Matching 12 amenities, 4 room types, and 5 policies in one pattern would create 240 path combinations for a single chunk. The shipped query avoids this: it collects each list inside its own subquery\:
 
 :::code{language=cypher}
 CALL (hotel) {
@@ -143,9 +149,9 @@ CALL (hotel) {
 }
 :::
 
-The subquery returns one amenity list for each hotel, so room and policy lists stay independent. A shared limit caps the list at 12 items. Ordered tie-breaking and `head(collect(candidate))` select one hotel per chunk in a repeatable way.
+Each subquery returns one amenity list per hotel, so the room and policy lists stay independent from it. A shared limit caps each list at 12 items. Ordered tie-breaking and `head(collect(candidate))` pick one hotel per chunk, every time, in the same way.
 
-The comparison tests five requested properties. `VectorRetriever` returns one because it only returns chunk text. `VectorCypherRetriever` returns all five because it follows `FROM_CHUNK` to the `Hotel`, where `hotel_id` exists as a graph property.
+The comparison tests five hotel properties. `VectorRetriever` returns only one, because it only returns chunk text. `VectorCypherRetriever` returns all five, because it follows `FROM_CHUNK` to the `Hotel` node, where `hotel_id` exists as a graph property.
 
 :::alert{type="info" header="Extraction defines the graph result"}
 Graph enrichment returns facts written during extraction. Each result includes `source_filename`, so a missing or merged property can be checked against the authored document.
@@ -186,7 +192,7 @@ This result shape records why each hotel passed or failed.
 3. Plan the statement with `EXPLAIN`.
 4. Run only a read query, identified by `query_type == 'r'`, with a 15-second timeout.
 
-The schema names the stored relationship `OFFERS_AMENITY`. A guessed relationship such as `HAS_AMENITY` is valid Cypher but returns zero rows, so the schema and examples prevent an empty result that falsely implies the hotel is missing.
+The schema names the stored relationship `OFFERS_AMENITY`. A guessed relationship such as `HAS_AMENITY` is valid Cypher, but it returns zero rows because that relationship does not exist in the graph. The schema and examples in the prompt stop this guess, so an empty result never gets mistaken for a missing hotel.
 
 :::alert{type="info" header="Three layers protect the database"}
 The prompt asks for read-only Cypher. The application checks the planned query type with `EXPLAIN`. A production read-only Neo4j user makes the database reject write operations even if the earlier checks miss one.
