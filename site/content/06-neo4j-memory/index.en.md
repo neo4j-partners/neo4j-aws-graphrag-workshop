@@ -35,8 +35,7 @@ Agent memory serves three purposes:
 
 This module implements long-term preference memory. It also stores source
 messages to provide provenance. Short-term prompt recall and reasoning traces
-need their own retention, access, and privacy rules because they store
-different information for different purposes.
+need their own retention, access, and privacy rules.
 
 ## The Preference Provenance Pattern
 
@@ -76,14 +75,12 @@ enforces the required actor scope.
 
 ## The Separate Memory Embedding Contract
 
-The memory client configures Amazon Titan Text Embeddings V2 with 1,024
-dimensions. The memory library uses this configuration for its own vector
-indexes.
+The memory client configures Amazon Titan Text Embeddings V2 at 1,024
+dimensions for the memory library's own vector indexes.
 
 The hotel chunks use Amazon Nova embeddings in a different Neo4j index. The
-two indexes compare vectors only within their own embedding spaces. Each index
-can therefore use the model and request format required by its library. This
-module's recall check uses the actor-scoped Cypher traversal described above.
+two indexes compare vectors only within their own embedding spaces, so each
+library can use the model and request format it requires.
 
 ## Verify Recall and Provenance
 

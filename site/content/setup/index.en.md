@@ -46,7 +46,7 @@ The notebooks read their settings from `CONFIG.txt` at the repository root. It i
 | `NEO4J_DATABASE` | `neo4j` |
 | `AWS_REGION` | `us-east-1`, already set |
 
-Only the URI and the password actually need typing. The username and the database name are already `neo4j`, and everything below the Neo4j block already has a working value. Paste the credentials with no surrounding quotes and no trailing spaces.
+Only the URI and the password actually need typing. The username and the database name are already `neo4j`, and `AWS_REGION` already has a working value. Below that, a commented-out `AWS_BEARER_TOKEN_BEDROCK` line only applies if an instructor hands you a Bedrock API key\: uncomment it and paste the key only in that case, and leave it commented otherwise. An uncommented but blank value is worse than no line at all, because it sends an empty Bearer header and Bedrock calls stop falling back to your normal AWS credentials. Paste the credentials with no surrounding quotes and no trailing spaces.
 
 `NEO4J_URI` and `NEO4J_PASSWORD` have no defaults, on purpose. A built-in default password sends a bad credential to the right host and a built-in localhost URI sends a good credential to a host that is not listening, and both read like an outage rather than a missing setting.
 

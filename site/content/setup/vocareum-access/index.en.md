@@ -49,7 +49,7 @@ NEO4J_PASSWORD=your_password_here
 NEO4J_DATABASE=neo4j
 :::
 
-The username and the database name are already `neo4j`, which is what every Aura instance uses, so leave those two alone. Nothing below the Neo4j block needs changing either. Paste the URI and password with no surrounding quotes and no trailing spaces, then save the file.
+The username and the database name are already `neo4j`, which is what every Aura instance uses, so leave those two alone. If your instructor hands out a Bedrock API key at the start of class, uncomment the `AWS_BEARER_TOKEN_BEDROCK` line near the bottom of the file and paste the key after the equals sign. Otherwise leave that line commented out\: an uncommented but blank value is worse than no line at all, because it sends an empty Bearer header and Bedrock calls stop falling back to your normal AWS credentials. Paste the URI and password with no surrounding quotes and no trailing spaces, then save the file.
 
 ---
 
