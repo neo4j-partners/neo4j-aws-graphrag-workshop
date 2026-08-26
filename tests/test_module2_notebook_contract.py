@@ -216,8 +216,31 @@ def test_module3_handoff_and_prose_style_are_explicit() -> None:
     assert "\u2014" not in text
 
 
-def test_every_acceptance_assertion_has_an_actionable_message() -> None:
+def test_the_notebook_carries_no_inline_assertions() -> None:
+    """Acceptance lives in workshop.retrieval_setup, not in the reader's way.
+
+    A bare `assert` in a teaching cell is a test the learner has to read past.
+    The checks it replaced are covered by tests/test_module2_checks.py.
+    """
     for cell_index, source in enumerate(notebook_code_cells()):
         for node in ast.walk(ast.parse(source)):
-            if isinstance(node, ast.Assert):
-                assert node.msg is not None, f"cell {cell_index} has a bare assertion"
+            assert not isinstance(node, ast.Assert), (
+                f"cell {cell_index} asserts inline; call a shared *_problems "
+                "helper through report_problems instead"
+            )
+
+
+def test_every_example_routes_its_acceptance_through_the_shared_checks() -> None:
+    """CI runs this notebook live, so each example still has to be able to fail."""
+    _, code = notebook_sources()
+
+    for check in (
+        "source_context_problems(arrival_rows, CAIRO_FIXTURE)",
+        "source_context_problems(",
+        "graph_context_problems(graph_records, CAIRO_FIXTURE)",
+        "chicago_filter_problems(candidate_records)",
+    ):
+        assert check in code
+
+    # Four examples plus the readiness gate, each reporting exactly once.
+    assert code.count("report_problems(") == 5

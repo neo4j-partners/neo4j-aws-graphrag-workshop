@@ -422,6 +422,144 @@ def chicago_filter_problems(records: Iterable[Mapping[str, Any]]) -> list[str]:
     return problems
 
 
+# The relationships the Module 2 graph-expansion query walks: text provenance,
+# entity provenance, and the amenity edge the question is actually about.
+GRAPH_CONTEXT_RELATIONSHIPS = ("FROM_DOCUMENT", "FROM_CHUNK", "OFFERS_AMENITY")
+
+# The fields a graph-expanded record names a provenance path for.
+GRAPH_CONTEXT_FIELDS = (
+    "source_chunk",
+    "source_filename",
+    "hotel_name",
+    "hotel_id",
+    "guest_rating",
+    "amenities",
+)
+
+
+def fixture_for(source_filename: str) -> SourceFixture:
+    """Return the locked source fixture for one Module 2 document."""
+    for fixture in SOURCE_FIXTURES:
+        if fixture.source_filename == source_filename:
+            return fixture
+    raise KeyError(f"no source fixture for {source_filename!r}")
+
+
+def source_context_problems(
+    rows: Iterable[Mapping[str, Any]],
+    fixture: SourceFixture,
+    extra_terms: Sequence[str] = (),
+) -> list[str]:
+    """Return defects in retrieved text context for one source fixture.
+
+    A text retriever earns its result by returning the fixture's source and the
+    terms that answer the question. Both are already stated once in
+    SOURCE_FIXTURES, so a notebook cell asks for them rather than restating
+    them next to the search that produced them.
+    """
+    matches = [
+        row for row in rows if row.get("source_filename") == fixture.source_filename
+    ]
+    if not matches:
+        observed = sorted({str(row.get("source_filename")) for row in rows})
+        return [
+            (
+                f"{fixture.source_filename} is not in the retrieved context; "
+                f"observed {observed}"
+            )
+        ]
+
+    chunk = str(matches[0].get("chunk") or "").casefold()
+    return [
+        f"{fixture.source_filename} context does not carry {term!r}"
+        for term in (*fixture.chunk_terms, *extra_terms)
+        if term.casefold() not in chunk
+    ]
+
+
+def graph_context_problems(
+    records: Iterable[Mapping[str, Any]],
+    fixture: SourceFixture,
+) -> list[str]:
+    """Return defects in graph-expanded context for one source fixture.
+
+    Graph expansion adds named fields a chunk of text cannot supply, so this
+    checks the fields, the relationships that produced them, and the provenance
+    path each field names.
+    """
+    matches = [
+        record
+        for record in records
+        if record.get("source_filename") == fixture.source_filename
+    ]
+    if len(matches) != 1:
+        return [
+            (
+                f"expected one graph record for {fixture.source_filename}, "
+                f"observed {len(matches)}"
+            )
+        ]
+
+    record = matches[0]
+    problems: list[str] = []
+    for field, expected in (
+        ("hotel_name", fixture.hotel_name),
+        ("hotel_id", fixture.hotel_id),
+        ("guest_rating", fixture.guest_rating),
+    ):
+        if expected is not None and record.get(field) != expected:
+            problems.append(
+                f"{fixture.source_filename} {field} is {record.get(field)!r}, "
+                f"expected {expected!r}"
+            )
+
+    missing_fields = list(record.get("missing_requested_fields") or [])
+    if missing_fields:
+        problems.append(
+            f"{fixture.source_filename} graph record is missing "
+            f"{sorted(missing_fields)}"
+        )
+
+    if record.get("semantic_score") is None:
+        problems.append(f"{fixture.source_filename} graph record has no semantic score")
+
+    observed_types = set(record.get("relationship_types") or [])
+    if observed_types != set(GRAPH_CONTEXT_RELATIONSHIPS):
+        problems.append(
+            f"{fixture.source_filename} relationship types are "
+            f"{sorted(observed_types)}, expected {sorted(GRAPH_CONTEXT_RELATIONSHIPS)}"
+        )
+
+    provenance = record.get("field_provenance") or {}
+    missing_provenance = [
+        field for field in GRAPH_CONTEXT_FIELDS if field not in provenance
+    ]
+    if missing_provenance:
+        problems.append(
+            f"{fixture.source_filename} names no provenance path for "
+            f"{missing_provenance}"
+        )
+
+    amenity_text = " ".join(record.get("amenities") or []).casefold()
+    problems.extend(
+        f"{fixture.source_filename} amenities do not include {amenity!r}"
+        for amenity in fixture.amenities
+        if amenity.casefold() not in amenity_text
+    )
+    return problems
+
+
+def report_problems(problems: Sequence[str], passed_message: str) -> None:
+    """Print one PASS line, or raise with every problem named.
+
+    Checks return problems so a caller decides what a defect means. A notebook
+    wants the run to stop, so it routes them here.
+    """
+    if problems:
+        details = "\n  - ".join(problems)
+        raise ReadinessError(f"Check failed:\n  - {details}")
+    print(f"PASS  {passed_message}")
+
 def _session(driver: Driver):
     """Open a session against the configured database.
 

@@ -246,6 +246,11 @@ workshop simplification, not a recommendation.
 
 ---
 
+<style scoped>
+/* A code block, four bullets, and a closing line overflow at the theme's 29px. */
+section { font-size: 24px; }
+</style>
+
 ## Identity, SigV4 All the Way Down
 
 ```python
