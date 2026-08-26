@@ -45,13 +45,23 @@ retrievers. This deck only has to make the graph feel like a normal database.
 
 ---
 
+## Where We Left Off
+
+Deck 2 named the six controls and who owns each one. Neo4j owns three of them, so this deck is what the graph actually is.
+
+<!--
+One line, said quickly. This is the recall slide.
+-->
+
+---
+
 ## What Is a Graph Database
 
 Three structures, and that is the whole model:
 
-- **Node:** a thing. A hotel, a room, an amenity, a document, a text chunk
-- **Relationship:** a named, directed connection between two nodes
-- **Property:** a named value on a node or a relationship
+- **Node:** A node is a thing, such as a hotel, a room, an amenity, a document, or a text chunk
+- **Relationship:** A relationship is a named, directed connection between two nodes
+- **Property:** A property is a named value stored on a node or on a relationship
 
 The relationship is stored, not computed. Following one is a pointer hop, not a join.
 
@@ -70,12 +80,12 @@ here and expensive in SQL.
 
 ## Graph Notation
 
-A pattern is written the way it is drawn:
+Cypher is Neo4j's query language. A pattern is written the way it is drawn:
 
 ```cypher
 (:Hotel {name: "AnyCompany Cairo Nile View"})
     -[:OFFERS_AMENITY]->
-(:Amenity {name: "Spa"})
+(:Amenity {name: "Full-Service Spa"})
 ```
 
 - **Parentheses** describe nodes
@@ -99,8 +109,8 @@ match the pattern in either direction, and Module 2's retrieval queries do.
 
 A graph database gives you the structures. A knowledge graph adds an agreement about what they mean.
 
-- **Typed entities:** `Hotel`, `Room`, `Amenity`, `Policy`, `Service`
-- **Typed relationships:** `OFFERS_AMENITY`, `HAS_POLICY`, `FROM_CHUNK`
+- **Typed entities:** Five labels carry the whole domain, `Hotel`, `Room`, `Amenity`, `Policy`, and `Service`
+- **Typed relationships:** Each edge is named for what it means, such as `OFFERS_AMENITY`, `HAS_POLICY`, and `FROM_CHUNK`
 - **A schema a domain expert recognizes:** the labels are the business's own words
 - **Provenance:** every extracted fact keeps a link back to the text it came from
 
@@ -108,8 +118,8 @@ The schema is the contract. Module 1 pins it so extraction cannot invent new lab
 
 <!--
 Attendees often expect an ontology project here. There is not one. The schema
-in this workshop is a Python dictionary of about a dozen node types with their
-property names, and it fits on one screen.
+in this workshop is a Python dictionary of five node types with their property
+names, and it fits on one screen.
 
 The provenance bullet is worth a beat. It is what turns "the model said so"
 into "this document said so, and here it is." Module 3 shows the answer
@@ -144,7 +154,7 @@ Set up the contrast honestly, then let the next slide do the work.
 section { font-size: 24px; }
 </style>
 
-## The Same Question, Two Languages
+## Graphs and Relational Databases: The Hard Question
 
 "Which Chicago hotels have both a spa and a pool, and what is their cancellation policy?"
 
@@ -152,9 +162,9 @@ section { font-size: 24px; }
 SELECT h.name
 FROM hotel h
 JOIN hotel_amenity ha1 ON ha1.hotel_id = h.id
-JOIN amenity a1 ON a1.id = ha1.amenity_id AND a1.name = 'Spa'
+JOIN amenity a1 ON a1.id = ha1.amenity_id AND a1.name = 'Full-Service Spa'
 JOIN hotel_amenity ha2 ON ha2.hotel_id = h.id
-JOIN amenity a2 ON a2.id = ha2.amenity_id AND a2.name = 'Swimming Pool'
+JOIN amenity a2 ON a2.id = ha2.amenity_id AND a2.name = 'Outdoor Swimming Pool'
 WHERE h.address LIKE '%Chicago%';
 ```
 
@@ -165,10 +175,10 @@ Walk the joins. Two amenities means the amenity tables appear twice, aliased,
 and every additional condition adds another pair. The query grows by the
 condition, not by the answer.
 
-Then name what SQL cannot reach at all: the cancellation policy lives in
-document text, not in a column. No join returns it. Getting it needs a search
-over passages, which is exactly the lexical layer of the graph, and exactly
-what deck 5 is about.
+Then point at the shape of the growth. Adding the policy adds a hotel_policy
+table and a policy table, so the query is eight joins for a question a guest
+would ask in one breath. Nothing here is beyond SQL. The cost is that the
+query text grows with the number of conditions rather than with the answer.
 -->
 
 ---
@@ -177,14 +187,16 @@ what deck 5 is about.
 
 ```cypher
 CYPHER 25
-MATCH (h:Hotel)-[:OFFERS_AMENITY]->(:Amenity {name: "Spa"})
-MATCH (h)-[:OFFERS_AMENITY]->(:Amenity {name: "Swimming Pool"})
-OPTIONAL MATCH (h)-[:HAS_POLICY]->(p:Policy)
+MATCH (h:Hotel)-[:OFFERS_AMENITY]->(:Amenity {name: "Full-Service Spa"})
+MATCH (h)-[:OFFERS_AMENITY]->(:Amenity {name: "Outdoor Swimming Pool"})
 WHERE h.address CONTAINS "Chicago"
+OPTIONAL MATCH (h)-[:HAS_POLICY]->(p:Policy)
 RETURN h.name AS hotel, collect(p.name) AS policies
 ```
 
 Each condition is one more line, not one more pair of joins.
+
+The question SQL cannot reach is the next one. "Which other hotels offer this amenity" is one hop from a node you already hold.
 
 <!--
 Cypher glossary, for the room that has not seen it:
@@ -202,7 +214,11 @@ rather than one per policy.
 
 WHERE filters. RETURN names the fields the application receives.
 
-That is enough Cypher for the whole workshop.
+CYPHER 25 pins the language version, so the query means the same thing on any
+server the workshop runs against. Every Cypher query in the workshop carries it.
+
+That is enough Cypher to read every query in this deck. Modules 2 and 6 add
+CALL, WITH, and MERGE, and each one is introduced where it is first used.
 -->
 
 ---
@@ -216,11 +232,11 @@ section { font-size: 24px; }
 
 | Label | Represents | Key properties |
 |---|---|---|
-| `Hotel` | One property in the chain | `name`, `address`, `guest_rating` |
-| `Room` | A bookable room type | `type`, `max_occupancy`, rate range |
+| `Hotel` | One hotel in the chain | `name`, `address`, `guest_rating` |
+| `Room` | A bookable room type | `type`, `max_occupancy`, `min_rate`, `max_rate` |
 | `Amenity` | A facility, unique across the graph | `name` |
 | `Policy` | A rule that governs a stay | `name`, `description` |
-| `Service` | Something the hotel offers for a fee | `name`, `cost`, `hours` |
+| `Service` | Something the hotel provides, free or paid | `name`, `cost`, `hours` |
 | `Document` | One source FAQ file | `source_filename` |
 | `Chunk` | A searchable passage of that file | `text`, `embedding` |
 
@@ -260,10 +276,10 @@ Deck 5 will put a retrieval path on top of this exact picture.
 ## Relationships in the Graph
 
 ```text
-                    (:Document)
-                         |
-                    [:FROM_CHUNK]
-                         |
+   (:Document) <--[:FROM_DOCUMENT]-- (:Chunk)
+                                        ^
+                                   [:FROM_CHUNK]
+                                        |
    (:Room) <--[:HAS_ROOM]--(:Hotel)--[:OFFERS_AMENITY]--> (:Amenity)
                           /      \
              [:HAS_POLICY]        [:PROVIDES_SERVICE]
@@ -288,9 +304,9 @@ this attraction." You add a node type and an edge. You do not migrate a schema.
 
 Typed relationships over one generic `RELATES_TO`:
 
-- **Relationship types are part of the index structure.** Property values on a generic edge are not
+- **Relationship types are part of the stored structure.** Property values on a generic edge are not
 - **The traversal reads as the question.** `OFFERS_AMENITY` says what the edge means
-- **Extraction gets a smaller target.** A model choosing among six named relationships beats a model inventing them
+- **Extraction gets a smaller target.** A model choosing among four named relationships beats a model inventing them
 
 Cost of the choice: the schema has to be decided before extraction runs.
 
@@ -339,10 +355,12 @@ This closes the concept half of the deck. The rest is product.
 
 ## Neo4j Aura
 
-Neo4j as a managed service, running on AWS.
+Neo4j as a managed service, with no server for you to run.
 
-- **AuraDB Free:** no card, no cluster to run, one database per instance
-- **`neo4j+s://` only:** encrypted connections, no other option
+That is the model. This is where your copy of it lives.
+
+- **AuraDB Free:** The tier takes no card, runs no cluster you manage, and gives one database per instance
+- **`neo4j+s://` only:** Every connection is encrypted, and Aura offers no unencrypted alternative
 - **Restore from a dump file:** the workshop graph loads through the console
 - **Everything in this workshop runs on the Free tier**
 
@@ -362,9 +380,9 @@ that none of the day depends on any of it.
 
 ## Aura Developer Tools
 
-- **Query:** run Cypher, see results as a table or as a rendered graph
-- **Explore:** click through the graph without writing Cypher
-- **Import:** map a spreadsheet or a CSV into nodes and relationships
+- **Query:** Query runs Cypher and shows results as a table or as a rendered graph
+- **Explore:** Explore lets you click through the graph without writing Cypher
+- **Restore:** The Restore tab loads the workshop graph from a dump file
 
 Two Free-tier limits worth knowing now:
 
@@ -376,27 +394,29 @@ Tell the room to open Query at least once during Setup, run the hero-hotel
 check, and look at the rendered graph. Seeing their own restored data as a
 picture does more for intuition than any slide here.
 
-The pause limit is the single most common support question at a workshop that
-spans two days. Say it now and again on the second morning.
+The pause limit is the single most common support question. Say it now, and
+say it again to anyone who comes back from a long break with a connection
+error.
 -->
 
 ---
 
 ## Where the Graph Goes Next
 
-The graph you are about to restore is used by every remaining module:
+The graph you are about to restore is the one every module reads:
 
 - **Module 1** adds two indexes and five more hotels to it
 - **Module 2** retrieves from it eight different ways
 - **Module 3** grounds an agent in it, and writes a reservation into it
 - **Module 6** writes guest preference memory into the same graph
+- **Modules 4 and 5** change where the code runs, and not the graph
 
-One database, six modules. Nothing else gets stood up.
+One database carries all six modules. You never create a second one.
 
 <!--
 This is the forward pointer. It also answers the question people are holding:
 whether they are about to accumulate a pile of infrastructure. They are not.
 One Aura instance and one AWS account carry the entire day.
 
-Next up is Setup, then Module 1 turns documents into the graph.
+Next up is Module 1, which turns the documents into the graph.
 -->

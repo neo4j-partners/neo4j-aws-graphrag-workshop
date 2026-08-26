@@ -29,10 +29,10 @@ ol > li {
 
 # From Documents to a Knowledge Graph
 
-Hotel FAQ Markdown becomes a graph you can query
+Hotel FAQ documents become a graph you can query
 
 <!--
-The hinge of this deck is slide 5, schema drift. Everything before it explains
+The hinge of this deck is slide 6, schema drift. Everything before it explains
 what extraction has to decide, and everything after it is the machinery for
 taking those decisions away from the model.
 
@@ -45,7 +45,7 @@ amenities are parsed rather than extracted.
 
 ## Where We Left Off
 
-You have a restored graph with no indexes and five hotels missing. This module fixes both.
+You have a restored graph with no indexes and five hotels missing. This module creates the indexes and extracts the five.
 
 <!--
 One line, said quickly. This is the recall slide.
@@ -57,9 +57,9 @@ One line, said quickly. This is the recall slide.
 
 Every document produces structure in two layers:
 
-- **Lexical layer:** `Document` holds the source file, `Chunk` holds the text and its embedding
+- **Lexical layer:** `Document` holds the source file. `Chunk` holds the text and its embedding
 - **Domain layer:** `Hotel` holds the facts, with typed edges to `Room`, `Amenity`, `Policy`, and `Service`
-- **The bridge:** `FROM_CHUNK` ties each extracted entity to the chunk it came from, and `FROM_DOCUMENT` ties that chunk to its file
+- **The bridge:** `FROM_CHUNK` ties each extracted entity to the chunk it came from. `FROM_DOCUMENT` ties that chunk to its file
 
 Search enters through the lexical layer. Answers come from the domain layer.
 
@@ -93,10 +93,10 @@ picture appears in deck 5 with a retrieval path drawn over it.
 
 Handed a page of hotel prose, the model must choose:
 
-- **Labels:** is a bed configuration a node, or a property of the room
-- **Properties:** is `4.6/5.0` a string, or the float `4.6`
-- **Relationships:** what connects the hotel to a cancellation rule, and in which direction
-- **Boundaries:** is "Cairo" part of the address, or a place in its own right
+- **Labels:** is a bed configuration a node, or a property of the room?
+- **Properties:** is `4.6/5.0` a string, or the float `4.6`?
+- **Relationships:** what connects the hotel to a cancellation rule, and in which direction?
+- **Boundaries:** is "Cairo" part of the address, or a place in its own right?
 
 Every one of these is defensible. That is the problem.
 
@@ -178,7 +178,7 @@ surfaces three modules later.
 Amenities come from a deterministic parser, not from Claude:
 
 1. Every document has a `## Hotel Amenities` bullet list
-2. The parser reads the bullets under that heading and stops at the next one
+2. The parser reads the bullets under that heading and stops at the next heading
 3. The trimmed bullet text becomes `Amenity.name`
 4. Neo4j merges that exact name into one shared node
 
@@ -223,7 +223,7 @@ Resolve is the row to explain. Global name-based entity resolution would merge
 two hotels that share a name in different cities, and this corpus has exactly
 that pattern. Leaving it off keeps them distinct.
 
-Extraction is also where the token limit matters. A complete hotel produces more
+Extraction is also where the token limit matters. A complete hotel can produce more
 JSON than the Bedrock client's 4096-token default, and truncation cuts a JSON
 object in half rather than failing cleanly. The build raises the extraction
 limit and retries once.
@@ -235,11 +235,11 @@ limit and retries once.
 
 One chunk per document, and zero overlap.
 
-- **The largest document is 7,442 bytes**, well under the splitter's limit
+- **The largest document is 7,442 bytes**, well under the splitter's 12,000-character limit
 - **The hotel's name, rooms, policies, and services stay in one chunk**, so extraction sees them together
 - **Overlap is zero** because there is no second chunk to overlap with
 
-Amazon Nova, 1024 dimensions, the same embedder for documents and for queries.
+The same embedder writes the document vectors and the query vectors.
 
 <!--
 This is a property of this corpus, not general advice. Deck 5 covers chunking
@@ -281,10 +281,10 @@ Do not explain hybrid search here. Deck 5 owns it.
 
 The build stops on any of four failures:
 
-- **Schema check:** lists every label the five chunks created, rejects anything off-schema
-- **Hotel identity check:** one `Hotel` per document, and no hotel linked to several documents
-- **Amenity check:** exact source-filename and amenity pairs, compared after the write
-- **Retrieval check:** both indexes exist, and the fixture queries later modules depend on return rows
+- **Schema check:** The check lists every label the five new chunks created and fails on anything off-schema
+- **Hotel identity check:** The check requires exactly one `Hotel` per document and refuses a hotel reached from several documents
+- **Amenity check:** The check compares exact source-filename and amenity-name pairs after the write
+- **Retrieval check:** Both indexes exist, and the fixture queries that later modules depend on return rows
 
 A broken build shows up in Module 2 as an empty result. These checks make it show up here.
 
@@ -304,7 +304,7 @@ will fail for the wrong reason.
 
 ## From Graph to Retrieval
 
-The graph is built and both indexes exist. Now the question is how to search it.
+The graph is built and both indexes exist. Everything that reads it starts here.
 
 Module 2 runs eight retrieval patterns against this graph and picks one for the application.
 

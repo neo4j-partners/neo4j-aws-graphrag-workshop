@@ -98,7 +98,7 @@ A model turns text into a list of numbers that positions it in meaning space.
 
 - **1024 numbers per chunk** in this workshop, from Amazon Nova
 - **Similar meaning, nearby vectors.** "Standard arrival processing" lands near "check-in time"
-- **Cosine similarity** measures the angle between two vectors, from 0 to 1
+- **Cosine similarity** measures how closely two vectors point the same way. Neo4j reports it from 0 to 1
 - **Same model, same dimensions, same purpose** for documents and for questions
 
 A mismatched embedder returns wrong rows while reporting success.
@@ -121,7 +121,7 @@ How much text goes into one searchable unit is a real trade-off:
 - **Larger chunks** keep related facts together, and return more irrelevant text per hit
 - **Smaller chunks** retrieve precisely, and split a fact away from its context
 
-This corpus uses one chunk per document, because the largest is 7,442 bytes.
+This corpus uses one chunk per document. The splitter is set to 12000 characters and the largest document is 7,442 bytes.
 
 `hybrid_retrieval.py` then caps returned chunk text at 1,200 characters.
 
@@ -193,11 +193,11 @@ embedding model.
 
 ## Context Rot
 
-More context is not free.
+More context has a cost.
 
 - **Long inputs degrade accuracy**, even on tasks the model handles easily at short length
 - **Chroma Research** measured this across models and called it context rot
-- **Retrieving more chunks** raises recall and lowers the odds the model uses the right one
+- **Retrieving more chunks** raises recall. It also lowers the odds the model uses the right one
 
 Returning the ten facts an answer needs beats returning ten documents that contain them.
 
@@ -217,7 +217,7 @@ are.
 
 ---
 
-## The Two-Layer Graph as a Retrieval Substrate
+## What Retrieval Searches Across
 
 ```text
    [lexical]                          [domain]
@@ -290,9 +290,9 @@ eight.
 
 `VectorRetriever` returns the matched chunks and nothing else.
 
-- **Good for:** questions phrased differently from the source text
-- **Returns:** ranked chunk text plus a similarity score
-- **Not for:** anything that needs a hotel property, an amenity list, or provenance
+- **Good for:** A question phrased differently from the source text still finds its chunk
+- **Returns:** The result carries ranked chunk text and a similarity score
+- **Not for:** A question that needs a hotel property, an amenity list, or a `hotel_id` gets none of them back
 
 The baseline. Everything after this adds to it.
 
@@ -313,17 +313,18 @@ Vector search finds the chunk. A reviewed `retrieval_query` runs from every matc
 
 - **The chunk is the anchor, not the answer**
 - **Neo4j calls this pattern** Graph-Enhanced Vector Search
-- **Returns:** chunk text, hotel properties, the amenity list, and the source filename
+- **Returns:** One record carries chunk text, hotel properties, the amenity list, and the source filename
 
-Master this one. The other three index-backed retrievers are variations on it.
+Master this one. The other three retrievers that enter through an index are variations on it.
 
 <!--
 This is the retriever to spend real time on, because understanding it makes the
 remaining three free.
 
-The comparison in the notebook tests five hotel properties. VectorRetriever
-returns chunk text only. VectorCypherRetriever returns all five, because it
-follows FROM_CHUNK to the Hotel node where those properties actually live.
+The comparison in the notebook tests five requested fields. VectorRetriever
+names one of them, the source filename, and only because a second lookup query
+goes and gets it. VectorCypherRetriever names all five, because it follows
+FROM_CHUNK to the Hotel node where those properties actually live.
 -->
 
 ---
@@ -355,9 +356,13 @@ RETURN hotel.name AS hotel_name, document.source_filename AS source_filename, ..
 Four rules, and each one is a bug someone has shipped.
 
 OPTIONAL MATCH first. Use plain MATCH and a chunk whose hotel extraction failed
-vanishes from the results entirely. The shipped query keeps it and reports
-graph_enrichment_status as "missing Hotel enrichment for semantic hit," which
-is a diagnosable result instead of a silent hole.
+vanishes from the results entirely. The Module 2 notebook query keeps it and
+reports graph_enrichment_status as "missing Hotel enrichment for semantic hit,"
+which is a diagnosable result instead of a silent hole.
+
+The block on this slide is that notebook traversal with the application's
+amenity subquery dropped into it. Neither file holds it verbatim, so send
+anyone who wants to copy one to workshop/hybrid_retrieval.py.
 
 The subquery is the one that surprises people. Match amenities in the top-level
 pattern and a hotel with twelve amenities returns twelve rows, top_k is spent
@@ -380,7 +385,7 @@ YIELD node, score
 ```
 
 - **Exact terms:** `60611` matches the literal token
-- **Fuzzy terms:** `Winward~` matches the misspelled `Windward`
+- **Fuzzy terms:** A misspelled `Winward~` still matches the correctly spelled `Windward`
 - **Boolean terms:** `spa AND pool` requires both, in the same chunk
 
 Rare tokens score high, which is the opposite of how embeddings treat them.
@@ -393,7 +398,7 @@ graph genuinely is the answer.
 
 Note the limit of the boolean form. "spa AND pool" requires both terms in the
 same chunk, which is not the same as requiring both amenities on the same
-hotel. Slide 21 has the real fix.
+hotel. Slide 20 has the real fix.
 
 This runs through a Cypher procedure. There is no FulltextRetriever class in
 the workshop's neo4j-graphrag version.
@@ -450,11 +455,11 @@ already computed for the full question avoids a second Bedrock call.
 
 ## Hybrid Re-ranking
 
-Cosine scores and Lucene scores are on different scales, so both are normalized first: divide by the best score from that index.
+Cosine scores and Lucene scores are on different scales. The library normalizes both first, dividing every score by the best score from its own index.
 
-- **`NAIVE`:** takes the larger normalized score per chunk. The library default
-- **`LINEAR`:** computes `alpha * vector + (1 - alpha) * fulltext`
-- **`alpha`:** the vector weight, from 0 to 1. The full-text weight is `1 - alpha`
+- **`NAIVE`:** The ranker takes the larger normalized score per chunk. This is the library default
+- **`LINEAR`:** The ranker computes `alpha * vector + (1 - alpha) * fulltext`
+- **`alpha`:** This is the vector weight, from 0 to 1. The full-text weight is `1 - alpha`
 
 The notebook uses `ranker='linear'` with `alpha=0.2` for the postal-code question.
 
@@ -485,10 +490,13 @@ hybrid_cypher_retriever = HybridCypherRetriever(
 )
 ```
 
-The two-by-two is complete: vector or hybrid entry, with or without a traversal.
+| Entry search | Return the chunk | Run the traversal |
+|---|---|---|
+| Vector | `VectorRetriever` | `VectorCypherRetriever` |
+| Vector plus full-text | `HybridRetriever` | `HybridCypherRetriever` |
 
 <!--
-Draw the grid on the whiteboard if you have one. Rows are the entry search,
+Walk the grid one cell at a time. Rows are the entry search,
 vector or vector-plus-full-text. Columns are what happens next, return the
 chunk or run the traversal. Four classes, four cells.
 
@@ -532,7 +540,7 @@ The model writes the query from the schema at request time.
 - **Prompt carries** the extraction schema and three worked examples
 - **`EXPLAIN`** plans the statement before it runs
 - **Only `query_type == 'r'` executes**, with a statement timeout
-- **A read-only database user** rejects writes even if the earlier checks miss one
+- **A read-only database user in production** rejects writes even if the earlier checks miss one
 
 Flexible, and the only pattern where an unreviewed query reaches the database.
 
@@ -556,9 +564,9 @@ flag the forward pointer.
 
 Every index-backed retriever exposes the same `search()` method and returns the same `RetrieverResultItem`.
 
-- **`content`:** the chunk text the model reads as context
-- **`metadata`:** hotel properties for application checks, such as `metadata['hotel_id']`
-- **`result_formatter`:** maps each database record into those two fields
+- **`content`:** This holds the chunk text the model reads as context
+- **`metadata`:** This holds hotel properties for application checks, such as `metadata['hotel_id']`
+- **`result_formatter`:** This maps each database record into those two fields
 
 Swapping retrievers is a one-line change. That is what makes the comparison in this module honest.
 
@@ -587,7 +595,7 @@ section { font-size: 23px; }
 | Needs hotel properties or provenance | Any Cypher variant |
 | Mixes paraphrase and exact terms | `HybridCypherRetriever` |
 | Has a fixed, known shape with conditions | Cypher Templates |
-| Is structured but unpredictable | `Text2Cypher`, guarded |
+| Is structured but unpredictable | `Text2CypherRetriever`, guarded |
 
 Three questions to ask: is the entry term literal or fuzzy, does the answer need connected facts, and is the question shape known in advance.
 

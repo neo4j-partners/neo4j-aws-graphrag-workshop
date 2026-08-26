@@ -32,8 +32,9 @@ ol > li {
 One tool it must call, and one thing it cannot do
 
 <!--
-This deck has two hinges, not one. Slide 5 argues for a single tool. Slide 11
-argues that the write path does not go through the model at all.
+This deck has two hinges, not one. "One Tool, On Purpose" argues for a single
+tool. "Writes Do Not Go Through the Model" argues that the write path does not
+go through the model at all.
 
 Most agent talks cover the first half of this deck and stop. The reservation
 half is where the workshop says something the room has probably not heard, so
@@ -70,7 +71,7 @@ what that reach is allowed to include.
 
 A model that can call a search function is useful. A model that can call a
 write function is a system where a wrong token becomes a row in a database.
-Slide 11 is where that gets resolved.
+"Writes Do Not Go Through the Model" is where that gets resolved.
 -->
 
 ---
@@ -80,10 +81,10 @@ Slide 11 is where that gets resolved.
 > Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
 
 1. **Reason:** I need hotel facts. I have one tool that returns them
-2. **Act:** call `search_hotel_knowledge_tool` with the question
-3. **Observe:** five results, each with hotel name, address, rating, amenities, and chunk text
+2. **Act:** I call `search_hotel_knowledge_tool` with the question
+3. **Observe:** the tool returns five results, each with hotel name, address, rating, amenities, and chunk text
 4. **Reason:** the context names the hotel and the policy. The hold is not something I can do
-5. **Respond:** answer the first two clauses from context, and say the third needs a reservation
+5. **Respond:** I answer the first two clauses from context, and I say the third needs a reservation
 
 Each turn of the loop is one round trip to the model.
 
@@ -104,7 +105,7 @@ different grounds.
 agent = Agent(
     model=BedrockModel(model_id=...),
     tools=[search_hotel_knowledge_tool],
-    system_prompt=GROUNDING_PROMPT,
+    system_prompt=GROUNDING_INSTRUCTIONS,
 )
 ```
 
@@ -131,7 +132,7 @@ from, which is the next slide.
 
 This agent has exactly one retrieval tool. That is the design, not a simplification.
 
-- **Nothing to route:** no chance of picking the wrong retriever for a question
+- **Nothing to route:** the agent cannot pick the wrong retriever for a question
 - **Nothing to widen:** the tool takes query text, not an index name, a `top_k`, or a ranker
 - **One path to test:** every answer in the workshop came through the same code
 
@@ -221,7 +222,7 @@ holds a Neo4j connection. It gets JSON. It cannot run Cypher of its own.
 - **Vector** matches the meaning of "amenities and a rating"
 - **The traversal** returns the connected amenity list and the exact `guest_rating` property
 
-Two different fields, for the same hotel, in one answer, with the source filename attached.
+Two different fields, for the same hotel, in one answer, returned alongside the chunk text that matched.
 
 <!--
 This question is chosen to exercise both arms of the hybrid retriever at once,
@@ -265,7 +266,7 @@ Run this one live if you run anything live.
 The reservation command sits beside the agent, not inside it.
 
 - **Not a tool.** It is plain Python the application calls
-- **Five defined inputs:** `request_id`, `hotel_id`, `check_in`, `check_out`, `guests`
+- **Five defined inputs.** The command accepts `request_id`, `hotel_id`, `check_in`, `check_out`, and `guests`
 - **`hotel_id`** is the stable identifier retrieval already returned
 - **Application-owned Cypher.** The model writes none of it
 
@@ -299,7 +300,7 @@ Neo4j stores a maximum-guests rule. A 15-guest request comes back:
 
 - **One transaction** checks for an existing `request_id`, reads the enabled rule, verifies the hotel, and creates the node
 - **The rejection returns before the create query runs.** No `ReservationRequest` node exists
-- **One transaction** means no other request can change the rule between the check and the write
+- **No interleaving.** No other request can change the rule between the check and the write
 
 <!--
 Two things make this different from validating in Python.
@@ -321,8 +322,8 @@ A human-readable message alone cannot be branched on reliably.
 
 The caller supplies `request_id`, and it stays the same across retries.
 
-- **First call:** creates the `ReservationRequest` and links it with `FOR_HOTEL`
-- **Second call, same id:** finds that node, returns `duplicate: true` and the original `created_at`
+- **First call:** the command creates the `ReservationRequest` and links it with `FOR_HOTEL`
+- **Second call, same id:** the command finds that node and returns `duplicate: true` with the original `created_at`
 - **Two concurrent retries:** a uniqueness constraint lets Neo4j accept one and roll back the other
 
 The command then reads the accepted node and returns it as the duplicate result.
@@ -351,7 +352,7 @@ section { font-size: 25px; }
 | **The model** | Proposes. Answers from returned context, or says it cannot |
 | **The tool** | Fixes the retriever, the traversal, and the result shape |
 | **The command** | Validates the five inputs and opens the transaction |
-| **Neo4j** | Rejects an over-limit request and a duplicate `request_id` |
+| **Neo4j** | Holds the maximum-guests rule and rejects a duplicate `request_id` |
 
 Each rule sits in the layer that can actually enforce it.
 

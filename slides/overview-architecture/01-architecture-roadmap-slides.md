@@ -49,7 +49,7 @@ Six modules, six verbs:
 1. **Build** a knowledge graph from hotel documents into your own Aura instance
 2. **Compare** eight retrieval patterns and pick one for the application
 3. **Ground** an agent in that retriever, and give it a write path it cannot reach
-4. **Publish** the retrieval tools through AgentCore Gateway as MCP
+4. **Publish** the retrieval tools through AgentCore Gateway, on the Model Context Protocol
 5. **Deploy** the whole agent to AgentCore Runtime as a container
 6. **Remember** guest preferences in the same graph, with provenance
 
@@ -74,11 +74,11 @@ section { font-size: 26px; }
 | Component | Role in this workshop |
 |---|---|
 | **Neo4j Aura** | Stores connected hotel facts, source text, indexes, business rules, reservation requests, and memory |
-| **Amazon Bedrock** | Provides Claude for extraction and reasoning, Amazon Nova for retrieval embeddings, Titan Text V2 for memory |
+| **Amazon Bedrock** | Provides Claude for extraction and reasoning, Amazon Nova for retrieval embeddings, Titan Text Embeddings V2 for memory |
 | **Strands Agents** | Gives the model its tools and runs the agent loop |
 | **AgentCore** | Exposes remote tools through Gateway and runs the deployed agent on Runtime |
 
-Four roles, and every module uses the same four.
+Four roles. The graph and the models are in every module. The two agent layers arrive as the day goes on.
 
 <!--
 Give the two platforms parallel treatment here. Neo4j is not a bolt-on to
@@ -106,11 +106,13 @@ A fictional chain of AnyCompany hotels, one FAQ document per property.
 |---|---|---|
 | `Hotel` | `name`, `address`, `guest_rating`, `total_rooms` | AnyCompany Cairo Nile View |
 | `Room` | `type`, `bed_configuration`, `max_occupancy`, rate range | Suite, one king bed |
-| `Amenity` | `name`, unique across the graph | Spa, Swimming Pool |
+| `Amenity` | `name`, unique across the graph | Full-Service Spa |
 | `Policy` | `name`, `description` | 24-hour cancellation |
 | `Service` | `name`, `cost`, `hours`, availability | Airport transfer |
 | `Document` | `source_filename` | The FAQ file |
 | `Chunk` | `text`, `embedding` | The searchable passage |
+
+Hundreds of properties worldwide. These eight carry the workshop:
 
 Cairo, Chicago, Paris, Tokyo, Sydney, Rio de Janeiro, Cape Town, Prague.
 
@@ -164,7 +166,7 @@ Resist the temptation to hand out a shared database. When everyone reads the
 same graph, one person's mistake is invisible to them and every later module
 appears to work. Here it does not, and they find out immediately.
 
-Nine checks in environment/verify.py gate the first module: Python version,
+Eight checks in environment/verify.py gate the first module: Python version,
 imports, settings, AWS credentials, the hero hotel in the graph, and each of
 the three Bedrock models. Tell the room to run it before Module 1 and to read
 the first failure rather than the last.
@@ -186,7 +188,7 @@ and the model either answers from it or says the context cannot answer the
 question.
 
 The reservation write is not on this path at all. It runs beside the agent,
-which is the next slide.
+and the next slide is where you say who owns it.
 
 The deployment changes three times across the day. This flow does not change
 once.
@@ -210,7 +212,7 @@ Each control belongs to the layer that can actually enforce it:
 | What the traversal returns | The fixed **`retrieval_query`** |
 | Rejecting an invalid or duplicate write | **Neo4j**, in the transaction |
 | Who can call AWS services | **IAM** |
-| Whose memory comes back | **Actor-scoped Cypher** |
+| Whose memory comes back | **Cypher scoped to one guest** |
 
 <!--
 This is the workshop's signature slide. Everything after it is an
@@ -249,5 +251,5 @@ groups are where it gets deployed. If you fall behind, Modules 4 and 5 are
 the ones to demonstrate rather than have everyone run.
 
 Head to Setup. Every path ends in the same place: a terminal, four Neo4j
-settings in CONFIG.txt, AWS credentials in us-east-1, and nine passing checks.
+settings in CONFIG.txt, AWS credentials in us-east-1, and eight passing checks.
 -->

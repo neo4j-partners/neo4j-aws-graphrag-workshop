@@ -32,8 +32,9 @@ ol > li {
 The tools leave the notebook. The agent stays.
 
 <!--
-The hinge is slide 9, guarding model-generated Cypher, because it is the first
-time in the workshop the model's output reaches the database at all.
+The hinge is slide 9, testing the guard on model-generated Cypher, because
+deck 5 introduced that guard and this is the first place the workshop proves
+it holds.
 
 The framing to hold onto all deck: the retrieval logic does not change. The
 same hybrid_retrieval.py that ran in Module 3 runs inside these Lambdas. What
@@ -94,7 +95,7 @@ section { font-size: 24px; }
 | Aspect | Module 3, local `@tool` | Module 4, Gateway MCP tool |
 |---|---|---|
 | Where the code runs | The notebook process | An AWS Lambda function |
-| How the model learns the tool | Strands reads the docstring | The client calls `tools/list` |
+| How the model learns the tool | Strands reads the signature and the docstring | The client calls `tools/list` |
 | Who holds the Neo4j credential | The notebook process | The Lambda, from Secrets Manager |
 | Who checks the caller | Nobody. The caller is the process | IAM checks the SigV4 signature |
 | What the agent passes to Strands | `tools=[search_hotel_knowledge_tool]` | `tools=gateway_mcp.list_tools_sync()` |
@@ -172,13 +173,15 @@ the bare name finds nothing.
 | `search_hotel_knowledge` | The fixed `HybridCypherRetriever` from Module 2 | Rooms, amenities, policies, services |
 | `graph_query` | `Text2CypherRetriever`, `EXPLAIN`-checked, read plans only | Counts, averages, filters, varied traversals |
 
-`graph_query` exists because a top-k retriever returns the five best chunks. "What is the average guest rating" needs every matching row.
+A top-k retriever returns the five best chunks. "What is the average guest rating" needs every matching row, so `graph_query` exists.
+
+Each tool is one Lambda function and one Gateway target.
 
 The reservation command stays outside this Gateway. Both tools only read.
 
 <!--
-This is the second tool the workshop adds, and deck 6 promised it would come
-with a guard. Slide 9 is that guard.
+This is the second tool the workshop adds, and deck 5 flagged that Text2Cypher
+would arrive here behind the same EXPLAIN guard. Slide 9 is that guard.
 
 Both tools import from the same hybrid_retrieval.py. The first reuses the exact
 function Module 3 called. The second turns Module 2's Text2Cypher pattern into
@@ -194,12 +197,12 @@ tools to a Gateway changed the rule that the model does not write.
 
 The schema is committed to the repository, not built at deploy time, so the Gateway advertises the same contract every run.
 
-- **The description is model input.** It replaces Module 3's docstring, and the model reads it to choose between the two tools
-- **State what the tool is for, what question shape it suits, and what it will not do**
-- **The Gateway reads a subset of JSON Schema:** `type`, `description`, `items`
-- **It ignores `minLength`, `format`, and `additionalProperties`**
+- **The description is model input.** It replaces Module 3's docstring. The model reads it to choose between the two tools
+- **What to write:** State what the tool is for, what question shape it suits, and what it will not do
+- **The Gateway reads a subset of JSON Schema.** It keeps `type`, `description`, and `items` on each property
+- **The Gateway ignores the stricter keys.** It drops `minLength`, `format`, and `additionalProperties`
 
-Validate in the handler. The Gateway dropped the constraint, so nothing else enforces it.
+Validate in the handler. The Gateway drops the constraint, so nothing else enforces it.
 
 <!--
 The subset behaviour is the practical trap. The committed schema keeps the
@@ -225,10 +228,10 @@ WRITE_CYPHER = "MATCH (n:__WorkshopGuardProbe) SET n.tampered = true RETURN coun
 ```
 
 - **The real model** follows its prompt and generates reads, so it never trips the guard
-- **A stub model** always returns a write, and the test asserts the call raises before execution
+- **A stub model** always returns a write. The test asserts the call raises before execution
 - **The probe targets a label no build creates**, so the data is safe even if the guard fails
 
-Three layers: the prompt asks, `EXPLAIN` verifies, and a read-only database user is the boundary underneath.
+Two layers run here. The prompt asks and `EXPLAIN` verifies. A read-only database user is the third layer, and production needs it.
 
 <!--
 The hinge of this deck, and the discipline worth stealing regardless of stack.
@@ -256,17 +259,17 @@ section { font-size: 24px; }
 ```python
 gateway_mcp = MCPClient(lambda: stdio_client(StdioServerParameters(
     command="uvx",
-    args=["mcp-proxy-for-aws@latest", GATEWAY_URL, "--region", "us-east-1"],
+    args=["mcp-proxy-for-aws@latest", GATEWAY_URL, "--region", REGION],
     env=os.environ.copy(),
 )))
 ```
 
-- **`mcp-proxy-for-aws`** bridges MCP's standard-input transport to a signed HTTPS request
+- **`mcp-proxy-for-aws`** bridges MCP's standard input and output transport to a signed HTTPS request
 - **The caller** proves its identity to the Gateway with SigV4
 - **`workshop-hotel-gateway-role`** lets the Gateway invoke functions named `hotel-booking-*`
-- **`workshop-hotel-lambda-role`** lets the Lambda read one secret and invoke the two models
+- **`workshop-hotel-lambda-role`** lets the Lambda read one secret and invoke the embedding model and the chat model
 
-The credential exists only inside the last step. No policy in the chain grants a write.
+The credential reaches only the Lambda. No policy in the chain grants a write.
 
 <!--
 Walk the chain as three hops with three different identities. The caller never
@@ -289,7 +292,7 @@ specific failure rather than stopping.
 Aura is a separately managed database. The trust boundary does not stop at the VPC edge.
 
 - **IAM controls** who invokes the Gateway and who invokes the Lambda
-- **Secrets Manager controls** which role can read the Neo4j credential
+- **The Lambda role controls** which identity can read the Neo4j credential from Secrets Manager
 - **Neo4j controls** what that credential is allowed to do
 
 A read-only Neo4j user is the control IAM cannot provide.
@@ -314,7 +317,7 @@ An empty result has two possible causes. Neo4j holds no matching hotel, or the r
 
 Both import their expected values from `workshop.fixtures`.
 
-The notebook runs the pair twice: directly against each Lambda, then through the Gateway.
+The notebook runs both controls directly against each Lambda, then repeats the positive controls through the Gateway.
 
 <!--
 A dead index, a wrong index name, a bad credential, and the wrong database all
@@ -343,7 +346,7 @@ One line changes from Module 3. Strands sees a name, a JSON schema, and a callab
 
 > Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
 
-Same question, same answer, and the tool now runs in Lambda.
+Same question, same answer. The tool now runs in Lambda.
 
 <!--
 This is the payoff, and it is deliberately anticlimactic. Everything hard in

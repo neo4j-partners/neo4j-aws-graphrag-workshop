@@ -45,9 +45,12 @@ node.
 
 ## The Agent You Built Forgets Everything
 
+The agent is deployed and callable over an API. It still meets every caller as a stranger.
+
 Ask about the Cairo hotel. Then say "book that one."
 
-- **Between turns**, the agent has the conversation and can resolve "that one"
+- **Between turns in the notebook**, one long-lived agent object holds the conversation and can resolve "that one"
+- **In the deployed container**, even that is gone. Each invocation builds a new agent
 - **Between sessions**, nothing survives. Every conversation starts from zero
 - **Across callers**, there is no notion of who is asking
 
@@ -68,9 +71,9 @@ to be able to say why it thinks that.
 
 The `neo4j-agent-memory` library splits memory into three namespaces:
 
-- **Short-term, `memory.short_term`:** the current conversation. It writes `Conversation` and `Message` nodes, and it resolves "that hotel"
-- **Long-term, `memory.long_term`:** facts and preferences that outlive a session. It writes `Preference` nodes
-- **Reasoning, `memory.reasoning`:** decisions, tool calls, and outcomes. It writes `ReasoningTrace` and `ReasoningStep` nodes
+- **Short-term, `memory.short_term`:** This layer holds the current conversation. It writes `Conversation` and `Message` nodes, and it is what resolves "that hotel"
+- **Long-term, `memory.long_term`:** This layer holds facts and preferences that outlive a session. It writes `Preference` nodes
+- **Reasoning, `memory.reasoning`:** This layer holds decisions, tool calls, and outcomes. It writes `ReasoningTrace` and `ReasoningStep` nodes
 
 Each layer carries different risk. A transcript holds far more personal detail than one stored preference.
 
@@ -90,10 +93,10 @@ the whole point of separating them into namespaces rather than one memory blob.
 Long-term preference memory, and only that.
 
 - **Writes one `Preference`**, connected to the actor who owns it
-- **Writes two short-term messages**, because a preference needs a source to point at
+- **Writes short-term messages**, because a preference needs a source to point at
 - **Writes no reasoning traces**
 
-The test: store a preference in one session, recall it in a new session, and return nothing when a different actor asks.
+The test: store a preference in one session, recall it in a new session, and confirm that a different actor sees nothing.
 
 <!--
 Scope this tightly so the room does not expect a full memory system.
@@ -139,10 +142,10 @@ preference traceable. That is not a coincidence, it is the module's argument.
 `DERIVED_FROM` links each preference to the message it came from.
 
 - **You can always answer "why does the agent think this"** by returning the source message
-- **A preference with no `DERIVED_FROM`** is a record you cannot trace. That query is one of the module's exercises
+- **A preference with no `DERIVED_FROM`** is a record you cannot trace. Finding those is one of the module's exercises
 - **`ABOUT_HOTEL` points at the `Hotel` node Module 1 created.** No copy exists in a separate store
 
-Memory you can explain is memory you can correct, and memory you can correct is memory you can trust.
+Memory you can explain is memory you can correct. Memory you can correct is memory you can trust.
 
 <!--
 The hinge. This is the same argument as source_filename in Module 2 and
@@ -165,7 +168,7 @@ relationship without touching the node.
 
 The library can send a transcript to a model and extract entities. This module turns that off.
 
-- **`ExtractorType.NONE`** and `extraction_mode="skip"`. No model runs on the write path
+- **The client sets `ExtractorType.NONE`.** Every message write also passes `extraction_mode="skip"`, so no model runs on the write path
 - **The application already knows the facts.** It just handled a request naming a specific hotel
 - **The stored text is exact.** The value in the graph is the value in the code
 
@@ -197,6 +200,11 @@ RETURN u.identifier AS actor, p.preference AS preference,
 The traversal is anchored at one `User`. Actor B's query returns an empty list because Actor B owns no matching relationship.
 
 <!--
+The notebook has two anchored queries. The isolation check runs the short one
+in memory_helpers.py, which stops at ABOUT_HOTEL. This is the long one, which
+adds the provenance hop. Both anchor at the same User node, and that is the
+point.
+
 The scope is a property of the traversal, not a filter applied afterward. There
 is no path from Actor B's User node to Actor A's preference, so there is
 nothing to leak.
@@ -217,14 +225,14 @@ The application still has to prove who the caller is.
 
 Memory uses Amazon Titan Text Embeddings V2 at 1,024 dimensions. Hotel chunks use Amazon Nova, in a different index.
 
-- **Each index compares vectors only within its own space.** Two models, two indexes, no overlap
+- **Each index compares vectors only within its own space.** Two models mean two indexes with no overlap
 - **The width is part of the contract.** A mismatch fails at query time, not at write time
 - **Changing the model means rebuilding the indexes.** The library sizes them on first connect and revalidates on every later one
 
 `retrieval_contract.py` holds both model IDs and both widths, so Setup and Module 6 cannot drift apart.
 
 <!--
-Both are 1024 dimensions, which makes this look like it should be one index. It
+Both are 1,024 dimensions, which makes this look like it should be one index. It
 is not, and matching widths do not make vectors comparable. They come from
 different models and mean different things.
 
@@ -244,7 +252,7 @@ SET p.preference = "high floor, away from elevator"
 The next recall reads the updated property from the same `Preference` node.
 
 - **The node keeps its identity**, so `DERIVED_FROM` and `ABOUT_HOTEL` still hold
-- **No re-extraction**, no pipeline run, no waiting for a write to become visible
+- **Nothing is re-extracted.** No pipeline runs, and the new value is readable as soon as the transaction commits
 
 A guest who changes their mind is the normal case, not an edge case.
 
@@ -274,6 +282,8 @@ section { font-size: 23px; }
 | **Correction** | The Memory service API | `SET` on one property |
 | **Domain link** | The application resolves it separately | `ABOUT_HOTEL` points at the existing `Hotel` node |
 | **Operations** | AWS manages it | You own it |
+
+Managed extraction is the row that decides it the other way. If nobody has parsed the input, the service does work you would otherwise write.
 
 <!--
 Give AgentCore Memory a fair hearing. Managed extraction and managed operations
@@ -315,6 +325,7 @@ One graph now holds hotel facts, the documents behind them, reservation requests
 - **Reasoning traces** are the layer this module skipped. Once they exist, "which agent decisions touched this hotel" is one query
 - **An incident review** becomes a traversal instead of a hunt through logs
 - **The Production Path page** covers read-only database users, secret handling, and the controls this workshop simplified
+- **The Summary page** collects every pattern from today in one list you can take back
 
 Every module today was one design: the layer that can enforce a rule is the layer that owns it.
 

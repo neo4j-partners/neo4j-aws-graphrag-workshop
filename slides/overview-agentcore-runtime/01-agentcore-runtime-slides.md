@@ -32,11 +32,11 @@ ol > li {
 The whole agent becomes a service someone else can call
 
 <!--
-The hinge is slide 7, what to cache and what to rebuild, because it is the one
+The hinge is "What to Cache and What to Rebuild," because it is the one
 decision in this deck that is genuinely easy to get wrong and produces a
 correctness bug rather than a performance one.
 
-The other thing to protect is slide 8. This module connects to Neo4j directly
+The other thing to protect is "Direct to Neo4j, No Gateway." This module connects to Neo4j directly
 and does not use the Gateway from Module 4. That is deliberate, and if you do
 not name it, half the room will assume you skipped a step.
 -->
@@ -78,8 +78,9 @@ section { font-size: 25px; }
 Same retrieval, same reservation rule. Only the request handling is new.
 
 <!--
-Row four is the interesting one and it comes back on slide 9. In a notebook the
-conversation lives in your kernel because there is exactly one caller. A
+Row four is the interesting one and it comes back on "Sessions and Request
+IDs." In a notebook the conversation lives in your kernel because there is
+exactly one caller. A
 service has many, and it needs to be told which conversation a request belongs
 to.
 
@@ -94,7 +95,7 @@ transaction.
 ## What Runtime Provides
 
 - **Session isolation:** each session gets its own microVM, with its own CPU, memory, and file system
-- **Session lifetime:** a session ends after 15 idle minutes, or 8 total hours
+- **Session lifetime:** a session ends after 15 idle minutes or 8 total hours
 - **Scaling:** AWS starts and stops containers, picks the instance size, and patches the hosts
 - **Invocation API:** clients call `InvokeAgentRuntime` with an ARN, a session ID, and a JSON payload
 - **Access control:** IAM decides who may invoke. Runtime also accepts OAuth 2.0 bearer tokens
@@ -129,10 +130,15 @@ the guest limit inside its own transaction. BedrockModel calls Claude, which
 reasons over what the tools returned.
 
 Point at what is absent: there is no Gateway and no MCP server anywhere in this
-picture. Slide 8 explains why.
+picture. "Direct to Neo4j, No Gateway" explains why.
 -->
 
 ---
+
+<style scoped>
+/* A ten-line code block and four bullets overflow at the theme's 29px. */
+section { font-size: 22px; }
+</style>
 
 ## The Container Contract
 
@@ -144,7 +150,8 @@ app = BedrockAgentCoreApp()
 @app.entrypoint
 def invoke(payload, context=None):
     ...
-    return {"response": ..., "request_id": ..., "tools_used": ...}
+    return {"response": ..., "request_id": ..., "tools_used": ...,
+            "grounding_result": ..., "command_result": ...}
 
 if __name__ == "__main__":
     app.run()
@@ -153,7 +160,7 @@ if __name__ == "__main__":
 - **Port 8080 on `0.0.0.0`.** Runtime posts every request to `/invocations`
 - **`linux/arm64`.** Runtime runs ARM64 images
 - **`BedrockAgentCoreApp`** serves the contract, so the agent code has no routing
-- **`app.run()`** is the container start command, and it runs the agent locally too
+- **`app.run()`** serves port 8080 when the container start command runs the module, and it runs the agent on your laptop too
 
 <!--
 The last bullet is the one that saves debugging. The same line that serves the
@@ -172,8 +179,8 @@ smoke tests assert on those structured fields rather than on prose.
 
 Docker copies only from its build context, and the agent depends on two things outside it.
 
-- **`notebooks/workshop/`**, the shared retrieval package, staged and built as a wheel
-- **`reservation_command.py`** from Module 3, staged beside it
+- **`notebooks/workshop/`** is the shared retrieval package, and `uv build --wheel` writes it into the build context
+- **`reservation_command.py`** comes from Module 3, and the notebook copies it in beside the wheel
 - **`BUILD_INFO.txt`** records the git commit and working-tree status inside the image
 - **CodeBuild** produces the `linux/arm64` image and pushes it to ECR
 
@@ -199,8 +206,8 @@ misbehaves, the first question is what source it was built from.
 
 AgentCore keeps the microVM warm between invocations. Split your code accordingly.
 
-- **Cache:** the Neo4j drivers and the hybrid retriever, so connection pools survive
-- **Rebuild every request:** the Strands `Agent` and its message history
+- **Cache:** the Neo4j drivers and the hybrid retriever are opened once, so their connection pools survive between invocations
+- **Rebuild every request:** the Strands `Agent` and its message history are constructed fresh inside the entry point
 
 A Strands `Agent` accumulates conversation state as it runs. One shared across callers leaks one caller's messages into another's.
 
@@ -250,12 +257,13 @@ the agent is the thing other people need to call.
 
 Two identifiers, doing two different jobs.
 
-- **Session ID:** supplied by the caller, routes invocations to the same container, and scopes the conversation
-- **`request_id`:** supplied by the caller, carries idempotency for the reservation write
+- **Session ID:** the caller supplies it, and Runtime routes invocations sharing it to the same container
+- **Conversation scope:** the session is what makes a follow-up question a follow-up
+- **`request_id`:** the caller supplies it too, and it is the idempotency key for the reservation write
 
 A hook requires the reservation tool to use the caller's exact UUID. A retry returns the first result and the graph keeps one node.
 
-Each smoke test gets its own session ID, so every test starts clean.
+Every invocation in the smoke tests opens its own session.
 
 <!--
 Attendees conflate these. Session is about conversation continuity. request_id
@@ -266,6 +274,10 @@ The hook matters because without it the model could generate its own UUID on
 the retry, which would produce a second reservation for the same intent. This
 is the same idempotency guarantee Module 3 built, carried across the network
 boundary.
+
+The replay in test 5 uses a fresh session on purpose. Reusing the session would
+let conversation history explain the correct answer, and the thing under test
+is the idempotency key.
 -->
 
 ---
@@ -280,7 +292,7 @@ section { font-size: 24px; }
 | Test | What it proves |
 |---|---|
 | Hotel details | Retrieval returns the recorded address, `789 Corniche el-Nil, Cairo 11519, Egypt` |
-| Unknown hotel | The request is rejected, and Neo4j records nothing |
+| Unknown hotel | Nothing is accepted, and Neo4j records no request |
 | Availability question | `answerable: false`, `missing_fact: live_room_availability` |
 | 15-guest request | `status: rejected`, and no node is written |
 | 10-guest request, sent twice | One node created, the retry returns `duplicate=true` |
@@ -309,7 +321,7 @@ The container starts under `opentelemetry-instrument`, and AgentCore sends telem
 - **Metrics, on by default:** invocations, sessions, latency, throttles, user errors, system errors
 - **Traces and spans:** one span per step of the agent loop, a model call or a tool call, with timing
 - **Logs:** a start line and a completion line per invocation, with the tools used and the command status
-- **The failure log records the exception type only**, so connection details and credentials stay out of CloudWatch
+- **Failure logging:** the handler records the exception type only, so connection details and credentials stay out of CloudWatch
 
 Use `request_id` to connect every entry for one reservation.
 
@@ -330,16 +342,17 @@ error breakdown per session.
 ![bg contain](../images/wrap-up-architectures.svg)
 
 <!--
-Three deployments, one design. This is synthesis, not restatement, so do not
-walk the modules again.
+Three architectures, one graph underneath. This is synthesis, not restatement,
+so do not walk the modules again.
 
-The same hybrid_retrieval.py ran in all three. The retriever, the traversal,
-and the result contract never changed. What changed was where the code executed
-and who was allowed to invoke it.
+The left two panels are the same agent deployed two ways. Module 4 moves the
+tools out and keeps the agent local. Module 5 packages the agent and keeps the
+tools in-process. The same hybrid_retrieval.py runs in both. What changed is
+where the code executed and who was allowed to invoke it.
 
-Ask the room which of the three they would ship. There is no right answer, and
+Ask the room which of those two they would ship. There is no right answer, and
 the discussion surfaces what they actually care about: reuse, blast radius,
-operational surface.
+operational surface. The third panel is where you are going next.
 
 What is deliberately left out of this deployment: OAuth inbound auth, secrets
 read at call time instead of injected as environment variables, named endpoints
