@@ -243,7 +243,9 @@ def main(argv: list[str] | None = None) -> int:
     print()
     print(f"Wrote {DEFINITION_PATH.name} and {TEMPLATE_PATH.name}.")
     print("Next, from this repository:")
-    print("  git add environment/environment/vocareum/course.json environment/environment/vocareum/lab.template")
+    definition_rel = DEFINITION_PATH.relative_to(REPOSITORY_ROOT)
+    template_rel = TEMPLATE_PATH.relative_to(REPOSITORY_ROOT)
+    print(f"  git add {definition_rel} {template_rel}")
     print('  git commit -m "Bump the Vocareum starter-code pin"')
     print("Then release from aws-vocareum. See environment/vocareum/quick-release-workshop.md.")
     return 0
