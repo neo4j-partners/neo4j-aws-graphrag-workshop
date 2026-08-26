@@ -1,9 +1,8 @@
 """Contract for the Module 2 retrieval diagram.
 
-Four gates, all of them about the asset rather than the prose around it: the
-page renders a diagram that exists, nothing competes with it, it teaches the
-locked retrieval roles, and it stays scalable. Learner wording is gated in
-tests/test_phase5_content_contract.py, so it is not restated here.
+Four gates cover the asset rather than the surrounding prose: the page renders
+a diagram that exists, nothing competes with it, the diagram teaches the locked
+retrieval order and roles, and it stays scalable.
 """
 
 from __future__ import annotations
@@ -46,18 +45,24 @@ def test_nothing_competes_with_the_diagram() -> None:
 
 
 def test_the_diagram_teaches_the_locked_retrieval_roles() -> None:
-    """Four named retrievers, with the workshop query owned by reviewed Cypher."""
+    """Three entry searches precede their Cypher-enriched retrieval paths."""
     labels = diagram_labels()
-    for retriever in (
-        "VectorRetriever",
-        "HybridRetriever",
-        "VectorCypherRetriever",
-        "Text2CypherRetriever",
-    ):
-        assert retriever in labels
+    ordered_groups = (
+        ("branch-vector", "1 VectorRetriever"),
+        ("branch-vector-cypher", "2 VectorCypherRetriever"),
+        ("branch-fulltext", "3 Full-Text Search"),
+        ("branch-fulltext-cypher", "4 Full-Text + Cypher"),
+        ("branch-hybrid", "5 HybridRetriever"),
+        ("branch-hybrid-cypher", "6 HybridCypherRetriever"),
+        ("branch-fixed-cypher", "7 Cypher Templates"),
+        ("optional-text2cypher", "8 Text2CypherRetriever"),
+    )
+    for group_id, expected in ordered_groups:
+        assert expected in diagram_labels(group_id)
 
     assert "Chicago hotels" in diagram_labels("branch-fixed-cypher")
     assert "Chicago hotels" not in diagram_labels("optional-text2cypher")
+    assert "No separate class name" in diagram_labels("branch-fulltext-cypher")
 
     for unsupported in ("Speed:", "Accuracy:"):
         assert unsupported not in labels

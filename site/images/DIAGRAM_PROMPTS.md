@@ -9,53 +9,40 @@ Use these prompts in [Canva's AI image generator](https://www.canva.com/ai-image
 ## Diagram 3: Retrieval Patterns Decision Tree
 **Filename:** `02-select-retriever.svg`
 **Editable source:** the SVG itself
-**Dimensions:** 960 x 640 viewBox, rendered at `width=800`
+**Dimensions:** 960 x 720 viewBox, rendered at `width=800`
 
 This diagram is hand-authored SVG, in the same style as `01-graph-structure.svg`.
 There is no separate editor file and no raster export. Edit the SVG directly and
 the site picks the change up on the next build. Keep the `id` attributes on the
-group elements: `tests/test_module2_diagrams.py` resolves the Chicago example
-through `branch-fixed-cypher` and `optional-text2cypher`.
+group elements because `tests/test_module2_diagrams.py` checks the retrieval
+roles and resolves the Chicago example through `branch-fixed-cypher`.
 
 **Design contract:**
 ```
-START: "What evidence does the question need?" in a dark navy bar across the top.
+TITLE: "Build retrieval one capability at a time."
 
-FOUR WORKSHOP BRANCHES fan out below it, each a colored question-shape header
-above a detail card carrying the retriever name, what it does, its EVIDENCE, and
-one EXAMPLE question:
+THREE COLUMNS pair an entry search with its graph-enriched form:
 
-BRANCH 1 (leftmost, purple, id "branch-vector"):
-Header: "Semantic or paraphrased source lookup"
-Card: "VectorRetriever", embedding similarity over Chunk text
-Evidence: ranked source Chunks and scores
-Example: "When does arrival processing begin?"
+VECTOR COLUMN (purple):
+1. `VectorRetriever` finds chunks by embedding similarity.
+2. `VectorCypherRetriever` adds a reviewed graph traversal.
 
-BRANCH 2 (left-center, blue, id "branch-hybrid"):
-Header: "Exact name, code, or identifier"
-Card: "HybridRetriever", vector plus full-text relevance
-Evidence: semantic score and exact-term hits
-Example: "Find the policy for ZIP 60611"
+FULL-TEXT COLUMN (blue):
+3. Full-Text Search finds chunks through a Neo4j full-text index.
+4. Full-Text + Cypher adds a reviewed traversal. Label it as a parameterized
+query or custom retriever, not as a packaged Python class.
 
-BRANCH 3 (right-center, teal, id "branch-vector-cypher"):
-Header: "Semantic match plus connected facts"
-Card: "VectorCypherRetriever". Semantic match finds a Chunk node, reviewed
-traversal expands the graph, and named fields include provenance.
-Evidence: named fields with source provenance
-Example: "Amenities and rating for the Cairo hotel"
+HYBRID COLUMN (teal):
+5. `HybridRetriever` fuses vector and full-text results.
+6. `HybridCypherRetriever` adds a reviewed traversal and is the workshop choice.
 
-BRANCH 4 (rightmost, amber, id "branch-fixed-cypher"):
-Header: "Reviewed structured filtering"
-Card: "Reviewed fixed Cypher", application-owned query over named fields and
-relationships
-Evidence: reviewed Cypher and database records
-Example: "Chicago hotels with a spa and pool"
+BOTTOM ROW contains the two direct domain-graph paths:
+7. Cypher Templates (amber, id "branch-fixed-cypher") uses the Chicago hotels
+with a spa and swimming pool example.
+8. `Text2CypherRetriever` (amber dashed outline, id "optional-text2cypher")
+generates Cypher from a question and schema.
 
-BOTTOM ROW: all four branches converge on "Neo4j Knowledge Graph."
-
-SEPARATE OPTIONAL EXTENSION (amber dashed outline, id "optional-text2cypher"):
-"Text2CypherRetriever generates read-only Cypher for flexible questions. It is
-planned with EXPLAIN and runs only when Neo4j reports it read-only."
+The footer states that all eight paths read the same Neo4j knowledge graph.
 
 Style: white card with a warm border and soft shadow, Helvetica stack, flat fills,
 one hue per branch, metadata labels in small caps.
