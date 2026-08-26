@@ -21,5 +21,19 @@ NEO4J_DATABASE=neo4j
 # whatever region your active AWS profile configures.
 AWS_REGION=us-east-1
 
-# Model override. The workshop default is us.anthropic.claude-sonnet-5.
-# MODEL_ID=us.anthropic.claude-sonnet-5
+# Model override. The workshop default is us.anthropic.claude-sonnet-4-6.
+# MODEL_ID=us.anthropic.claude-sonnet-4-6
+
+# =============================================================================
+# Bedrock API key (only if the instructor gives you one)
+# =============================================================================
+# The instructor hands out a Bedrock API key at the start of class. Uncomment
+# the line below and paste that key after the equals sign.
+#
+# Leave the line commented if you are not pasting a key. An uncommented blank
+# value is worse than no line at all, because botocore then sends an empty
+# Bearer header and never falls back to your normal AWS credentials. Every
+# Bedrock call fails in that state.
+#
+# The key is a credential. Never commit it or share it outside the class.
+# AWS_BEARER_TOKEN_BEDROCK=
