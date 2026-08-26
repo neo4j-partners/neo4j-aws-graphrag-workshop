@@ -3,11 +3,11 @@ title: "Module 1: Build the Graph"
 weight: 20
 ---
 
-## Overview
-
 This module adds five hotel documents to Neo4j. The build stores each document as searchable text and extracts hotel facts into a structured graph.
 
 The two structures answer different parts of a question such as "Which Cairo hotels have a spa that costs extra?" Search finds text with similar meaning. Graph relationships connect the hotel, spa, and fee so one Cypher query can match all three facts.
+
+**Brief overview**
 
 * **Searchable text:** `Document` and `Chunk` nodes store source text and embeddings.
 * **Structured facts:** `Hotel`, `Room`, `Amenity`, `Policy`, and `Service` nodes store properties and relationships.
@@ -74,7 +74,7 @@ To identify the output from the current run, the build records the existing `Chu
 
 ## Why Extraction Uses a Fixed Schema
 
-The extraction schema gives every document one graph vocabulary. Without it, the model chooses labels from headings that vary across documents. Test runs produced these differences\:
+The extraction schema gives every document one graph vocabulary. Schema-free extraction lets the model choose labels from headings that vary across documents. Test runs produced these differences\:
 
 | Kind of drift | Labels the model chose | Why it breaks queries |
 |---------------|------------------------|-----------------------|
@@ -83,9 +83,9 @@ The extraction schema gives every document one graph vocabulary. Without it, the
 | Two names for one thing | `ContactMethod`, `ContactInfo` | Both are reasonable, and a query has to know which one a given document used |
 | Geography expanded into a hierarchy | `City`, `Country` | The city is text inside the address in most documents and a node in a few |
 
-Each structure describes its source document. The label differences still break corpus-wide Cypher queries because one pattern cannot match every form. A fixed extraction schema removes that drift.
+Each structure describes its source document. The label differences break corpus-wide Cypher queries because each form needs a different pattern. A fixed extraction schema removes that drift.
 
-The LLM schema provides the vocabulary for facts extracted from prose\:
+The LLM schema defines the vocabulary for facts extracted from prose\:
 
 :::code{language=text}
 (:Hotel)-[:HAS_ROOM]->(:Room)
@@ -93,7 +93,7 @@ The LLM schema provides the vocabulary for facts extracted from prose\:
 (:Hotel)-[:PROVIDES_SERVICE]->(:Service)
 :::
 
-`SimpleKGPipeline` receives this structure through its `schema` argument. The argument contains `node_types`, `relationship_types`, and `patterns`. Schema-driven pruning removes extracted items outside that structure before the graph write, so the model cannot add new labels.
+`SimpleKGPipeline` receives this structure through its `schema` argument. The argument contains `node_types`, `relationship_types`, and `patterns`. Schema-driven pruning removes other extracted items before the graph write, so the graph contains only the defined labels.
 
 The model also follows the property descriptions in the schema\:
 
@@ -115,22 +115,22 @@ The section rule also prevents a sentence such as "Pool facilities are not avail
 
 This division assigns prose extraction to the LLM and preserves authored labels through deterministic parsing. The prebuilt graph and the five documents you add follow the same rule.
 
-The notebook includes an optional comparison that extracts one document without a schema and prints the labels created by the LLM. A temporary source identity isolates that extraction, and cleanup removes only the comparison data after either success or failure. Participant and preloaded documents remain unchanged.
+The notebook includes an optional schema-free extraction and prints the labels created by the LLM. A temporary source identity isolates that extraction, and cleanup removes only the comparison data after either success or failure. Participant and preloaded documents remain unchanged.
 
 ---
 
 ## Retrieval Indexes
 
-The graph dump contains extracted data without retrieval indexes. This module creates vector and full-text indexes over every `Chunk`, including the five new chunks\:
+The graph dump contains the extracted data. This module adds vector and full-text indexes over every `Chunk`, including the five new chunks\:
 
 | Index | What it reads | What it finds |
 |-------|---------------|---------------|
 | `hotel_chunk_embeddings` | `Chunk.embedding`, cosine similarity over 1024 dimensions | Text that means the same thing as the question in different words |
 | `hotel_chunk_fulltext` | `Chunk.text`, full-text | Exact strings that embeddings blur together, such as a postal code or a hotel name |
 
-Each index handles a different query type. Vector search matches meaning, but an embedding of `60611` resembles other five-digit numbers and can rank the correct chunk too low. Full-text search matches the literal value. Module 2 combines both results with hybrid search and then adds hotel properties through a graph traversal.
+Each index serves a different query type. Vector search matches meaning, but an embedding of `60611` resembles other five-digit numbers and can rank the correct chunk too low. Full-text search matches the literal value. Module 2 owns the retrieval comparison: it combines both results with hybrid search and then adds hotel properties through a graph traversal.
 
-Matching the document and query embedding settings ensures that their vectors are comparable. A query embedding created with a different model, dimension count, or purpose can return incorrect rows without producing an error. The workshop embedder prevents this mismatch with fixed settings.
+Matching the document and query embedding settings makes their vectors comparable. A different model, dimension count, or purpose can return incorrect rows while reporting success. The workshop embedder prevents this mismatch with fixed settings.
 
 The build enforces one uniqueness constraint for deterministic identity: `Amenity.name` must be unique. The dump also contains the constraints used by later modules, including the one Module 3 verifies for its duplicate-request check.
 

@@ -7,7 +7,7 @@ Module 5 moves the grounded booking agent from JupyterLab to a managed
 container. Amazon Bedrock AgentCore Runtime starts the container and gives
 authorized AWS clients an API for invoking the agent.
 
-**Overview:**
+**Brief overview**
 
 * **AgentCore Runtime:** Runs the packaged agent outside the notebook.
 * **Deployment package:** Reuses the Module 3 retrieval code, system prompt,
@@ -16,7 +16,7 @@ authorized AWS clients an API for invoking the agent.
   response and structured tool results.
 * **Warm resources:** Reuses Neo4j drivers and the retriever while the container
   stays warm.
-* **Result:** Provides a deployed agent that authorized clients invoke through
+* **Invocation API:** Lets authorized clients invoke the deployed agent through
   `InvokeAgentRuntime`.
 
 The deployment changes where the agent runs and where its credentials live:
@@ -33,9 +33,9 @@ request handling only changes how a caller sends a request and receives a
 result.
 
 Module 3.1 gives the agent one retrieval tool and calls the reservation command
-directly in the write examples. Module 5 exposes both operations as tools. The
-system prompt requires the agent to decline questions when Neo4j lacks the
-required context.
+as a local Python operation in the write examples. Module 5 exposes both
+operations as tools. The system prompt requires the agent to state when Neo4j
+lacks the required context.
 
 ## Deploy the Agent
 
@@ -52,9 +52,9 @@ Runtime, ECR repository, CodeBuild project, and IAM execution role when you
 finish.
 :::
 
-:image[Module 5 architecture: an authorized AWS client invokes the packaged agent on AgentCore Runtime, which calls Neo4j and Bedrock directly]{src="../../images/05-agentcore-runtime-architecture.svg" width=800}
+:image[Module 5 architecture: an authorized AWS client invokes the packaged agent on AgentCore Runtime, which calls Neo4j and Bedrock from the Runtime container]{src="../../images/05-agentcore-runtime-architecture.svg" width=800}
 
-Both tools connect directly to Neo4j from the deployed process. Neo4j checks
+Both tools connect to Neo4j from the deployed process. Neo4j checks
 the maximum-guests rule in the transaction that writes a reservation request.
 This design applies the same rule to every write from the deployed agent.
 
@@ -70,11 +70,10 @@ The container separates reusable resources from request state:
 * **Warm container resources:** Cached Neo4j drivers and the hybrid retriever
   keep their connection pools available for later invocations.
 * **Per-request state:** A new Strands `Agent` and message history are created
-  for every invocation, which keeps one caller's conversation out of the next
-  caller's request.
+  for every invocation. Each request gets an isolated conversation.
 * **Caller request ID:** A hook requires the reservation tool to use the exact
   UUID supplied by the caller. Reusing that UUID makes a retry return the first
-  result without creating a second reservation node.
+  result and keeps the graph at one reservation node.
 
 ## Why the Build Context Needs Staging
 
@@ -83,18 +82,17 @@ sources outside that directory, so Step 2 stages them before the build:
 
 * **Shared package:** `notebooks/workshop/` contains the retrieval code used by
   every module.
-* **Reservation command:**
-  `notebooks/03-grounded-booking-agent/reservation_command.py` contains the
+* **Reservation command:** Module 3's `reservation_command.py` contains the
   graph-enforced write command.
 
 The notebook places both dependencies in `runtime_app/` immediately before the
 build. Git ignores the staged copies, and each notebook run replaces them. The
-original files remain the source of truth.
+original files remain the source of truth, including
+`notebooks/03-grounded-booking-agent/reservation_command.py`.
 
 The staging step packages `workshop/` as a wheel with `uv build --wheel`. It
 also writes the current git commit and working tree status to `BUILD_INFO.txt`.
-The container retains this file so you can identify the source used for the
-build.
+The container retains this file as a record of the source used for the build.
 
 The AgentCore toolkit builds a `linux/arm64` image in CodeBuild. Building for
 the Runtime target ensures that native Python packages match the container's
@@ -113,7 +111,7 @@ used the context returned by Neo4j.
 | Unknown hotel | The request is rejected, and Neo4j records no request |
 | Availability question | The tool returns `answerable: false` and `missing_fact: live_room_availability` |
 | 15-guest request | Neo4j returns `status: rejected` and writes no node |
-| 10-guest request, delivered twice | The first call creates one node, and the retry returns `duplicate=true` without creating another |
+| 10-guest request, delivered twice | The first call creates one node, and the retry returns `duplicate=true` while preserving that one node |
 
 :::alert{type="info" header="Confirm retrieval before testing refusals"}
 A failed retriever can make the agent decline every question. The hotel-details

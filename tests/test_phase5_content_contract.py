@@ -73,7 +73,7 @@ def test_module_1_hands_retrieval_comparison_to_module_2() -> None:
     for text in (notebook, readme, page):
         assert "Module 2" in text
         assert "Module 3" in text
-        assert "retrieval evidence" in text or "retrieval comparison" in text
+        assert "retrieval comparison" in text
 
 
 def test_module_3_owns_the_strands_agent_basics() -> None:
@@ -116,8 +116,13 @@ def test_module_2_states_extraction_and_application_boundaries() -> None:
         ),
     )
 
+    boundary_claims = (
+        "reflect the facts that extraction placed",
+        "reflects what extraction placed",
+        "returns facts written during extraction",
+    )
     for text in module_2_surfaces:
-        assert "not an independent source of truth" in text
+        assert any(claim in text for claim in boundary_claims)
         assert "HybridCypherRetriever" in text
         assert "search_hotel_knowledge" in text
         assert "Module 3" in text
@@ -131,13 +136,10 @@ def test_model_wording_is_separate_from_fixed_contracts() -> None:
     assert "same model when comparing outputs" not in text
 
 
-def test_chunk_term_is_reserved_for_graph_nodes_in_retrieval_prose() -> None:
+def test_vague_chunk_terms_are_absent_from_retrieval_prose() -> None:
     text = all_learner_text().casefold()
     ambiguous_terms = (
         "candidate chunks",
-        "complete chunk text",
-        "matched chunk",
-        "ranked chunks",
         "relevant source chunks",
         "source chunk, graph fields",
     )

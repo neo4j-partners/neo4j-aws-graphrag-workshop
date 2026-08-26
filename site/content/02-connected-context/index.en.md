@@ -3,11 +3,11 @@ title: "Module 2: From Vector Search to Graph-Enriched Retrieval"
 weight: 30
 ---
 
-## Overview
-
 This module compares four retrieval patterns over the Module 1 graph. Each pattern solves a different type of question.
 
 "Which Chicago hotels offer both a spa and a swimming pool?" requires two amenity checks on the same `Hotel` node. Similarity search ranks passages by relevance, while a Cypher query tests both relationships as exact conditions.
+
+**Brief overview**
 
 * **Vector search:** Finds chunks with similar meaning.
 * **Hybrid search:** Combines vector search with exact-term full-text search.
@@ -42,7 +42,7 @@ One large chunk keeps the complete hotel in a single extraction prompt, but it a
 
 The first question asks when "standard arrival processing" begins at AnyCompany Cairo Nile View. The source says "Standard check-in time," yet vector search still finds the Cairo chunk because both phrases have similar meaning. The result includes `3:00 PM`.
 
-The query embedder must match the build settings: the same model, 1024 dimensions, and `GENERIC_INDEX` purpose. Both paths import these values from `workshop/retrieval_contract.py`. A mismatched configuration can return incorrect rows without an error.
+The query embedder must match the build settings: the same model, 1024 dimensions, and `GENERIC_INDEX` purpose. Both paths import these values from `workshop/retrieval_contract.py`. A mismatched configuration can return incorrect rows while reporting success.
 
 ## The Exact-Term Problem
 
@@ -143,9 +143,9 @@ CALL (hotel) {
 }
 :::
 
-The subquery returns one amenity list for each hotel, so room and policy lists do not multiply it. A shared limit caps the list at 12 items. Ordered tie-breaking and `head(collect(candidate))` select one hotel per chunk in a repeatable way.
+The subquery returns one amenity list for each hotel, so room and policy lists stay independent. A shared limit caps the list at 12 items. Ordered tie-breaking and `head(collect(candidate))` select one hotel per chunk in a repeatable way.
 
-The comparison tests five requested properties. `VectorRetriever` returns one because it only returns chunk text. `VectorCypherRetriever` returns all five because it follows `FROM_CHUNK` to the `Hotel`, including `hotel_id`, which never appears in the source text.
+The comparison tests five requested properties. `VectorRetriever` returns one because it only returns chunk text. `VectorCypherRetriever` returns all five because it follows `FROM_CHUNK` to the `Hotel`, where `hotel_id` exists as a graph property.
 
 :::alert{type="info" header="Extraction defines the graph result"}
 Graph enrichment returns facts written during extraction. Each result includes `source_filename`, so a missing or merged property can be checked against the authored document.
@@ -186,7 +186,7 @@ This result shape records why each hotel passed or failed.
 3. Plan the statement with `EXPLAIN`.
 4. Run only a read query, identified by `query_type == 'r'`, with a 15-second timeout.
 
-The schema names the stored relationship `OFFERS_AMENITY`. A guessed relationship such as `HAS_AMENITY` is valid Cypher but returns zero rows, so the schema and examples prevent a false "no hotel found" result.
+The schema names the stored relationship `OFFERS_AMENITY`. A guessed relationship such as `HAS_AMENITY` is valid Cypher but returns zero rows, so the schema and examples prevent an empty result that falsely implies the hotel is missing.
 
 :::alert{type="info" header="Three layers protect the database"}
 The prompt asks for read-only Cypher. The application checks the planned query type with `EXPLAIN`. A production read-only Neo4j user makes the database reject write operations even if the earlier checks miss one.

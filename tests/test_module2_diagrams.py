@@ -16,6 +16,7 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 IMAGES = REPO_ROOT / "site" / "images"
 MODULE_2_PAGE = REPO_ROOT / "site" / "content" / "02-connected-context" / "index.en.md"
 DIAGRAM = IMAGES / "02-select-retriever.svg"
+GRAPH_STRUCTURE_DIAGRAM = IMAGES / "01-graph-structure.svg"
 SVG_NAMESPACE = "http://www.w3.org/2000/svg"
 
 
@@ -34,7 +35,8 @@ def test_the_page_renders_a_diagram_that_exists() -> None:
     referenced = re.findall(
         r'src="\.\./\.\./images/([^"]+)"', MODULE_2_PAGE.read_text(encoding="utf-8")
     )
-    assert referenced == [DIAGRAM.name]
+    assert referenced == [GRAPH_STRUCTURE_DIAGRAM.name, DIAGRAM.name]
+    assert GRAPH_STRUCTURE_DIAGRAM.is_file()
     assert DIAGRAM.is_file()
 
 

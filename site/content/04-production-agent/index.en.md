@@ -112,9 +112,9 @@ with gateway_mcp:
     agent = Agent(tools=gateway_mcp.list_tools_sync(), ...)
 :::
 
-No API key is needed. The proxy uses the AWS credentials already available to
-the notebook process, and the Gateway applies IAM permissions to the signed
-request.
+Authentication comes from the AWS credentials already available to the
+notebook process. The proxy signs the request, and Gateway applies IAM
+permissions to the caller's identity.
 
 ## Telling an Empty Result from a Failure
 

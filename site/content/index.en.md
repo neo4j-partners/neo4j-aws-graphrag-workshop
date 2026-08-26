@@ -35,7 +35,7 @@ arrives pre-configured. Setup guides you through creating a free Neo4j database.
 | **Foundations** | Learn the property graph, the GraphRAG retrieval flow, service responsibilities, and AgentCore capabilities |
 | **Setup** | Create a Neo4j AuraDB Free database, restore the workshop graph, verify Neo4j and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} access |
 | **Module 1: Build the Graph** | Extract five held-out hotel documents into the graph, define the extraction schema, create both retrieval indexes |
-| **Module 2: From Similarity Search to Graph-Enriched Retrieval** | Semantic search, exact-term search, and graph-enriched retrieval |
+| **Module 2: From Vector Search to Graph-Enriched Retrieval** | Semantic search, exact-term search, and graph-enriched retrieval |
 | **Module 3: Build the Grounded Booking Agent** | Grounded answers, clear handling of unsupported questions, and protected reservation writes |
 | **Module 4: Production Agent with AgentCore** | AgentCore Gateway, IAM-authenticated MCP, and a Strands agent over remote tools |
 | **Module 5: Deploy to AgentCore Runtime** | Containerize the agent, launch it on Runtime, correlate one request end to end |
