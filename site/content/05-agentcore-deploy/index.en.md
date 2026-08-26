@@ -37,6 +37,133 @@ as a local Python operation in the write examples. Module 5 exposes both
 operations as tools. The system prompt requires the agent to state when Neo4j
 lacks the required context.
 
+## What AgentCore Runtime Provides
+
+Amazon Bedrock AgentCore is a set of managed services for running agents in
+production. Module 4 used **Gateway** to turn Lambda functions into tools. This
+module uses **Runtime** to host the agent.
+
+Runtime runs the container and handles the operations work around it.
+
+* **Session isolation:** Each session gets its own microVM with its own CPU,
+  memory, and file system. One caller's session stays private from every other
+  caller.
+* **Session lifetime:** A session ends after 15 idle minutes or 8 total hours.
+  AgentCore then deletes the microVM and wipes its memory.
+* **Session context:** Invocations that share a session ID reach the same
+  container. Step 6 gives each smoke test its own session ID, so each test
+  starts clean.
+* **Scaling:** AWS starts and stops containers as traffic changes. AWS also
+  picks the instance size and patches the hosts.
+* **Invocation API:** Clients call `InvokeAgentRuntime` with the Runtime ARN, a
+  session ID, and a JSON payload. AWS supplies the endpoint.
+* **Access control:** IAM decides who may invoke this deployment. Runtime also
+  accepts OAuth 2.0 bearer tokens from a provider such as Amazon Cognito, Okta,
+  or Microsoft Entra ID.
+* **Versions and endpoints:** Creating the Runtime creates version 1 and a
+  `DEFAULT` endpoint. Each update creates a new version, and `DEFAULT` moves to
+  it. Rerunning the notebook therefore ships a new version behind the same ARN.
+* **Protocols:** This agent speaks HTTP. Runtime hosts MCP servers and A2A
+  agents from the same kind of container.
+* **Long requests and streaming:** One invocation can run up to 8 hours. An
+  agent can stream partial output over server-sent events or a WebSocket. This
+  agent returns one JSON result instead.
+
+### The Container Contract
+
+Runtime talks to the container over HTTP. The image has to meet a fixed
+contract, and the `bedrock-agentcore` SDK implements most of it.
+
+* **Port 8080 on `0.0.0.0`:** Runtime posts every request to `/invocations` on
+  that port.
+* **`linux/arm64`:** Runtime runs ARM64 images. Step 4 builds for that platform
+  in CodeBuild.
+* **`BedrockAgentCoreApp`:** `booking_agent.py` creates this object at module
+  level. It serves the HTTP contract, so the agent code skips routing code.
+* **`@app.entrypoint`:** Marks the one function Runtime calls per invocation.
+  The function receives the payload as a dictionary and returns a dictionary.
+  Runtime passes that dictionary back to the caller as JSON.
+* **`app.run()`:** The container's start command runs the module, and
+  `app.run()` serves port 8080. The same line runs the agent locally before you
+  deploy it.
+
+The deployed agent keeps that shape:
+
+:::code{language=python}
+app = BedrockAgentCoreApp()
+
+@app.entrypoint
+def invoke(payload, context=None):
+    prompt, request_id = _prompt(payload)
+    ...
+    return {
+        "response": str(result),
+        "request_id": request_id,
+        "tools_used": tools_used,
+        "grounding_result": grounding_recorder.last_result,
+        "command_result": command_result,
+    }
+
+if __name__ == "__main__":
+    app.run()
+:::
+
+### What Runtime Observes
+
+AgentCore emits telemetry in OpenTelemetry format and stores it in Amazon
+CloudWatch. The container starts under `opentelemetry-instrument`, which adds
+the instrumentation for you.
+
+* **Metrics, on by default:** Invocations, session count, active sessions,
+  latency, throttles, user errors, and system errors.
+* **Traces and spans:** A span records one step of the agent loop, such as a
+  model call or a tool call, with its timing. Enable CloudWatch Transaction
+  Search once per account to view them.
+* **Logs:** Application log lines land in the Runtime log group. The **Read the
+  Runtime Logs** section below reads them with boto3.
+* **GenAI observability dashboard:** CloudWatch draws the execution path, token
+  usage, and an error breakdown for each session.
+* **Your own signals:** Add spans, metrics, and log lines in agent code when
+  the built-in data misses something you need.
+
+### The Rest of AgentCore
+
+Runtime is one service in a larger set. The others cover the remaining parts of
+a production agent.
+
+* **Gateway:** Turns APIs, Lambda functions, and existing MCP servers into
+  tools. Module 4 uses it.
+* **Memory:** Stores short-term conversation state and long-term facts across
+  sessions. Module 6 builds this in Neo4j instead.
+* **Identity:** Holds the credentials an agent needs for outside services, such
+  as Slack or GitHub, and issues tokens at call time.
+* **Code Interpreter and Browser:** Give the agent a sandboxed shell and a
+  managed browser as tools.
+* **Evaluations and Optimization:** Score recorded agent runs, then recommend
+  prompt and tool-description changes and A/B test them.
+* **Policy:** Applies rules to each tool call at the Gateway before the call
+  runs.
+
+AgentCore also includes Harness, Registry, and Payments. Each service works on
+its own, so you can adopt Runtime alone and add the others later.
+
+### What This Module Leaves Out
+
+This deployment covers the shortest path to a running agent. A production
+deployment adds four things.
+
+* **OAuth inbound auth:** This Runtime accepts IAM callers only. A user-facing
+  app validates bearer tokens from an identity provider instead.
+* **Secret handling:** Step 4 passes the Neo4j credentials as environment
+  variables. Production reads them from AWS Secrets Manager or AgentCore
+  Identity at call time.
+* **Custom endpoints:** This deployment invokes `DEFAULT`. Teams that need a
+  test stage create named endpoints and move each one to a version on its own
+  schedule.
+* **Streaming responses:** This entry point returns one JSON object. A chat UI
+  streams tokens over server-sent events or a WebSocket so the user sees text
+  as it arrives.
+
 ## Deploy the Agent
 
 Open `notebooks/05-agentcore-deploy/5.1_deploy.ipynb` to build the container,

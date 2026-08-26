@@ -1,0 +1,89 @@
+<svg viewBox="0 0 900 540" xmlns="http://www.w3.org/2000/svg" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <defs>
+    <filter id="sh3" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1a1a1a" flood-opacity="0.16"/>
+    </filter>
+    <marker id="arrowGray3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#6E7681"/>
+    </marker>
+    <marker id="arrowSteel3" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#4581C3"/>
+    </marker>
+
+    <symbol id="icon-strands3" viewBox="0 0 290 463">
+      <path d="M97.2902 52.7884C85.0674 49.1667 72.2234 56.1389 68.6017 68.3616C64.9801 80.5843 71.9524 93.4283 84.1749 97.0501L235.117 139.775C245.223 142.769 246.357 156.628 236.874 161.226L32.546 260.291C-14.9439 283.316 -9.16107 352.74 41.4835 367.591L189.551 411.009L190.125 411.169C202.183 414.376 214.665 407.396 218.196 395.355C221.784 383.122 214.774 370.296 202.541 366.709L54.4738 323.291C44.3447 320.321 43.1879 306.436 52.6857 301.831L257.014 202.766C304.432 179.776 298.758 110.483 248.233 95.512L97.2902 52.7884Z" fill="#8A8A8A"/>
+      <path d="M259.147 0.981812C271.389 -2.57498 284.197 4.46571 287.754 16.7074C291.311 28.9492 284.27 41.757 272.028 45.3138L71.1727 103.671C40.7142 112.521 37.1976 154.262 65.7459 168.083L241.343 253.093C307.872 285.302 299.794 382.546 228.862 403.336L30.4041 461.502C18.1707 465.088 5.34708 458.078 1.76153 445.844C-1.8239 433.611 5.18637 420.787 17.4197 417.202L215.878 359.035C246.277 350.125 249.739 308.449 221.226 294.645L45.6297 209.635C-20.9834 177.386 -12.7772 79.9893 58.2928 59.3402L259.147 0.981812Z" fill="#00A87A"/>
+    </symbol>
+
+    <symbol id="icon-neo4j3" viewBox="0 0 260 260">
+      <path d="M145 37.6c-3.5.7-10.1 3.1-14.5 5.2-14.7 7.1-24.6 18.7-30.2 35.7-2.6 7.6-2.7 9.1-3.1 33.4l-.4 25.4 2.4-.7c5.3-1.6 15.3-1.8 19.6-.3l4.2 1.5v-19.7c0-27.7 2.6-37.7 12.1-47.2 11.2-11.2 33.7-14.1 49.5-6.4 8 3.9 15 12.5 18.7 23 .7 1.9 1.3 19.2 1.7 46l.5 43h26l-.1-43c0-48.5-.2-50.2-7.4-65.2-7.6-15.6-22.2-26.6-40.7-30.7-8.9-2-29.2-2-38.3 0z"/>
+      <path d="M41.5 100.1c-1.6.4-4.7 2.3-6.9 4.1-9.9 8.1-10.3 24.1-.9 33 6.1 5.8 16.9 7.6 24.1 3.9l3.7-1.9 13.2 9.7c8.2 5.9 13.1 10.1 12.8 10.9-.3.8-.5 3.9-.5 7l-.1 5.7-12.1 8.2-12.1 8.2-3.1-2.2c-4.4-3.2-14.9-3.6-20.2-.9-8.7 4.5-12.8 11.5-12.2 21.3.5 8.9 3.9 14.2 11.7 18.2 9.3 4.7 17.9 3.2 25.2-4.2 4.9-5.1 7.3-11.3 6.7-17.4-.3-3.5-.2-3.6 12.1-12.1l12.3-8.4 3.1 1.9c8.1 4.8 18.5 3.2 25.8-4.1 7.9-7.9 8.9-18.4 2.6-27.7-5.8-8.6-17.9-12.1-27-7.8-2 .9-4 1.5-4.5 1.3-.4-.1-6.3-4.3-13-9.3l-12.2-9 .6-4.6c1.7-12.7-9.2-25.1-21.8-24.8-2.4 0-5.6.5-7.3 1z"/>
+    </symbol>
+  </defs>
+
+  <!-- Header -->
+  <rect x="30" y="20" width="840" height="56" rx="8" fill="#F5F5F5" stroke="#D6D6D6"/>
+  <text x="450" y="45" text-anchor="middle" font-size="17" font-weight="700" fill="#1A1A1A">The Grounded Booking Agent</text>
+  <text x="450" y="64" text-anchor="middle" font-size="12" fill="#555555">One tool reads the graph. A separate command writes to it.</text>
+
+  <!-- Read path lane -->
+  <rect x="30" y="92" width="840" height="228" rx="10" fill="#FAFAFA" stroke="#E4E4E4"/>
+  <text x="48" y="114" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#6E7681">READ PATH: ANSWER A QUESTION</text>
+
+  <!-- Return leg -->
+  <path d="M751,150 V124 H349 V150" fill="none" stroke="#4581C3" stroke-width="2" marker-end="url(#arrowSteel3)"/>
+  <text x="550" y="118" text-anchor="middle" font-size="10.5" fill="#1F4E7A">hotel facts, as JSON</text>
+
+  <!-- Step 1: user -->
+  <rect x="60" y="150" width="174" height="64" rx="8" fill="#F0F0F0" stroke="#8A8A8A" stroke-width="1.5"/>
+  <text x="147" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#3A3A3A">You</text>
+  <text x="147" y="198" text-anchor="middle" font-size="10.5" fill="#555555">ask a hotel question</text>
+  <line x1="234" y1="182" x2="262" y2="182" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+
+  <!-- Step 2: agent -->
+  <rect x="262" y="150" width="174" height="64" rx="8" fill="#FFFFFF" stroke="#8A8A8A" stroke-width="1.5" filter="url(#sh3)"/>
+  <use href="#icon-strands3" x="272" y="159" width="18" height="18"/>
+  <text x="349" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1A1A">Strands agent</text>
+  <text x="349" y="198" text-anchor="middle" font-size="10.5" fill="#555555">Claude on Amazon Bedrock</text>
+  <line x1="436" y1="182" x2="464" y2="182" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+
+  <!-- Step 3: tool -->
+  <rect x="464" y="150" width="174" height="64" rx="8" fill="#FFFFFF" stroke="#01A88D" stroke-width="1.5" filter="url(#sh3)"/>
+  <text x="551" y="180" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">search_hotel_knowledge</text>
+  <text x="551" y="198" text-anchor="middle" font-size="10.5" fill="#555555">the agent's only tool</text>
+  <line x1="638" y1="182" x2="666" y2="182" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+
+  <!-- Step 4: Neo4j -->
+  <rect x="666" y="150" width="174" height="64" rx="8" fill="#EEF4FB" stroke="#4581C3" stroke-width="1.5"/>
+  <use href="#icon-neo4j3" x="676" y="159" width="18" height="18" fill="#4581C3"/>
+  <text x="753" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E7A">Neo4j</text>
+  <text x="753" y="198" text-anchor="middle" font-size="10.5" fill="#1F4E7A">hotel graph and indexes</text>
+
+  <!-- Answer -->
+  <line x1="349" y1="214" x2="349" y2="244" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+  <rect x="60" y="244" width="780" height="56" rx="8" fill="#232F3E" filter="url(#sh3)"/>
+  <text x="450" y="269" text-anchor="middle" font-size="13.5" font-weight="700" fill="#FFFFFF">The agent answers from those facts only.</text>
+  <text x="450" y="288" text-anchor="middle" font-size="11.5" fill="#D5DBE2">When the facts do not cover the question, it says the graph does not have the answer.</text>
+
+  <!-- Write path lane -->
+  <rect x="30" y="344" width="840" height="140" rx="10" fill="#FAFAFA" stroke="#E4E4E4"/>
+  <text x="48" y="366" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#6E7681">WRITE PATH: MAKE A RESERVATION</text>
+
+  <rect x="60" y="388" width="240" height="68" rx="8" fill="#FFFFFF" stroke="#8A8A8A" stroke-width="1.5" filter="url(#sh3)"/>
+  <text x="180" y="418" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1A1A">Reservation command</text>
+  <text x="180" y="436" text-anchor="middle" font-size="10.5" fill="#555555">your Python code, not the model</text>
+  <line x1="300" y1="422" x2="330" y2="422" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+
+  <rect x="330" y="388" width="240" height="68" rx="8" fill="#EEF4FB" stroke="#4581C3" stroke-width="1.5"/>
+  <use href="#icon-neo4j3" x="340" y="397" width="18" height="18" fill="#4581C3"/>
+  <text x="450" y="418" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E7A">Rule check in Neo4j</text>
+  <text x="450" y="436" text-anchor="middle" font-size="10.5" fill="#1F4E7A">at most 10 guests</text>
+  <line x1="570" y1="422" x2="600" y2="422" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+
+  <rect x="600" y="388" width="240" height="68" rx="8" fill="#EEF4FB" stroke="#4581C3" stroke-width="1.5"/>
+  <use href="#icon-neo4j3" x="610" y="397" width="18" height="18" fill="#4581C3"/>
+  <text x="720" y="418" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E7A">Write in one transaction</text>
+  <text x="720" y="436" text-anchor="middle" font-size="10.5" fill="#1F4E7A">one request_id, one saved request</text>
+
+  <text x="450" y="514" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3A3A3A">The model never writes to the graph.</text>
+</svg>

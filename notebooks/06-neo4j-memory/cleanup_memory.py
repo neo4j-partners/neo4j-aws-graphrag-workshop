@@ -5,7 +5,7 @@
 Removes exactly what the scenario notebook wrote:
 
 1. Workshop-owned ``ABOUT_HOTEL`` relationships.
-2. Conversations, messages, and users in the ``demo08-`` namespace.
+2. Conversations, messages, and users in the ``memory06-`` namespace.
 3. Preferences tagged by this demo, but only after no user owns them.
 
 The hotel graph, its chunk indexes, and other modules' data are untouched.

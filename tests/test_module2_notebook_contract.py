@@ -115,7 +115,7 @@ def test_context_measurement_counts_values_once_without_repr_punctuation() -> No
     for source in notebook_code_cells():
         for node in ast.parse(source).body:
             if isinstance(node, ast.FunctionDef) and node.name in {
-                "evidence_value_chars",
+                "context_value_chars",
                 "context_char_counts",
             }:
                 nodes.append(node)
@@ -136,9 +136,9 @@ def test_fixed_chicago_evidence_fields_are_built_behaviorally() -> None:
     for source in notebook_code_cells():
         for node in ast.parse(source).body:
             if isinstance(node, ast.FunctionDef) and node.name in {
-                "evidence_value_chars",
+                "context_value_chars",
                 "context_char_counts",
-                "fixed_cypher_evidence",
+                "fixed_cypher_context",
             }:
                 nodes.append(node)
             elif isinstance(node, ast.Assign) and any(
@@ -159,12 +159,12 @@ def test_fixed_chicago_evidence_fields_are_built_behaviorally() -> None:
         "missing_required_amenities": [],
     }
 
-    evidence = namespace["fixed_cypher_evidence"](record)
+    context = namespace["fixed_cypher_context"](record)
 
-    assert evidence["missing_requested_fields"] == []
-    assert evidence["source_text_chars"] == len("authored Chicago source")
-    assert evidence["structured_context_chars"] > 0
-    assert evidence["field_provenance"]["source_filename"].endswith(
+    assert context["missing_requested_fields"] == []
+    assert context["source_text_chars"] == len("authored Chicago source")
+    assert context["structured_context_chars"] > 0
+    assert context["field_provenance"]["source_filename"].endswith(
         "[:FROM_DOCUMENT]->(:Document)"
     )
 

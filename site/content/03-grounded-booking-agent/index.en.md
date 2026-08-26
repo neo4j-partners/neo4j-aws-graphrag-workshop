@@ -8,7 +8,7 @@ answers hotel questions from Neo4j context and says when the graph lacks a
 requested fact. A separate reservation command checks business rules before it
 writes an approved request to Neo4j.
 
-**What this module builds**
+**Brief overview**
 
 * **Grounded answers:** The agent must call a retrieval tool before it answers.
   The tool runs `HybridCypherRetriever` from Module 2 and hands the model only
@@ -21,17 +21,21 @@ writes an approved request to Neo4j.
   return the original result instead of creating a second `ReservationRequest`
   node.
 
-:image[Grounded agent architecture: Neo4j supplies graph-enriched context and enforces reservation rules; Amazon Bedrock uses the context to answer questions]{src="../../images/03-grounded-agent-architecture-context.png" width=800}
+:image[Grounded agent architecture: the agent reads hotel facts from Neo4j through one tool, and a separate command writes reservations back to Neo4j]{src="../../images/03-grounded-agent-overview.svg" width=800}
 
-The diagram splits the system into two zones. Neo4j, on the left, holds the
-knowledge and enforces the rules\: the hotel graph, the vector and full-text
-indexes, `HybridCypherRetriever`, the maximum-guests rule, and the reservation
-write. Amazon Bedrock, on the right, only reasons\: it embeds the question,
-runs the model, and lets the model call one tool, `search_hotel_knowledge_tool`.
-Two arrows cross between the zones. Retrieval sends bounded context JSON up
-from Neo4j to the model. Once the model decides to make a reservation, the
-reservation command sends validated command input back down to Neo4j. The
-model itself never touches the write path.
+The agent has one way to read the graph and no way to write to it. A separate
+command handles reservations.
+
+* **Strands agent:** Runs Claude on Amazon Bedrock. It reads the question and
+  picks the tool to call.
+* **`search_hotel_knowledge` tool:** The agent's only tool. It runs the
+  Module 2 hybrid search and returns hotel facts as JSON.
+* **Neo4j:** Stores the hotel graph, both search indexes, and the
+  maximum-guests rule.
+* **Grounded answer:** The agent answers from the returned facts. When those
+  facts do not cover the question, it says the graph does not have the answer.
+* **Reservation command:** Plain Python code. It checks the rule and writes the
+  request in one transaction, so the model never writes to the graph.
 
 ## Strands Agent Basics
 

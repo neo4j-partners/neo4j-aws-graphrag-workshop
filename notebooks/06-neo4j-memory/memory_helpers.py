@@ -79,18 +79,21 @@ from pydantic import SecretStr
 # to the same model before the workshop starts and would otherwise drift from
 # this module silently.
 
-# Workshop ownership marker for the memory records this demo writes. It mirrors
-# contracts.WORKSHOP_OWNER, a fixed namespace string ("neo4j-ftw-demo-6") the
-# shared workshop code reuses as its ownership tag.
-# cleanup_memory.py deletes only records carrying this marker, so cleanup can
-# never reach the hotel graph or another module's data.
-WORKSHOP_OWNER = "neo4j-ftw-demo-8"
+# Workshop ownership marker for the memory records this module writes.
+# It follows the same convention as contracts.WORKSHOP_OWNER but holds a
+# deliberately different value. The shared workshop code tags the fixture
+# hotels and the maximum-guests rule with "neo4j-ftw-demo-6", and
+# cleanup_memory.py deletes records carrying the marker below. Reusing the
+# shared value here would point memory cleanup at fixture data, so the two
+# markers must never be equal. Naming this one after the module rather than
+# after a module number keeps it distinct when modules are renumbered.
+WORKSHOP_OWNER = "neo4j-ftw-memory"
 
 # Every session id and user identifier the scenario notebook writes starts
 # with this prefix. Cleanup sweeps the prefix as well as the ownership
 # marker, so records from a run that failed before the tagging step are
 # still removed.
-DEMO_ID_PREFIX = "demo08-"
+DEMO_ID_PREFIX = "memory06-"
 
 # One committed fixture keeps the participant path deterministic. Every Hotel
 # node gets a hotel_id when it is created: the two fixture hotels are pinned

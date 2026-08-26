@@ -165,7 +165,26 @@ BANNED_PATTERNS = (
     (re.compile(r"\bModules?\s+[78]\b"), "retired 'Module 7/8' numbering"),
     (re.compile(r"customer-service-"), "retired e-commerce resource prefix"),
     (re.compile(r"\(\s*\d+\s*(?:min|minutes|hours?)\s*\)", re.IGNORECASE), "timing stamp"),
-    (re.compile(r"\b\d+\s*(?:-|\s)\s*(?:minute|hour)\b", re.IGNORECASE), "timing estimate"),
+    # Scoped to durations that describe the workshop itself. The bare form
+    # "\d+ hour" also matches hotel facts the retrievers return, such as a
+    # 24-hour front desk or a 24-hour cancellation policy, and those are corpus
+    # content rather than a schedule the facilitator has to keep.
+    (
+        re.compile(
+            r"\b\d+\s*(?:-|\s)\s*(?:minute|hour)s?\s+"
+            r"(?:module|lab|workshop|session|exercise|demo|notebook|walkthrough|break)\b",
+            re.IGNORECASE,
+        ),
+        "timing estimate",
+    ),
+    (
+        re.compile(
+            r"\b(?:takes|take|allow|budget|plan for|expect|approximately|about|around|roughly)"
+            r"\s+\d+\s*(?:-|\s)\s*(?:minute|hour)s?\b",
+            re.IGNORECASE,
+        ),
+        "timing estimate",
+    ),
 )
 
 # Applied to notebooks and content pages only. "Counts stay out of prose" is a

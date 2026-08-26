@@ -50,46 +50,36 @@ one hue per branch, metadata labels in small caps.
 
 ---
 
-## Diagram 4: Grounded Agent Architecture
-**Filename:** `03-grounded-agent-architecture-context.png`
-**Dimensions:** 1600 × 900 px (16:9)
+## Diagram 4: Grounded Agent Overview
+**Filename:** `03-grounded-agent-overview.svg`
+**Editable source:** the SVG itself
+**Dimensions:** 900 x 540 viewBox, rendered at `width=800`
 
-**Canva prompt:**
+This diagram is hand-authored SVG, in the same style as
+`foundations-grounded-request-flow.svg`. There is no editor file and no raster
+export. Edit the SVG directly and the site picks the change up on the next build.
+
+**Design contract:**
 ```
-Clean architecture diagram on white background showing responsibility separation between Neo4j and AWS.
+TITLE: "The Grounded Booking Agent"
+SUBTITLE: "One tool reads the graph. A separate command writes to it."
 
-TWO-ZONE LAYOUT divided by a vertical dashed line:
+TOP LANE, "READ PATH: ANSWER A QUESTION", left to right:
+You -> Strands agent (Claude on Amazon Bedrock) -> search_hotel_knowledge
+(the agent's only tool) -> Neo4j (hotel graph and indexes).
+A return arrow carries "hotel facts, as JSON" from Neo4j back to the agent.
+A dark bar closes the lane: the agent answers from those facts only, and says
+the graph does not have the answer when they do not cover the question.
 
-LEFT ZONE labeled "Neo4j Aura" (cyan/teal theme, #4581C3):
-Header: Neo4j logo + "Knowledge + Rules"
+BOTTOM LANE, "WRITE PATH: MAKE A RESERVATION", left to right:
+Reservation command (your Python code, not the model) -> Rule check in Neo4j
+(at most 10 guests) -> Write in one transaction (one request_id, one saved
+request).
 
-Boxes from top to bottom:
-1. "Hotel Knowledge Graph" - network nodes icon
-   (hotels, amenities, ratings, policies)
-2. "Vector Index: hotel_chunk_embeddings" - cylinder icon
-3. "Full-text Index: hotel_chunk_fulltext" - text search icon
-4. "HybridCypherRetriever" - fixed traversal icon
-5. "Maximum-Guests Rule (cap: 10)" - shield/rule icon
-6. "Idempotent ReservationRequest Write" - database write icon
+FOOTER: "The model never writes to the graph."
 
-RIGHT ZONE labeled "Amazon Bedrock" (orange theme, #FF9900):
-Header: AWS logo + "Reasoning only"
-
-Boxes from top to bottom:
-1. "Amazon Nova 2 Embeddings" - vector icon
-   (1024-dim query embedding)
-2. "Claude Sonnet" - brain/LLM icon
-   (reasons over retrieved context only)
-3. "Strands Agent" - tool calling icon
-   (tool: search_hotel_knowledge_tool)
-
-CENTER (connecting the zones):
-Arrow from Neo4j retrieval → Bedrock: "Bounded context JSON"
-Arrow from Bedrock decision → Neo4j write: "Validated command input"
-
-BOTTOM BAR: "The LLM never sees the write path. Rules are enforced by the graph."
-
-Style: AWS architecture style, two-tone zones, flat icons, clean labels, professional workshop look
+Style: white background, Helvetica stack, flat fills, Neo4j blue for graph
+boxes, teal for the tool, dark navy for the outcome bar.
 ```
 
 ---

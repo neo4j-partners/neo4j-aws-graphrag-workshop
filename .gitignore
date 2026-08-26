@@ -68,3 +68,7 @@ site/node_modules/
 
 # macOS
 .DS_Store
+
+# Local Marp preview output. The published slide HTML is written into
+# site/modules/ by site/scripts/build-slides.mjs and is ignored with it.
+slides/**/*.html
