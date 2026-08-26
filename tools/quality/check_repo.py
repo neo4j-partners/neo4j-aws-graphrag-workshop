@@ -243,13 +243,21 @@ SWEPT_SUFFIXES = (".py", ".ipynb", ".md")
 
 
 def swept_files() -> list[Path]:
-    """Notebooks, shared modules, and content pages. Not the planning documents."""
+    """Notebooks, shared modules, and content pages. Not the planning documents.
+
+    `build/` is skipped with the other generated trees. A wheel build under
+    `notebooks/workshop/` copies the package sources into it, and that copy goes
+    stale the moment the sources change, so checking it reports defects that were
+    already fixed.
+    """
     files: list[Path] = []
     for tree in SWEPT_TREES:
         for path in sorted(tree.rglob("*")):
             if path.suffix not in SWEPT_SUFFIXES or not path.is_file():
                 continue
             if ".venv" in path.parts or "__pycache__" in path.parts:
+                continue
+            if "build" in path.parts:
                 continue
             files.append(path)
     return files

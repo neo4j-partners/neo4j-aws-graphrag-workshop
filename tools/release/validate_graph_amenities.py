@@ -33,7 +33,7 @@ from workshop.graph_connection import (
     require_neo4j_env,
 )
 
-CORPUS_ARCHIVE = CONNECTED_CONTEXT_DIR / "hotel-faqs.zip"
+CORPUS_ARCHIVE = NOTEBOOKS_DIR / "shared" / "hotel-faqs.zip"
 
 DOCUMENT_QUERY = """
 CYPHER 25

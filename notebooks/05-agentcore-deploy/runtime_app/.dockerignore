@@ -1,3 +1,17 @@
+# This file governs a hand-run `docker build` in this directory and nothing
+# else. The deploy path in 5.1_deploy.ipynb never reads it: the starter toolkit
+# zips the build context with its own bundled dockerignore template regardless
+# of how the runtime is configured, and that template excludes `.dockerignore`
+# by name, which is why the uploaded source zip carries a copy of this file
+# rather than obeying it.
+#
+# It is kept here for two reasons. The toolkit's `generate_dockerfile` calls
+# `_ensure_dockerignore` on the build context during `configure()`, and that
+# writes the toolkit's own template copy here whenever this file is absent, so
+# deleting it produces an untracked file nobody wrote. Separately, what reaches
+# the image is decided by the Dockerfile, which names every file it copies
+# instead of using `COPY . .`, so nothing below is what keeps the image clean.
+
 # Python cache
 __pycache__/
 *.py[cod]

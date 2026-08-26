@@ -50,7 +50,7 @@ from workshop.retrieval_setup import (
 )
 
 DATA_DIR = SCRIPT_DIR / "data"
-CORPUS_ZIP = SCRIPT_DIR / "hotel-faqs.zip"
+CORPUS_ZIP = NOTEBOOKS_ROOT / "shared" / "hotel-faqs.zip"
 LITE_DOCUMENTS = 30
 EXPECTED_CORPUS_DOCUMENTS = 300
 
@@ -62,10 +62,10 @@ class SourceSelectionError(ValueError):
 def ensure_corpus_extracted(data_dir: Path = DATA_DIR) -> int:
     """Extract the committed corpus zip when no documents are present yet.
 
-    `data/` is gitignored, so a fresh clone has only `hotel-faqs.zip`. The
-    notebook's first cell extracts it, and the script path has to do the same
-    or a participant who starts here stops at an empty directory. Returns the
-    number of source documents now on disk.
+    `data/` is gitignored, so a fresh clone has only the committed corpus zip
+    in `notebooks/shared/`. The notebook's first cell extracts it, and the
+    script path has to do the same or a participant who starts here stops at
+    an empty directory. Returns the number of source documents now on disk.
     """
     extracted = sorted(data_dir.glob("*.txt"))
     if extracted or not CORPUS_ZIP.exists():

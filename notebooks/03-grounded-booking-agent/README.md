@@ -49,7 +49,6 @@ The database enforces two behaviors:
 |---|---|
 | `3.1_grounded_booking_agent.ipynb` | The grounded agent and the protected reservation write |
 | `reservation_command.py` | The local reservation command that Module 5 deploys with the agent |
-| `grounded_bedrock_model.py` | The `BedrockModel` subclass that forces a tool call on every fresh hotel question |
 
 The production retriever lives in `workshop/hybrid_retrieval.py`. Module 2 selects its fixed Hybrid-Cypher pattern because the application needs exact hotel-name support and connected graph fields. The `search_hotel_knowledge` function exposes that decision through one `query` argument. Modules 4 and 5 deploy the same function unchanged.
 

@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" font-family="Helvetica Neue, Helvetica, Arial, sans-serif">
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="7" flood-color="#17233a" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#E87722"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0 0 L10 5 L0 10 Z" fill="#3574B9"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="900" fill="#FFFFFF"/>
+
+  <text x="800" y="54" text-anchor="middle" font-size="32" font-weight="700" fill="#17233A">How This Pattern Extends to Production</text>
+  <text x="800" y="84" text-anchor="middle" font-size="17" fill="#5F6875">Use each store for the questions it answers best</text>
+  <rect x="617" y="102" width="366" height="30" rx="15" fill="#FFF3E8" stroke="#E87722"/>
+  <text x="800" y="122" text-anchor="middle" font-size="13" font-weight="700" fill="#A34A09" letter-spacing="0.7">PRODUCTION EXTENSION, NOT BUILT IN THIS LAB</text>
+
+  <rect x="48" y="154" width="646" height="668" rx="18" fill="#FFFFFF" stroke="#E5E8EC" filter="url(#shadow)"/>
+  <path d="M48 206 V172 Q48 154 66 154 H676 Q694 154 694 172 V206 Z" fill="#E87722"/>
+  <text x="78" y="188" font-size="22" font-weight="700" fill="#FFFFFF">Amazon S3 Tables + Amazon Athena</text>
+  <text x="371" y="232" text-anchor="middle" font-size="16" font-style="italic" fill="#737B86">Lakehouse storage + serverless SQL</text>
+
+  <rect x="76" y="254" width="590" height="296" rx="14" fill="#FFF7F0" stroke="#F0A66D" stroke-width="2"/>
+  <text x="100" y="287" font-size="16" font-weight="700" fill="#A34A09" letter-spacing="0.5">APACHE ICEBERG TABLES IN AMAZON S3</text>
+  <text x="641" y="287" text-anchor="end" font-size="13" font-style="italic" fill="#9A7560">analytic facts and events</text>
+
+  <g font-size="17" fill="#17233A">
+    <rect x="100" y="312" width="18" height="22" rx="3" fill="#FFFFFF" stroke="#E87722" stroke-width="2"/>
+    <text x="136" y="329" font-weight="700">hotels</text>
+    <rect x="560" y="307" width="78" height="28" rx="14" fill="#E8F7EF" stroke="#2D9D68"/>
+    <text x="599" y="326" text-anchor="middle" font-size="13" fill="#167748">shared</text>
+
+    <rect x="100" y="356" width="18" height="22" rx="3" fill="#FFFFFF" stroke="#E87722" stroke-width="2"/>
+    <text x="136" y="373" font-weight="700">rooms</text>
+    <rect x="560" y="351" width="78" height="28" rx="14" fill="#E8F7EF" stroke="#2D9D68"/>
+    <text x="599" y="370" text-anchor="middle" font-size="13" fill="#167748">shared</text>
+
+    <rect x="100" y="400" width="18" height="22" rx="3" fill="#FFFFFF" stroke="#E87722" stroke-width="2"/>
+    <text x="136" y="417" font-weight="700">rate_inventory_snapshots</text>
+    <text x="638" y="417" text-anchor="end" font-size="14" fill="#737B86">high volume</text>
+
+    <rect x="100" y="444" width="18" height="22" rx="3" fill="#FFFFFF" stroke="#E87722" stroke-width="2"/>
+    <text x="136" y="461" font-weight="700">booking_events</text>
+    <text x="638" y="461" text-anchor="end" font-size="14" fill="#737B86">high volume</text>
+
+    <rect x="100" y="488" width="18" height="22" rx="3" fill="#FFFFFF" stroke="#E87722" stroke-width="2"/>
+    <text x="136" y="505" font-weight="700">guest_interactions</text>
+    <text x="638" y="505" text-anchor="end" font-size="14" fill="#737B86">high volume</text>
+  </g>
+
+  <rect x="76" y="570" width="590" height="218" rx="14" fill="#F3F5F7" stroke="#CDD3DA"/>
+  <text x="100" y="603" font-size="17" font-weight="700" fill="#17233A">Optimized for analytics</text>
+  <g font-size="16" fill="#354052">
+    <circle cx="108" cy="637" r="3.5" fill="#E87722"/><text x="126" y="643">Occupancy, ADR, and RevPAR</text>
+    <circle cx="108" cy="674" r="3.5" fill="#E87722"/><text x="126" y="680">Hourly, daily, and seasonal trends</text>
+    <circle cx="108" cy="711" r="3.5" fill="#E87722"/><text x="126" y="717">Demand forecasting and anomaly detection</text>
+    <circle cx="108" cy="748" r="3.5" fill="#E87722"/><text x="126" y="754">SQL reporting and dashboards with Athena</text>
+  </g>
+  <rect x="98" y="766" width="212" height="24" rx="12" fill="#FFFFFF" stroke="#F0A66D"/>
+  <text x="204" y="783" text-anchor="middle" font-size="12" fill="#A34A09">AWS Glue Data Catalog</text>
+  <rect x="326" y="766" width="206" height="24" rx="12" fill="#FFFFFF" stroke="#F0A66D"/>
+  <text x="429" y="783" text-anchor="middle" font-size="12" fill="#A34A09">AWS Lake Formation</text>
+
+  <rect x="906" y="154" width="646" height="668" rx="18" fill="#FFFFFF" stroke="#E5E8EC" filter="url(#shadow)"/>
+  <path d="M906 206 V172 Q906 154 924 154 H1534 Q1552 154 1552 172 V206 Z" fill="#1590E8"/>
+  <text x="936" y="188" font-size="22" font-weight="700" fill="#FFFFFF">Neo4j Aura</text>
+  <text x="1229" y="232" text-anchor="middle" font-size="16" font-style="italic" fill="#737B86">Connected domain data + GraphRAG</text>
+
+  <rect x="934" y="254" width="590" height="386" rx="14" fill="#EDF5FD" stroke="#6AB3EA" stroke-width="2"/>
+  <text x="958" y="287" font-size="16" font-weight="700" fill="#14558A" letter-spacing="0.5">HOTEL KNOWLEDGE GRAPH</text>
+  <text x="1500" y="287" text-anchor="end" font-size="13" font-style="italic" fill="#5C8CB4">connected facts and controls</text>
+
+  <g stroke="#3574B9" stroke-width="2.5" fill="none">
+    <line x1="1229" y1="375" x2="1058" y2="337"/>
+    <line x1="1229" y1="375" x2="1400" y2="337"/>
+    <line x1="1229" y1="375" x2="1058" y2="462"/>
+    <line x1="1229" y1="375" x2="1400" y2="462"/>
+    <line x1="1229" y1="415" x2="1400" y2="550"/>
+    <line x1="1146" y1="550" x2="1312" y2="550"/>
+  </g>
+
+  <rect x="1143" y="354" width="172" height="62" rx="31" fill="#3477BB" stroke="#165488" stroke-width="2"/>
+  <text x="1229" y="379" text-anchor="middle" font-size="19" font-weight="700" fill="#FFFFFF">Hotel</text>
+  <text x="1229" y="400" text-anchor="middle" font-size="12" fill="#EAF5FF">name · address · rating</text>
+
+  <g font-size="16" text-anchor="middle">
+    <rect x="970" y="307" width="176" height="52" rx="26" fill="#E8F7EF" stroke="#2D9D68" stroke-width="2"/>
+    <text x="1058" y="339" fill="#176E47" font-weight="700">Room</text>
+    <rect x="1312" y="307" width="176" height="52" rx="26" fill="#E8F7EF" stroke="#2D9D68" stroke-width="2"/>
+    <text x="1400" y="339" fill="#176E47" font-weight="700">Amenity</text>
+    <rect x="970" y="436" width="176" height="52" rx="26" fill="#FFFFFF" stroke="#6AB3EA" stroke-width="2"/>
+    <text x="1058" y="468" fill="#14558A" font-weight="700">Policy</text>
+    <rect x="1312" y="436" width="176" height="52" rx="26" fill="#FFFFFF" stroke="#6AB3EA" stroke-width="2"/>
+    <text x="1400" y="468" fill="#14558A" font-weight="700">Service</text>
+    <rect x="970" y="524" width="176" height="52" rx="26" fill="#FFFFFF" stroke="#6AB3EA" stroke-width="2"/>
+    <text x="1058" y="556" fill="#14558A" font-weight="700">User</text>
+    <rect x="1312" y="524" width="176" height="52" rx="26" fill="#FFFFFF" stroke="#6AB3EA" stroke-width="2"/>
+    <text x="1400" y="556" fill="#14558A" font-weight="700">Preference</text>
+  </g>
+
+  <g font-size="11" font-weight="700" fill="#3574B9" text-anchor="middle">
+    <text x="1124" y="331">HAS_ROOM</text>
+    <text x="1334" y="331">OFFERS_AMENITY</text>
+    <text x="1116" y="449">HAS_POLICY</text>
+    <text x="1342" y="449">PROVIDES_SERVICE</text>
+    <text x="1328" y="500">ABOUT_HOTEL</text>
+    <text x="1229" y="542">HAS_PREFERENCE</text>
+  </g>
+
+  <rect x="934" y="660" width="590" height="128" rx="14" fill="#F3F5F7" stroke="#CDD3DA"/>
+  <text x="958" y="692" font-size="17" font-weight="700" fill="#17233A">Optimized for connected questions</text>
+  <g font-size="15" fill="#354052">
+    <circle cx="966" cy="724" r="3.5" fill="#3574B9"/><text x="984" y="730">Multi-hop traversal and graph-enriched retrieval</text>
+    <circle cx="966" cy="756" r="3.5" fill="#3574B9"/><text x="984" y="762">Rules, provenance, reservations, and guest memory</text>
+  </g>
+
+  <rect x="708" y="322" width="178" height="282" rx="18" fill="#F6FBFA" stroke="#64BDB1" stroke-width="2"/>
+  <text x="797" y="354" text-anchor="middle" font-size="15" font-weight="700" fill="#146D65">DATA PIPELINE</text>
+  <text x="797" y="380" text-anchor="middle" font-size="12" fill="#4D716D">AWS Glue ETL or</text>
+  <text x="797" y="399" text-anchor="middle" font-size="12" fill="#4D716D">application services</text>
+
+  <line x1="694" y1="442" x2="906" y2="442" stroke="#E87722" stroke-width="4" marker-end="url(#arrow-orange)"/>
+  <text x="800" y="429" text-anchor="middle" font-size="12" font-weight="700" fill="#A34A09">entities + relationships</text>
+  <line x1="906" y1="505" x2="694" y2="505" stroke="#3574B9" stroke-width="4" marker-end="url(#arrow-blue)"/>
+  <text x="800" y="530" text-anchor="middle" font-size="12" font-weight="700" fill="#14558A">graph results + features</text>
+  <rect x="728" y="556" width="138" height="30" rx="15" fill="#E8F7EF" stroke="#2D9D68"/>
+  <text x="797" y="576" text-anchor="middle" font-size="12" font-weight="700" fill="#176E47">shared stable IDs</text>
+
+  <rect x="178" y="842" width="1244" height="40" rx="20" fill="#17233A"/>
+  <text x="800" y="868" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">Athena analyzes tables in Amazon S3. Neo4j traverses relationships and returns grounded context.</text>
+</svg>

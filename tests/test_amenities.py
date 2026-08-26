@@ -21,10 +21,7 @@ from workshop.amenities import (
 )
 
 CORPUS_ARCHIVE = (
-    Path(__file__).resolve().parents[1]
-    / "notebooks"
-    / "02-connected-context"
-    / "hotel-faqs.zip"
+    Path(__file__).resolve().parents[1] / "notebooks" / "shared" / "hotel-faqs.zip"
 )
 
 HISTORICAL_MISSING_HOTEL_SOURCES = {

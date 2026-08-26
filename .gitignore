@@ -51,8 +51,11 @@ notebooks/faqs_*.index
 # are staged into runtime_app/ by 5.1_deploy.ipynb immediately before the
 # container build, because Docker cannot reach outside its build context. The
 # originals are the versioned copies; these are regenerated every run.
+# `BUILD_INFO.txt` is written by the same cell and stamps the commit the image
+# was built from, so a tracked copy of it is stale from the moment it lands.
 notebooks/05-agentcore-deploy/runtime_app/workshop-*.whl
 notebooks/05-agentcore-deploy/runtime_app/reservation_command.py
+notebooks/05-agentcore-deploy/runtime_app/BUILD_INFO.txt
 notebooks/05-agentcore-deploy/runtime_app/.bedrock_agentcore.yaml
 notebooks/05-agentcore-deploy/runtime_app/Dockerfile.bak
 

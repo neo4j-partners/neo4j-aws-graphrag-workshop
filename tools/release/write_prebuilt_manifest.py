@@ -26,7 +26,7 @@ CRITICAL_FILES = {
     "contracts": Path("notebooks/workshop/contracts.py"),
     "graph_schema_contract": Path("notebooks/workshop/graph_schema.py"),
     "retrieval_contract": Path("notebooks/workshop/retrieval_contract.py"),
-    "corpus": Path("notebooks/02-connected-context/hotel-faqs.zip"),
+    "corpus": Path("notebooks/shared/hotel-faqs.zip"),
     "uv_lock": Path("notebooks/workshop/uv.lock"),
     "build_script": Path("tools/release/build_prebuilt_graph.sh"),
     "manifest_writer": Path("tools/release/write_prebuilt_manifest.py"),

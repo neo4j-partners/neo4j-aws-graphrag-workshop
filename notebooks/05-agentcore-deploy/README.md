@@ -38,7 +38,7 @@ The cells that create or invoke AWS resources check `DEPLOY_READY` first. They s
 | File | Purpose |
 |---|---|
 | `5.1_deploy.ipynb` | The module notebook |
-| `runtime_app/` | The container build context with `booking_agent.py`, `agent_requirements.txt`, and the `Dockerfile`. Git ignores the staged `workshop` wheel, `reservation_command.py`, and `workshop/` tree. The notebook rewrites the tracked `BUILD_INFO.txt` file for each build. |
+| `runtime_app/` | The container build context with `booking_agent.py`, `agent_requirements.txt`, and the `Dockerfile`. Git ignores the staged `workshop` wheel, `reservation_command.py`, the `workshop/` tree, and `BUILD_INFO.txt`, all of which the notebook regenerates on every run. |
 
 ## Cleanup
 

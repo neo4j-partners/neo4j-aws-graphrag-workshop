@@ -47,9 +47,10 @@ NOTEBOOKS = REPO_ROOT / "notebooks"
 if str(NOTEBOOKS) not in sys.path:
     sys.path.insert(0, str(NOTEBOOKS))
 
-# The lowest interpreter the shared modules parse on. `contracts.py` uses
-# `StrEnum` and `NotRequired`, both 3.11.
-MINIMUM_PYTHON = (3, 11)
+# The lowest interpreter the shared modules parse on. The Vocareum lab image
+# runs CPython 3.10.14, so the shared modules stay clear of 3.11-only syntax
+# and typing features.
+MINIMUM_PYTHON = (3, 10)
 
 # One question with one right answer, so the chat check asserts a value instead
 # of asserting that some text came back. Any model capable of running this

@@ -59,10 +59,12 @@ reservation command.
 | File | Purpose |
 |---|---|
 | `2.1_connected_context.ipynb` | The module notebook |
-| `hotel-faqs.zip` | The source corpus stored with the workshop |
 | `graph_builder.py` | The extraction pipeline shared with Module 1 |
 | `graph_config.py` | Chunking and deterministic corpus selection |
 | `prepare_graph.py` | Prepares the graph for this module when you run the workshop outside the hosted environment |
+
+The source corpus, `hotel-faqs.zip`, is shared with Module 1 and lives in
+[`notebooks/shared/`](../shared/hotel-faqs.zip).
 
 ## The workshop page
 

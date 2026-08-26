@@ -1,0 +1,154 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <title id="title">Three ways Neo4j GraphRAG strengthens Strands Agents</title>
+  <desc id="desc">Three panels show grounded hotel retrieval, connected reasoning across hotel data, and a small relevant subgraph. A bottom flow shows Amazon Bedrock, a Strands agent, and Neo4j GraphRAG context.</desc>
+  <defs>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#182334" flood-opacity="0.12"/>
+    </filter>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#4581C3"/>
+    </marker>
+    <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#00A87A"/>
+    </marker>
+    <marker id="arrow-gray" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#6E7681"/>
+    </marker>
+  </defs>
+
+  <rect width="960" height="540" fill="#FFFFFF"/>
+
+  <!-- Header -->
+  <text x="48" y="42" font-size="24" font-weight="700" fill="#232F3E">Three ways Neo4j GraphRAG strengthens Strands Agents</text>
+  <text x="48" y="64" font-size="12.5" fill="#56616F">The graph gives the agent verified facts, connected evidence, and focused context.</text>
+
+  <!-- Panel 1 -->
+  <rect x="48" y="88" width="272" height="322" rx="12" fill="#F7FAFC" stroke="#D9E2EC" filter="url(#shadow)"/>
+  <circle cx="73" cy="116" r="13" fill="#4581C3"/>
+  <text x="73" y="121" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">1</text>
+  <text x="94" y="121" font-size="16" font-weight="700" fill="#1F4E7A">Grounded retrieval</text>
+  <text x="64" y="143" font-size="10.5" fill="#56616F">Resolve the request to facts in the graph.</text>
+  <line x1="64" y1="157" x2="304" y2="157" stroke="#D9E2EC"/>
+
+  <rect x="70" y="174" width="228" height="42" rx="8" fill="#FFFFFF" stroke="#A9B7C6"/>
+  <text x="184" y="192" text-anchor="middle" font-size="11" font-weight="700" fill="#232F3E">Find the hotel at postal code 60611</text>
+  <text x="184" y="207" text-anchor="middle" font-size="9.5" fill="#6E7681">the guest's request</text>
+
+  <path d="M184,216 V238" fill="none" stroke="#4581C3" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <rect x="120" y="240" width="128" height="40" rx="20" fill="#EAF2FA" stroke="#4581C3" stroke-width="1.5"/>
+  <text x="184" y="256" text-anchor="middle" font-size="10" font-weight="700" fill="#1F4E7A">Chunk</text>
+  <text x="184" y="271" text-anchor="middle" font-size="11" font-weight="700" fill="#232F3E">contains 60611</text>
+
+  <path d="M184,280 V302" fill="none" stroke="#4581C3" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="196" y="295" font-size="8.5" font-weight="700" fill="#56616F">reverse FROM_CHUNK</text>
+  <rect x="90" y="304" width="188" height="48" rx="8" fill="#4581C3" stroke="#1F4E7A" stroke-width="1.5"/>
+  <text x="184" y="324" text-anchor="middle" font-size="11" font-weight="700" fill="#FFFFFF">Windward Mile Tower</text>
+  <text x="184" y="340" text-anchor="middle" font-size="9.5" fill="#EAF2FA">verified Hotel node</text>
+
+  <rect x="64" y="369" width="240" height="25" rx="6" fill="#E8F7F2"/>
+  <circle cx="78" cy="381.5" r="7" fill="#00A87A"/>
+  <path d="M74.5,381.5 L77.2,384.3 L81.8,378.6" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="91" y="385" font-size="10.5" font-weight="700" fill="#17664F">The answer starts from a verified match.</text>
+
+  <!-- Panel 2 -->
+  <rect x="344" y="88" width="272" height="322" rx="12" fill="#F7FAFC" stroke="#D9E2EC" filter="url(#shadow)"/>
+  <circle cx="369" cy="116" r="13" fill="#4581C3"/>
+  <text x="369" y="121" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">2</text>
+  <text x="390" y="121" font-size="16" font-weight="700" fill="#1F4E7A">Connected reasoning</text>
+  <text x="360" y="143" font-size="10.5" fill="#56616F">Follow stored relationships to collect evidence.</text>
+  <line x1="360" y1="157" x2="600" y2="157" stroke="#D9E2EC"/>
+
+  <line x1="480" y1="218" x2="480" y2="246" stroke="#4581C3" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <text x="490" y="235" font-size="8" font-weight="700" fill="#56616F">FROM_CHUNK</text>
+  <line x1="480" y1="286" x2="421" y2="320" stroke="#4581C3" stroke-width="2" marker-end="url(#arrow-blue)"/>
+  <line x1="480" y1="286" x2="539" y2="320" stroke="#4581C3" stroke-width="2" marker-end="url(#arrow-blue)"/>
+
+  <rect x="431" y="180" width="98" height="38" rx="19" fill="#4581C3" stroke="#1F4E7A" stroke-width="1.5"/>
+  <text x="480" y="197" text-anchor="middle" font-size="10.5" font-weight="700" fill="#FFFFFF">Chunk</text>
+  <text x="480" y="210" text-anchor="middle" font-size="8.5" fill="#EAF2FA">matched text</text>
+
+  <rect x="427" y="248" width="106" height="38" rx="19" fill="#FFFFFF" stroke="#4581C3" stroke-width="1.5"/>
+  <text x="480" y="265" text-anchor="middle" font-size="10.5" font-weight="700" fill="#232F3E">Hotel</text>
+  <text x="480" y="278" text-anchor="middle" font-size="8.5" fill="#56616F">Windward Mile</text>
+
+  <rect x="368" y="317" width="106" height="38" rx="19" fill="#FFFFFF" stroke="#4581C3" stroke-width="1.5"/>
+  <text x="421" y="334" text-anchor="middle" font-size="10.5" font-weight="700" fill="#232F3E">Amenity</text>
+  <text x="421" y="347" text-anchor="middle" font-size="8.5" fill="#56616F">indoor pool</text>
+
+  <rect x="486" y="317" width="106" height="38" rx="19" fill="#EAF2FA" stroke="#4581C3" stroke-width="1.5"/>
+  <text x="539" y="334" text-anchor="middle" font-size="10.5" font-weight="700" fill="#1F4E7A">Policy</text>
+  <text x="539" y="347" text-anchor="middle" font-size="8.5" fill="#56616F">family access</text>
+
+  <rect x="360" y="369" width="240" height="25" rx="6" fill="#E8F7F2"/>
+  <circle cx="374" cy="381.5" r="7" fill="#00A87A"/>
+  <path d="M370.5,381.5 L373.2,384.3 L377.8,378.6" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="387" y="385" font-size="10.5" font-weight="700" fill="#17664F">One query connects facts and meaning.</text>
+
+  <!-- Panel 3 -->
+  <rect x="640" y="88" width="272" height="322" rx="12" fill="#F7FAFC" stroke="#D9E2EC" filter="url(#shadow)"/>
+  <circle cx="665" cy="116" r="13" fill="#4581C3"/>
+  <text x="665" y="121" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">3</text>
+  <text x="686" y="121" font-size="16" font-weight="700" fill="#1F4E7A">Right-sized context</text>
+  <text x="656" y="143" font-size="10.5" fill="#56616F">Return only the graph slice the question needs.</text>
+  <line x1="656" y1="157" x2="896" y2="157" stroke="#D9E2EC"/>
+
+  <text x="672" y="180" font-size="8.5" font-weight="700" letter-spacing="0.7" fill="#6E7681">FULL HOTEL GRAPH</text>
+  <g stroke="#C7D0D9" stroke-width="1.2">
+    <line x1="689" y1="205" x2="727" y2="194"/><line x1="689" y1="205" x2="704" y2="238"/>
+    <line x1="727" y1="194" x2="751" y2="226"/><line x1="704" y1="238" x2="751" y2="226"/>
+    <line x1="704" y1="238" x2="682" y2="271"/><line x1="751" y1="226" x2="733" y2="270"/>
+    <line x1="751" y1="226" x2="770" y2="252"/><line x1="733" y1="270" x2="770" y2="252"/>
+  </g>
+  <g fill="#D7DEE5" stroke="#A9B7C6">
+    <circle cx="689" cy="205" r="5"/><circle cx="727" cy="194" r="5"/><circle cx="704" cy="238" r="5"/>
+    <circle cx="751" cy="226" r="5"/><circle cx="682" cy="271" r="5"/><circle cx="733" cy="270" r="5"/><circle cx="770" cy="252" r="5"/>
+  </g>
+
+  <path d="M778,231 H802" fill="none" stroke="#00A87A" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+  <text x="790" y="218" text-anchor="middle" font-size="8.5" font-weight="700" fill="#17664F">FILTER</text>
+
+  <rect x="807" y="177" width="73" height="112" rx="10" fill="#E8F7F2" stroke="#00A87A" stroke-width="1.5"/>
+  <text x="843.5" y="195" text-anchor="middle" font-size="8.5" font-weight="700" letter-spacing="0.5" fill="#17664F">RELEVANT</text>
+  <g stroke="#00A87A" stroke-width="1.5">
+    <line x1="843" y1="220" x2="824" y2="246"/><line x1="843" y1="220" x2="864" y2="246"/>
+    <line x1="824" y1="246" x2="844" y2="271"/><line x1="864" y1="246" x2="844" y2="271"/>
+  </g>
+  <circle cx="843" cy="220" r="7" fill="#4581C3"/>
+  <g fill="#FFFFFF" stroke="#00A87A" stroke-width="1.5">
+    <circle cx="824" cy="246" r="6"/><circle cx="864" cy="246" r="6"/><circle cx="844" cy="271" r="6"/>
+  </g>
+
+  <rect x="677" y="311" width="198" height="41" rx="8" fill="#FFFFFF" stroke="#A9B7C6"/>
+  <text x="776" y="328" text-anchor="middle" font-size="10.5" font-weight="700" fill="#232F3E">4 nodes, 4 relationships</text>
+  <text x="776" y="343" text-anchor="middle" font-size="9.5" fill="#56616F">enough context to answer clearly</text>
+
+  <rect x="656" y="369" width="240" height="25" rx="6" fill="#E8F7F2"/>
+  <circle cx="670" cy="381.5" r="7" fill="#00A87A"/>
+  <path d="M666.5,381.5 L669.2,384.3 L673.8,378.6" fill="none" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="683" y="385" font-size="10.5" font-weight="700" fill="#17664F">Focused context improves every response.</text>
+
+  <!-- AWS and Strands enhancement flow -->
+  <rect x="48" y="432" width="864" height="82" rx="12" fill="#232F3E"/>
+  <text x="68" y="454" font-size="9.5" font-weight="700" letter-spacing="1" fill="#C8D2DD">NEO4J ENHANCES THE STRANDS AGENT WITH GRAPH CONTEXT</text>
+
+  <rect x="70" y="466" width="246" height="34" rx="8" fill="#FFFFFF" stroke="#00A87A" stroke-width="2"/>
+  <path d="M86,477 C93,475 99,479 104,475 M86,489 C93,487 99,491 104,487" fill="none" stroke="#00A87A" stroke-width="2.2" stroke-linecap="round"/>
+  <text x="119" y="480" font-size="11.5" font-weight="700" fill="#232F3E">Strands agent</text>
+  <text x="119" y="493" font-size="8.5" fill="#56616F">Claude on Amazon Bedrock</text>
+
+  <line x1="316" y1="483" x2="338" y2="483" stroke="#C8D2DD" stroke-width="2" marker-end="url(#arrow-gray)"/>
+
+  <rect x="342" y="466" width="242" height="34" rx="8" fill="#FFFFFF"/>
+  <circle cx="359" cy="483" r="7" fill="#FF9900"/>
+  <text x="374" y="487" font-size="11.5" font-weight="700" fill="#232F3E">GraphRAG retrieval tool</text>
+
+  <line x1="584" y1="483" x2="610" y2="483" stroke="#00A87A" stroke-width="2.2" marker-end="url(#arrow-green)"/>
+
+  <rect x="614" y="466" width="276" height="34" rx="8" fill="#EAF2FA" stroke="#4581C3" stroke-width="2"/>
+  <g stroke="#4581C3" stroke-width="1.3">
+    <line x1="634" y1="479" x2="644" y2="487"/><line x1="644" y1="487" x2="654" y2="478"/>
+  </g>
+  <circle cx="634" cy="479" r="3.5" fill="#4581C3"/><circle cx="644" cy="487" r="3.5" fill="#4581C3"/><circle cx="654" cy="478" r="3.5" fill="#4581C3"/>
+  <text x="669" y="480" font-size="11.5" font-weight="700" fill="#1F4E7A">Neo4j Aura</text>
+  <text x="669" y="493" font-size="8.5" fill="#56616F">grounded graph context</text>
+</svg>

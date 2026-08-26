@@ -19,6 +19,7 @@ from workshop.graph_schema import GRAPH_SCHEMA, LLM_EXTRACTION_SCHEMA
 CONNECTED_CONTEXT = (
     Path(__file__).resolve().parents[1] / "notebooks" / "02-connected-context"
 )
+SHARED_DIR = Path(__file__).resolve().parents[1] / "notebooks" / "shared"
 RELEASE_DIR = Path(__file__).resolve().parents[1] / "tools" / "release"
 sys.path.insert(0, str(RELEASE_DIR))
 sys.path.insert(0, str(CONNECTED_CONTEXT))
@@ -455,7 +456,7 @@ def test_restored_graph_reconciliation_enforces_expected_source_set(
 
 
 def test_release_source_contract_omits_only_held_out_documents() -> None:
-    corpus_archive = CONNECTED_CONTEXT / "hotel-faqs.zip"
+    corpus_archive = SHARED_DIR / "hotel-faqs.zip"
     with ZipFile(corpus_archive) as corpus:
         archive_names = set(corpus.namelist())
 
@@ -568,7 +569,7 @@ def test_prebuilt_selection_omits_only_the_five_live_documents(
     tmp_path: Path,
     monkeypatch,
 ) -> None:
-    corpus_archive = CONNECTED_CONTEXT / "hotel-faqs.zip"
+    corpus_archive = SHARED_DIR / "hotel-faqs.zip"
     with ZipFile(corpus_archive) as corpus:
         filenames = sorted(name for name in corpus.namelist() if name.endswith(".txt"))
         prebuilt_amenities = [

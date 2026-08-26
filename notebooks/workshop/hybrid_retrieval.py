@@ -47,7 +47,17 @@ from workshop import contracts, graph_connection
 from workshop.bedrock_providers import BedrockEmbeddings, BedrockLLM
 from workshop.graph_schema import GRAPH_SCHEMA
 
-MAX_CONTEXT_CHARS = 1_200
+# Sized to carry a whole hotel document, because that is what a Chunk is.
+# graph_config sets CHUNK_SIZE to 12000 against a 7,442 byte largest
+# document, so one document becomes exactly one Chunk on purpose. A 1,200
+# bound undid that downstream: it cut every passage mid-word around the
+# Cancellation Policy heading, so the agent saw the heading and lost the
+# penalty and the group-booking rule beneath it. Module 3 asks the agent to
+# quote recorded wording, which that bound made impossible to satisfy.
+#
+# Section-sized chunks are the better answer and would let this drop back
+# down. That is a graph rebuild, so Phase 3 owns it.
+MAX_CONTEXT_CHARS = 8_000
 MAX_EXACT_TERMS = 20
 
 GROUNDING_INSTRUCTIONS = """

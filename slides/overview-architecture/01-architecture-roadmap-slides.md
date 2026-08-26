@@ -213,6 +213,28 @@ hop that composes with the last.
 
 ---
 
+![bg contain](../images/aws-hotel-dual-database-architecture.svg)
+
+<!--
+This is a production extension. Participants build the Neo4j and agent path in
+this lab. The lakehouse shows how the pattern can grow.
+
+Amazon S3 Tables stores high-volume analytic facts and events as Apache
+Iceberg tables. Amazon Athena queries those tables with serverless SQL. The
+AWS Glue Data Catalog holds the shared table metadata. Lake Formation can
+govern access.
+
+Neo4j Aura stores the connected hotel domain, GraphRAG paths, rules,
+provenance, reservations, and guest memory. Stable identifiers connect both
+views through an ETL pipeline or application services.
+
+The split follows the workload. Athena scans and aggregates tables. Neo4j
+traverses relationships and returns focused context. The next slide returns
+to the exact request path that participants build today.
+-->
+
+---
+
 ![bg contain](../images/foundations-grounded-request-flow.svg)
 
 <!--

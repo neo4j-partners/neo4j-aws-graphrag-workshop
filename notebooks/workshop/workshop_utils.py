@@ -1,3 +1,5 @@
+# Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: MIT-0
 """Workshop utility helpers shared by the agent notebooks.
 
 Four concerns live here for the workshop's agent notebooks:
@@ -7,10 +9,13 @@ Four concerns live here for the workshop's agent notebooks:
 - progress display (`lego_progress`), which prints the workshop-wide
   module-progress tower;
 - a Strands trace hook (`ToolTraceHook`), which prints each tool call an
-  agent makes as it happens; and
+  agent makes as it happens and records what came back;
+- routing evidence (`selected_tool_names`), which reads the tools an agent
+  turn actually chose out of its result metrics; and
 - result printing (`show_result`), which prints an agent turn's text answer
   followed by its token usage.
 """
+import json
 import logging
 
 
@@ -51,7 +56,7 @@ def lego_progress(completed: int):
 
 
 # ---------------------------------------------------------------------------
-# Live tool tracing and token metrics for Module 4
+# Live tool tracing and token metrics for Modules 3 and 4
 # ---------------------------------------------------------------------------
 #
 # `strands` is imported at module scope rather than inside the hook. It is the
@@ -73,10 +78,60 @@ def _truncate(value: object, limit: int = TRACE_VALUE_CHARS) -> str:
     return text if len(text) <= limit else text[: limit - 1] + "…"
 
 
+def _block_payload(block: object) -> object | None:
+    """Return one tool-result content block as data, or None if it carries none.
+
+    A content block can hold native JSON or text. Module 3's local tools return
+    a `json` block, so numbers reach the model as numbers. A Gateway tool
+    returns JSON serialized into a `text` block. Both are read here, and a
+    `text` block that parses as JSON is returned as data rather than as a
+    string, so a caller reads one shape whichever transport produced it.
+    """
+    if not isinstance(block, dict):
+        return None
+    if "json" in block:
+        return block["json"]
+    text = block.get("text")
+    if not isinstance(text, str) or not text.strip():
+        return None
+    try:
+        return json.loads(text)
+    except (TypeError, ValueError):
+        return text
+
+
+def _payloads(result: object) -> list[object]:
+    """Return every content block of a tool result that carried data."""
+    if not isinstance(result, dict):
+        return []
+    found = [_block_payload(block) for block in result.get("content") or []]
+    return [payload for payload in found if payload is not None]
+
+
+def _render(payload: object) -> str:
+    """Render one payload for the printed trace."""
+    if isinstance(payload, str):
+        return payload
+    return json.dumps(payload, ensure_ascii=False, default=str)
+
+
+def selected_tool_names(result: object) -> list[str]:
+    """Return the tool names an agent turn used, in name order.
+
+    The trace prints tool calls as they happen, which a participant reads. This
+    reads the same fact back as data, out of the event loop's own metrics, so a
+    routing check does not depend on parsing printed output. A turn that called
+    no tool returns an empty list, which is what the social-turn example needs.
+    """
+    metrics = getattr(result, "metrics", None)
+    return sorted(getattr(metrics, "tool_metrics", None) or {})
+
+
 class ToolTraceHook(HookProvider):
     """Print each tool call as the agent makes it.
 
-    Module 4 uses this hook to show that a Strands agent calls a retrieval tool
+    Module 3 uses it to show which of its two read tools the model chose.
+    Module 4 uses it to show that a Strands agent calls a retrieval tool
     through the Gateway. Without a trace the participant sees only the final
     answer and has to take on faith that a remote tool ran at all.
 
@@ -84,7 +139,17 @@ class ToolTraceHook(HookProvider):
     never sets `cancel_tool` or `retry`, so adding it cannot change what the
     agent does. That matters for a teaching aid: an observer that alters the run
     is not observing the run the participant is being shown.
+
+    `calls` records one entry per completed tool call, holding the tool name,
+    its status, and the complete payload of every content block. Only the
+    printed line is truncated: a check that reads a returned grounding verdict
+    needs the whole payload, and reading it back out of clipped console text is
+    how a check ends up asserting on a display limit. Build one hook per
+    example so recorded calls cannot leak between them.
     """
+
+    def __init__(self) -> None:
+        self.calls: list[dict[str, object]] = []
 
     def register_hooks(self, registry: HookRegistry, **kwargs: object) -> None:
         """Subscribe to the before and after tool-call events."""
@@ -100,13 +165,30 @@ class ToolTraceHook(HookProvider):
         # no useful `result` payload, and silently printing an empty one is how
         # a broken tool looks identical to a tool that returned nothing.
         if event.exception is not None:
+            self.calls.append(
+                {
+                    "name": (event.tool_use or {}).get("name", "<unnamed>"),
+                    "status": "exception",
+                    "input": (event.tool_use or {}).get("input", {}),
+                    "payloads": [],
+                }
+            )
             print(f"     └─ raised {type(event.exception).__name__}: {_truncate(event.exception)}")
             return
         result = event.result or {}
         status = result.get("status", "unknown")
         marker = "✅" if status == "success" else "⚠️"
-        blocks = result.get("content") or []
-        body = " ".join(b.get("text", "") for b in blocks if isinstance(b, dict))
+        payloads = _payloads(result)
+        tool_use = event.tool_use or {}
+        self.calls.append(
+            {
+                "name": tool_use.get("name", "<unnamed>"),
+                "status": status,
+                "input": tool_use.get("input", {}),
+                "payloads": payloads,
+            }
+        )
+        body = " ".join(_render(payload) for payload in payloads)
         print(f"     └─ {marker} {status}: {_truncate(body)}")
 
 

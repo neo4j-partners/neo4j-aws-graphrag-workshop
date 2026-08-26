@@ -13,6 +13,11 @@ Import submodules directly, for example::
     from workshop.contracts import MAX_GUESTS
     from workshop.graph_connection import neo4j_auth, require_neo4j_env
 
+A module notebook opens by calling `workshop.bootstrap.start_module`, which
+puts this package and the notebook's own folder on the import path and reads
+the workshop's `.env` files. That file holds the setup all seven notebooks
+used to repeat.
+
 This package deliberately re-exports nothing. `bedrock_providers`, `fixtures`,
 `hybrid_retrieval`, and `retrieval_setup` all build AWS or Neo4j clients, and
 `workshop_utils` imports the Strands SDK. A convenience re-export here would drag

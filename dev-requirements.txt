@@ -1,0 +1,21 @@
+# Tooling for working ON the workshop, not for running it.
+#
+# Participants never install this file. They install notebooks/requirements.txt,
+# which carries the three pinned runtime dependencies the modules import.
+# Nothing here is imported by any notebook or by the workshop package.
+#
+# It exists because the test suite and the repo checks need pytest and nbformat,
+# and neither was written down anywhere. A fresh clone could build a working
+# participant kernel and still fail `pytest` with "No module named pytest",
+# which reads as a broken checkout rather than a missing dev tool.
+#
+# Install with:
+#
+#     python -m pip install -r dev-requirements.txt
+#
+# Floors rather than exact pins: these never reach a participant kernel or a
+# deployed image, so they carry none of the version-drift risk that
+# tests/test_dependency_pins.py guards for strands-agents, neo4j, and
+# neo4j-graphrag.
+pytest>=9.1.1
+nbformat>=5.10.4

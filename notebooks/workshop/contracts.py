@@ -18,8 +18,8 @@ The database name is not here. `graph_database()` lives in `graph_connection`
 alongside the other environment reads, which keeps this module free of `os`.
 """
 
-from enum import StrEnum
-from typing import Final, Literal, NotRequired, TypedDict
+from enum import Enum
+from typing import Final, Literal, TypedDict
 
 from workshop.retrieval_contract import (
     CHUNK_FULLTEXT_INDEX as CHUNK_FULLTEXT_INDEX,
@@ -53,13 +53,28 @@ COMMAND_SECRET_ID_ENV: Final = "NEO4J_COMMAND_SECRET_ID"
 SECRET_FIELDS: Final = ("uri", "username", "password", "database")
 
 
-class ReservationStatus(StrEnum):
+class _StrEnum(str, Enum):
+    """`enum.StrEnum` for interpreters that predate it.
+
+    The Vocareum lab image runs CPython 3.10.14, where `enum.StrEnum` does not
+    exist. Plain `(str, Enum)` is not a drop-in replacement: it inherits
+    `Enum.__str__` and `Enum.__format__`, so `str(member)` and `f"{member}"`
+    render as `ReservationStatus.ACCEPTED` rather than `accepted`. Pinning both
+    dunders to the `str` versions is exactly what `StrEnum` does, which keeps
+    every member interchangeable with its value on 3.10 and on 3.11 or later.
+    """
+
+    __str__ = str.__str__
+    __format__ = str.__format__
+
+
+class ReservationStatus(_StrEnum):
     ACCEPTED = "accepted"
     REJECTED = "rejected"
     ERROR = "error"
 
 
-class ReservationReason(StrEnum):
+class ReservationReason(_StrEnum):
     MAX_GUESTS_EXCEEDED = "max_guests_exceeded"
     UNKNOWN_HOTEL = "unknown_hotel"
     INVALID_DATES = "invalid_dates"
@@ -86,23 +101,27 @@ class ReservationCommandInput(TypedDict):
     guests: int
 
 
-class ReservationCommandResponse(TypedDict):
+# Split rather than written with `NotRequired`, which is 3.11 and later only.
+# A `total=False` base carries the optional keys, and the subclass below adds
+# the required ones, which is the same required and optional split.
+class _ReservationCommandResponseOptional(TypedDict, total=False):
+    reason_code: Literal[
+        "max_guests_exceeded",
+        "unknown_hotel",
+        "invalid_dates",
+        "unauthorized",
+        "service_error",
+    ]
+    max_guests: int
+    created_at: str
+
+
+class ReservationCommandResponse(_ReservationCommandResponseOptional):
     status: Literal["accepted", "rejected", "error"]
     request_id: str
     hotel_id: str
     duplicate: bool
     message: str
-    reason_code: NotRequired[
-        Literal[
-            "max_guests_exceeded",
-            "unknown_hotel",
-            "invalid_dates",
-            "unauthorized",
-            "service_error",
-        ]
-    ]
-    max_guests: NotRequired[int]
-    created_at: NotRequired[str]
 
 
 def retrieval_input_schema() -> dict[str, object]:

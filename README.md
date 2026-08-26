@@ -4,7 +4,7 @@
 
 **[Run the workshop in your own AWS account](environment/own-account/README.md)**
 
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?style=flat&logo=python&logoColor=white)](https://python.org)
+[![Python](https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Amazon Bedrock](https://img.shields.io/badge/Amazon-Bedrock-FF9900.svg?style=flat&logo=amazon-aws)](https://aws.amazon.com/bedrock/)
 [![Neo4j](https://img.shields.io/badge/Neo4j-Graph--RAG-4581C3.svg?style=flat&logo=neo4j)](https://neo4j.com)
 [![Strands Agents](https://img.shields.io/badge/Strands_Agents-1.27+-00B4D8.svg?style=flat)](https://strandsagents.com)
@@ -227,7 +227,7 @@ uv run jupyter lab
 # Open 01-build-graph/1.1_build_graph.ipynb first
 ```
 
-Prerequisites for this path are Python 3.11+, [`uv`](https://docs.astral.sh/uv/), an AWS account with Amazon Bedrock model access enabled in `us-east-1`, and a reachable Neo4j instance. A [Neo4j AuraDB Free](https://console.neo4j.io/) database is what the workshop targets. The full walkthrough is on the [Own Account Setup](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/site/content/setup/own-account-setup) page.
+Prerequisites for this path are Python 3.10+, [`uv`](https://docs.astral.sh/uv/), an AWS account with Amazon Bedrock model access enabled in `us-east-1`, and a reachable Neo4j instance. A [Neo4j AuraDB Free](https://console.neo4j.io/) database is what the workshop targets. The full walkthrough is on the [Own Account Setup](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/site/content/setup/own-account-setup) page.
 
 `prepare_graph.py` wipes and rebuilds. Module 1's notebook uses the additive path instead, so it extends a restored graph without deleting anything a participant has already built.
 

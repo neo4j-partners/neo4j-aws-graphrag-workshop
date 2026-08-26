@@ -41,7 +41,7 @@ from graph_config import (
     EXTRACTION_MAX_TOKENS,
 )
 from neo4j import Driver, GraphDatabase
-from neo4j_graphrag.experimental.components.text_splitters.fixed_size_splitter import (
+from neo4j_graphrag.components.text_splitters.fixed_size_splitter import (
     FixedSizeSplitter,
 )
 from neo4j_graphrag.experimental.pipeline.kg_builder import SimpleKGPipeline

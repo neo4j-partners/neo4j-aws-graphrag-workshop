@@ -1,0 +1,152 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <title>How Vector Cypher Retrieval Enriches Search</title>
+  <desc>A five-step AWS and Neo4j retrieval flow. Vector search finds a hotel document chunk. Reviewed Cypher follows provenance and domain relationships to add hotel, amenity, and policy facts.</desc>
+
+  <defs>
+    <filter id="shadow" x="-15%" y="-15%" width="130%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#101828" flood-opacity="0.10"/>
+    </filter>
+    <marker id="arrow-slate" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#667085"/>
+    </marker>
+    <marker id="arrow-blue" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#2E6DB4"/>
+    </marker>
+    <marker id="arrow-teal" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#008C72"/>
+    </marker>
+    <marker id="arrow-orange" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#D97706"/>
+    </marker>
+  </defs>
+
+  <rect width="1600" height="900" fill="#F7F8FA"/>
+
+  <!-- Header -->
+  <text x="800" y="54" text-anchor="middle" font-size="32" font-weight="700" fill="#16233A">How Vector Cypher Retrieval Enriches Search</text>
+  <text x="800" y="87" text-anchor="middle" font-size="17" fill="#5C6470">Vector similarity finds relevant text. Reviewed Cypher adds connected hotel facts and provenance.</text>
+
+  <!-- Left pipeline -->
+  <rect x="56" y="118" width="590" height="656" rx="22" fill="#FFFFFF" stroke="#E4E7EC" filter="url(#shadow)"/>
+  <text x="86" y="154" font-size="14" font-weight="700" letter-spacing="1.3" fill="#667085">QUESTION TO GROUNDED ANSWER</text>
+
+  <!-- Step 1 -->
+  <rect x="86" y="178" width="530" height="92" rx="14" fill="#F0FBF7" stroke="#00A87A" stroke-width="2"/>
+  <circle cx="116" cy="208" r="16" fill="#00A87A"/>
+  <text x="116" y="214" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">1</text>
+  <text x="146" y="210" font-size="21" font-weight="700" fill="#155D4B">Ask a hotel question</text>
+  <text x="146" y="239" font-size="15" fill="#477565">The question comes from Strands Agents.</text>
+  <text x="146" y="259" font-size="12" fill="#667085">Example: Which Chicago hotel has a spa, a pool, and a flexible cancellation policy?</text>
+
+  <line x1="351" y1="270" x2="351" y2="296" stroke="#667085" stroke-width="2.5" marker-end="url(#arrow-slate)"/>
+
+  <!-- Step 2 -->
+  <rect x="86" y="300" width="530" height="92" rx="14" fill="#FFF7ED" stroke="#FF9900" stroke-width="2"/>
+  <circle cx="116" cy="330" r="16" fill="#FF9900"/>
+  <text x="116" y="336" text-anchor="middle" font-size="16" font-weight="700" fill="#232F3E">2</text>
+  <text x="146" y="332" font-size="21" font-weight="700" fill="#8A4B08">Embed the question</text>
+  <text x="146" y="361" font-size="15" fill="#8A5A24">Amazon Nova 2 Multimodal Embeddings</text>
+  <text x="146" y="381" font-size="12" fill="#667085">Runs on Amazon Bedrock and uses the same embedding contract as the chunks.</text>
+
+  <line x1="351" y1="392" x2="351" y2="418" stroke="#667085" stroke-width="2.5" marker-end="url(#arrow-slate)"/>
+
+  <!-- Step 3 -->
+  <rect x="86" y="422" width="530" height="92" rx="14" fill="#EEF4FB" stroke="#2E6DB4" stroke-width="2"/>
+  <circle cx="116" cy="452" r="16" fill="#2E6DB4"/>
+  <text x="116" y="458" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">3</text>
+  <text x="146" y="454" font-size="21" font-weight="700" fill="#1F4E86">Retrieve from Neo4j</text>
+  <text x="146" y="483" font-size="14" font-weight="700" fill="#2E6DB4" font-family="'SFMono-Regular', Consolas, monospace">VectorCypherRetriever finds a Chunk.</text>
+  <text x="146" y="503" font-size="12" fill="#667085">Reviewed Cypher expands it through fixed paths and returns fixed fields.</text>
+
+  <line x1="351" y1="514" x2="351" y2="540" stroke="#667085" stroke-width="2.5" marker-end="url(#arrow-slate)"/>
+
+  <!-- Step 4 -->
+  <rect x="86" y="544" width="530" height="92" rx="14" fill="#ECFDF3" stroke="#19A974" stroke-width="2"/>
+  <circle cx="116" cy="574" r="16" fill="#19A974"/>
+  <text x="116" y="580" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">4</text>
+  <text x="146" y="576" font-size="21" font-weight="700" fill="#166534">Return graph-enriched context</text>
+  <text x="146" y="605" font-size="15" fill="#39715A">Hotel, amenities, policy, source filename, and matched text</text>
+  <text x="146" y="625" font-size="13" fill="#667085">Source provenance shows where each returned fact came from.</text>
+
+  <line x1="351" y1="636" x2="351" y2="662" stroke="#667085" stroke-width="2.5" marker-end="url(#arrow-slate)"/>
+
+  <!-- Step 5 -->
+  <rect x="86" y="666" width="530" height="82" rx="14" fill="#232F3E" stroke="#FF9900" stroke-width="2"/>
+  <circle cx="116" cy="696" r="16" fill="#FF9900"/>
+  <text x="116" y="702" text-anchor="middle" font-size="16" font-weight="700" fill="#232F3E">5</text>
+  <text x="146" y="698" font-size="21" font-weight="700" fill="#FFFFFF">Answer with Claude</text>
+  <text x="146" y="727" font-size="15" fill="#E4E7EC">Claude on Amazon Bedrock answers from the returned facts.</text>
+
+  <!-- Cross-flow pointers -->
+  <path d="M616,468 H680 Q696,468 696,452 V276 Q696,260 712,260 H820" fill="none" stroke="#2E6DB4" stroke-width="3" marker-end="url(#arrow-blue)"/>
+  <path d="M820,648 H730 Q714,648 714,632 V590 Q714,574 698,574 H616" fill="none" stroke="#008C72" stroke-width="3" stroke-dasharray="8 6" marker-end="url(#arrow-teal)"/>
+
+  <!-- Right graph panel -->
+  <rect x="748" y="118" width="796" height="656" rx="22" fill="#FFFFFF" stroke="#E4E7EC" filter="url(#shadow)"/>
+  <path d="M748,174 V140 Q748,118 770,118 H1522 Q1544,118 1544,140 V174 Z" fill="#018BFF"/>
+  <circle cx="784" cy="146" r="11" fill="#FFFFFF" opacity="0.96"/>
+  <circle cx="778" cy="146" r="3.5" fill="#018BFF"/>
+  <circle cx="790" cy="140" r="3.5" fill="#018BFF"/>
+  <circle cx="790" cy="152" r="3.5" fill="#018BFF"/>
+  <line x1="781" y1="144" x2="787" y2="141" stroke="#018BFF" stroke-width="1.5"/>
+  <line x1="781" y1="148" x2="787" y2="151" stroke="#018BFF" stroke-width="1.5"/>
+  <text x="810" y="153" font-size="22" font-weight="700" fill="#FFFFFF">Neo4j hotel knowledge graph</text>
+
+  <text x="788" y="206" font-size="16" fill="#5C6470">Vector search enters through</text>
+  <text x="980" y="206" font-size="16" font-weight="700" fill="#1F4E86" font-family="'SFMono-Regular', Consolas, monospace">(:Chunk)</text>
+  <text x="1060" y="206" font-size="16" fill="#5C6470">. Reviewed Cypher controls every hop.</text>
+
+  <!-- Callout 1 -->
+  <rect x="788" y="228" width="716" height="54" rx="12" fill="#EEF4FB" stroke="#B8CDE4"/>
+  <circle cx="818" cy="255" r="17" fill="#2E6DB4"/>
+  <text x="818" y="261" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">1</text>
+  <text x="847" y="262" font-size="18" font-weight="700" fill="#1F4E86">Vector search finds the Chunk</text>
+
+  <!-- Chunk and Document -->
+  <rect x="820" y="314" width="254" height="76" rx="16" fill="#FFFFFF" stroke="#2E6DB4" stroke-width="3"/>
+  <text x="947" y="344" text-anchor="middle" font-size="22" font-weight="700" fill="#1F4E86" font-family="'SFMono-Regular', Consolas, monospace">(:Chunk)</text>
+  <text x="947" y="370" text-anchor="middle" font-size="14" fill="#5C6470">matched text and embedding</text>
+
+  <rect x="1250" y="314" width="224" height="76" rx="16" fill="#FFFFFF" stroke="#2E6DB4" stroke-width="2"/>
+  <text x="1362" y="344" text-anchor="middle" font-size="22" font-weight="700" fill="#1F4E86" font-family="'SFMono-Regular', Consolas, monospace">(:Document)</text>
+  <text x="1362" y="370" text-anchor="middle" font-size="14" fill="#5C6470">source filename</text>
+
+  <line x1="1076" y1="352" x2="1236" y2="352" stroke="#2E6DB4" stroke-width="2.5" marker-end="url(#arrow-blue)"/>
+  <rect x="1095" y="319" width="124" height="24" rx="12" fill="#FFFFFF"/>
+  <text x="1157" y="336" text-anchor="middle" font-size="12" font-weight="700" fill="#2E6DB4" font-family="'SFMono-Regular', Consolas, monospace">FROM_DOCUMENT</text>
+
+  <!-- Callout 2 -->
+  <rect x="1110" y="418" width="394" height="54" rx="12" fill="#EAF9F5" stroke="#A8DCCF"/>
+  <circle cx="1140" cy="445" r="17" fill="#008C72"/>
+  <text x="1140" y="451" text-anchor="middle" font-size="16" font-weight="700" fill="#FFFFFF">2</text>
+  <text x="1169" y="452" font-size="16.5" font-weight="700" fill="#126B59">Reviewed Cypher adds connected facts</text>
+
+  <!-- Reverse FROM_CHUNK traversal -->
+  <path d="M947,392 V502" fill="none" stroke="#008C72" stroke-width="3.5" stroke-dasharray="8 5" marker-end="url(#arrow-teal)"/>
+  <rect x="788" y="418" width="280" height="54" rx="12" fill="#FFFFFF" stroke="#A8DCCF"/>
+  <text x="928" y="441" text-anchor="middle" font-size="12" font-weight="700" fill="#126B59" font-family="'SFMono-Regular', Consolas, monospace">FROM_CHUNK</text>
+  <text x="928" y="459" text-anchor="middle" font-size="12" fill="#477565">followed in reverse</text>
+
+  <!-- Hotel -->
+  <rect x="820" y="512" width="254" height="78" rx="16" fill="#2E6DB4" stroke="#1F4E86" stroke-width="2"/>
+  <text x="947" y="544" text-anchor="middle" font-size="23" font-weight="700" fill="#FFFFFF" font-family="'SFMono-Regular', Consolas, monospace">(:Hotel)</text>
+  <text x="947" y="570" text-anchor="middle" font-size="14" fill="#E8F1FA">name, address, guest rating</text>
+
+  <!-- Hotel domain branches -->
+  <path d="M902,592 C880,618 856,628 836,642" fill="none" stroke="#D97706" stroke-width="2.5" marker-end="url(#arrow-orange)"/>
+  <path d="M992,592 C1042,620 1126,626 1220,642" fill="none" stroke="#D97706" stroke-width="2.5" marker-end="url(#arrow-orange)"/>
+  <text x="818" y="621" text-anchor="middle" font-size="12" font-weight="700" fill="#9A5B09" font-family="'SFMono-Regular', Consolas, monospace">OFFERS_AMENITY</text>
+  <text x="1190" y="621" text-anchor="middle" font-size="12" font-weight="700" fill="#9A5B09" font-family="'SFMono-Regular', Consolas, monospace">HAS_POLICY</text>
+
+  <rect x="784" y="648" width="238" height="74" rx="16" fill="#FFF7ED" stroke="#D97706" stroke-width="2"/>
+  <text x="903" y="679" text-anchor="middle" font-size="21" font-weight="700" fill="#8A4B08" font-family="'SFMono-Regular', Consolas, monospace">(:Amenity)</text>
+  <text x="903" y="703" text-anchor="middle" font-size="14" fill="#8A5A24">spa and swimming pool</text>
+
+  <rect x="1190" y="648" width="278" height="74" rx="16" fill="#FFF7ED" stroke="#D97706" stroke-width="2"/>
+  <text x="1329" y="679" text-anchor="middle" font-size="21" font-weight="700" fill="#8A4B08" font-family="'SFMono-Regular', Consolas, monospace">(:Policy)</text>
+  <text x="1329" y="703" text-anchor="middle" font-size="14" fill="#8A5A24">cancellation terms</text>
+
+  <!-- Footer -->
+  <rect x="56" y="810" width="1488" height="56" rx="14" fill="#232F3E"/>
+  <text x="800" y="845" text-anchor="middle" font-size="18" fill="#FFFFFF" font-family="'SFMono-Regular', Consolas, monospace">neo4j-graphrag · VectorCypherRetriever · Amazon Bedrock · Strands Agents</text>
+</svg>

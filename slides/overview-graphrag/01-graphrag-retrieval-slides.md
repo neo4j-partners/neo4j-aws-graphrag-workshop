@@ -192,46 +192,38 @@ are.
 
 ---
 
-![bg contain](../images/retrieval-substrate.svg)
+![bg contain](../images/aws-hotel-knowledge-graph-model.svg)
 
 <!--
-Say the payoff line out loud: search enters at Chunk, the traversal crosses
-FROM_CHUNK, and what comes back is facts.
+Start with storage. One Neo4j graph keeps the searchable text, its source, and
+the connected hotel facts together.
 
-This is the same two-layer picture from deck 4, entered from the other end.
-Point at the band labels and say so.
+The lexical layer holds the Chunk, its embedding, and both indexes. The domain
+layer holds the Hotel and the facts connected to it. Each workshop document
+has one Chunk.
 
-Note the direction. Extraction wrote (:Hotel)-[:FROM_CHUNK]->(:Chunk). Retrieval
-follows it in reverse, as (node)<-[:FROM_CHUNK]-(hotel:Hotel), because it starts
-from the chunk it just matched.
+Search enters at Chunk. The traversal follows FROM_CHUNK in reverse to Hotel,
+then follows named relationships to Room, Amenity, Policy, and Service.
 
-That reversal is the entire mechanical difference between a plain retriever and
-a Cypher retriever. Everything else in the next fifteen slides is which index
-you enter through and what the traversal returns.
+The next slide shows that read path as a request flow.
 -->
 
 ---
 
-## How Graph-Enriched Retrieval Works
-
-Three hops, in order:
-
-1. **Find** the matching `Chunk` by vector similarity, full-text, or both
-2. **Traverse** from that chunk into the domain graph along a fixed `retrieval_query`
-3. **Return** structured facts plus the source filename, not just a passage
-
-The search decides where you land. The traversal decides what you get.
+![bg contain](../images/aws-hotel-vector-cypher-retrieval-flow.svg)
 
 <!--
-This is the deck's hinge slide. Say the last line, pause, and say it again.
+Follow the numbered path on the left. The question is embedded with the same
+Amazon Nova model used for the stored chunks. Vector search finds a Chunk.
+Reviewed Cypher then expands from that Chunk to the Hotel, Amenity, Policy, and
+source Document.
 
-It is also the sentence that separates this workshop from a generic RAG talk.
-In a plain vector retriever, what comes back is whatever text happened to be in
-the chunk. Here, what comes back is a fixed field list that the application
-authored and that a reviewer can read.
+The two numbered bands on the graph are the distinction to protect. Vector
+search decides where the query lands. The reviewed Cypher query decides which
+connected facts come back.
 
-Step 2 is where governance lives. The traversal is code in the repository, not
-a decision the model makes at request time. Deck 6 makes that explicit.
+This slide shows VectorCypherRetriever, pattern 2 in the comparison. The final
+application uses the same enrichment idea with hybrid search in pattern 6.
 -->
 
 ---

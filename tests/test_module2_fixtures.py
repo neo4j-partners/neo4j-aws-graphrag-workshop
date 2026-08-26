@@ -11,9 +11,9 @@ from zipfile import ZipFile
 import pytest
 from workshop import retrieval_setup
 
-CONNECTED_CONTEXT = (
-    Path(__file__).resolve().parents[1] / "notebooks" / "02-connected-context"
-)
+NOTEBOOKS_ROOT = Path(__file__).resolve().parents[1] / "notebooks"
+CONNECTED_CONTEXT = NOTEBOOKS_ROOT / "02-connected-context"
+SHARED_DIR = NOTEBOOKS_ROOT / "shared"
 sys.path.insert(0, str(CONNECTED_CONTEXT))
 
 import graph_config
@@ -68,7 +68,7 @@ def _chicago_records() -> list[dict[str, object]]:
 def test_lite_selection_uses_every_required_source_and_stays_at_30(
     tmp_path: Path,
 ) -> None:
-    with ZipFile(CONNECTED_CONTEXT / "hotel-faqs.zip") as corpus:
+    with ZipFile(SHARED_DIR / "hotel-faqs.zip") as corpus:
         for filename in corpus.namelist():
             if filename.endswith(".txt"):
                 (tmp_path / filename).touch()

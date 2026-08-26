@@ -28,7 +28,18 @@ RUN uv pip install -r agent_requirements.txt
 # below because system Python's site-packages, where this lands, is not
 # writable by bedrock_agentcore.
 COPY workshop-*.whl .
-RUN uv pip install --no-deps workshop-*.whl
+# The presence check is not redundant with the COPY above. In the failed
+# build that prompted it, the wheel was missing from the build context, this
+# COPY still reported CACHED, and the build died fifteen lines later on an
+# unrelated COPY that named the wrong file. `ls` fails here instead, at the
+# line the missing file belongs to.
+RUN set -e; \
+    ls workshop-*.whl >/dev/null 2>&1 || { \
+        echo "no workshop-*.whl in the build context;" \
+             "re-run the staging cell in 5.1_deploy.ipynb" >&2; \
+        exit 1; \
+    }; \
+    uv pip install --no-deps workshop-*.whl
 
 RUN useradd -m -u 1000 bedrock_agentcore
 USER bedrock_agentcore
@@ -38,10 +49,11 @@ EXPOSE 8080
 # No HEALTHCHECK: AgentCore Runtime manages container liveness itself, so one
 # here would be redundant rather than forgotten.
 
-# `reservation_command.py` is not in this directory in git either.
-# 5.1_deploy.ipynb copies it here for the same reason. Listed explicitly
-# rather than `COPY . .`, so the already-installed wheel above is not also
-# picked up a second time as a loose file.
+# `reservation_command.py` and `BUILD_INFO.txt` are not in this directory in
+# git either. 5.1_deploy.ipynb copies the first here for the same reason as the
+# wheel above, and writes the second fresh on every run, so a tracked copy of it
+# could only ever be stale. The three are listed by name rather than `COPY . .`,
+# so the already-installed wheel is not also picked up as a loose file.
 COPY --chown=bedrock_agentcore:bedrock_agentcore booking_agent.py reservation_command.py BUILD_INFO.txt ./
 
 CMD ["opentelemetry-instrument", "python", "-m", "booking_agent"]

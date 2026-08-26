@@ -27,7 +27,7 @@ from graph_config import HELD_OUT_DOCUMENTS
 # they start at the repository root, notebooks/, or this module directory.
 MODULE_DIR = Path(__file__).resolve().parent
 NOTEBOOKS_ROOT = MODULE_DIR.parent
-CORPUS_ARCHIVE = NOTEBOOKS_ROOT / "02-connected-context" / "hotel-faqs.zip"
+CORPUS_ARCHIVE = NOTEBOOKS_ROOT / "shared" / "hotel-faqs.zip"
 DATA_DIR = MODULE_DIR / "data"
 
 
@@ -39,7 +39,7 @@ def extract_held_out(
     if not archive.exists():
         raise FileNotFoundError(
             f"The source corpus is missing: {archive.resolve()}. It ships in "
-            "the repository next to prepare_graph.py."
+            "the repository's notebooks/shared/ directory."
         )
 
     data_dir.mkdir(parents=True, exist_ok=True)

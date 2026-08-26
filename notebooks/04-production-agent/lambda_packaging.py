@@ -6,10 +6,9 @@ that calls `build_lambda_zips` does not need to show:
 1. **Platform-targeted wheels.** Lambda runs on Amazon Linux, so the
    third-party install must target that platform's wheels even when this
    notebook runs on a different one.
-2. **Shared-package source.** Vocareum runs the notebook kernel on Python
-   3.10, while the `workshop` package correctly declares Python 3.11 or
-   later. Building a wheel with that kernel would fail before Lambda's
-   Python 3.12 runtime ever saw it, so the package's pure-Python source
+2. **Shared-package source.** The `workshop` package is a local source
+   tree in this repository rather than a distribution on an index, so
+   the zip cannot simply pip-install it by name. Its pure-Python source
    and JSON fixtures are copied in directly instead.
 3. **Excluded transitive weight.** `neo4j-graphrag` pulls in `numpy` and
    `scipy` for an experimental extraction pipeline and a sentence

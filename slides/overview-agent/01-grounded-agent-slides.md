@@ -118,6 +118,23 @@ from, which is the next slide.
 
 ---
 
+![bg contain](../images/strands-agents-graphrag-principles.svg)
+
+<!--
+Strands runs the agent loop. Amazon Bedrock provides the model. The retrieval
+tool gives that agent verified facts and connected context from Neo4j.
+
+Walk the three panels from left to right. Grounded retrieval resolves the
+request to facts in the graph. Connected reasoning follows stored
+relationships. Right-sized context returns only the small graph slice needed
+for this question.
+
+Neo4j complements Strands. It strengthens the context that the Strands agent
+can use. The next slide narrows that design to one retrieval tool.
+-->
+
+---
+
 ## One Tool, On Purpose
 
 This agent has exactly one retrieval tool. That is the design, not a simplification.

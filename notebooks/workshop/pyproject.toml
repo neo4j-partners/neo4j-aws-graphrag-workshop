@@ -5,22 +5,26 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "workshop"
 version = "0.1.0"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 dependencies = [
-    "neo4j>=5.24.0",
+    "neo4j==6.2.0",
     # 1.16.0 is the first neo4j-graphrag whose Text2CypherRetriever plans
     # the generated Cypher with EXPLAIN and refuses anything the planner
     # does not report as read-only. An agent calls that retriever directly
     # in Module 3, so an older version would run model-generated Cypher
-    # with no read-only check. 1.18.0 is the locked version.
-    "neo4j-graphrag>=1.18.0",
+    # with no read-only check. Pinned exactly, and to the same version as
+    # notebooks/requirements.txt, the retrieval Lambdas, and the Runtime.
+    "neo4j-graphrag==1.19.0",
     "numpy>=2.0.0",
     # 1.39.0 is the first botocore that reads AWS_BEARER_TOKEN_BEDROCK.
     # Anything older ignores the Bedrock API key and signs with SigV4.
     "boto3>=1.39.0",
     "botocore>=1.39.0",
     "python-dotenv>=1.0.0",
-    "strands-agents>=1.27.0",
+    # Pinned exactly for the same reason: Strands builds the tool
+    # specification the model reads when it chooses between the two read
+    # tools, so the version is part of the lesson.
+    "strands-agents==1.53.0",
 ]
 
 # `workshop`'s own __init__.py lives next to this file, not under a nested

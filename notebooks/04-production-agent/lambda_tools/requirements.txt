@@ -7,4 +7,4 @@
 # accelerator for the driver, and adding it puts a compiled artifact back into
 # a package that is otherwise pure Python wheels.
 neo4j==6.2.0
-neo4j-graphrag==1.18.0
+neo4j-graphrag==1.19.0
