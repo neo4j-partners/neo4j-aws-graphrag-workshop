@@ -3,8 +3,6 @@ title: "Production Path"
 weight: 85
 ---
 
-## Overview
-
 The workshop uses a small dataset and simple setup. A production system needs
 stronger security, testing, monitoring, and data management.
 
@@ -16,7 +14,7 @@ stronger security, testing, monitoring, and data management.
 
 ---
 
-## Harden the Graph
+## Graph Hardening
 
 - **Capacity:** Choose an Aura tier that fits the graph, indexes, and query load.
 - **Database access:** Use separate Neo4j identities for reads and writes.
@@ -31,7 +29,7 @@ stronger security, testing, monitoring, and data management.
 
 ---
 
-## Grow the Ingestion Pipeline
+## Ingestion at Production Scale
 
 Module 1 processes a fixed set of documents. A production pipeline must process
 new, changed, and deleted sources.
@@ -48,7 +46,7 @@ new, changed, and deleted sources.
 
 ---
 
-## Evaluate Retrieval and Answers Separately
+## Separate Retrieval and Answer Evaluation
 
 Test retrieval before testing the final answer. This shows which layer caused a
 failure.
@@ -57,14 +55,14 @@ failure.
 - **Exact question:** Confirm that full-text search keeps the exact name or identifier.
 - **Connected question:** Confirm that graph expansion returns the required fields and source.
 - **Structured question:** Confirm that Cypher returns the correct records.
-- **Unsupported question:** Confirm that the tool reports that no context came back and the agent abstains.
+- **Unsupported question:** Confirm that the tool reports missing context and the agent states that it cannot answer from that context.
 - **Retrieval quality:** Measure source coverage, field coverage, rank, and irrelevant context.
-- **Answer quality:** Measure how faithfully the answer is grounded in the returned context, plus exact values, citations, and abstention.
+- **Answer quality:** Measure how faithfully the answer uses the returned context. Check exact values, citations, and clear handling of unsupported questions.
 - **Regression tracking:** Run the same tests after changes to chunks, models, retrieval settings, Cypher, or prompts.
 
 ---
 
-## Operate Gateway Tools and the Runtime
+## Gateway and Runtime Operations
 
 - **Request tracking:** Pass one correlation ID through AgentCore, Lambda, Bedrock, and Neo4j.
 - **Tool metrics:** Record tool name, duration, result count, retries, and failures.
@@ -81,7 +79,7 @@ speed, cost, and operations.
 
 ---
 
-## Add Security and Guardrails in Layers
+## Security and Guardrails
 
 - **Input validation:** Validate tool inputs before database or API calls.
 - **Generated Cypher:** Run it with a read-only database identity.
@@ -96,7 +94,7 @@ the final write rules.
 
 ---
 
-## Govern Memory
+## Memory Governance
 
 Cross-session memory stores user data beyond one request. Define how the
 application manages that data.
@@ -113,7 +111,7 @@ application manages that data.
 
 ---
 
-## Keep the Portable Pieces
+## Portable Components
 
 Keep these parts of the workshop in production:
 

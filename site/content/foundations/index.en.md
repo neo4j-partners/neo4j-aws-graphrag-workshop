@@ -3,8 +3,6 @@ title: "Foundations: Neo4j, AWS, and AgentCore"
 weight: 5
 ---
 
-## Overview
-
 This workshop combines Neo4j, Amazon Bedrock, Strands, and Amazon Bedrock
 AgentCore. Each component has one main role:
 
@@ -13,11 +11,11 @@ AgentCore. Each component has one main role:
 - **Strands:** Gives the model a set of tools it can call.
 - **AgentCore:** Exposes remote tools and runs deployed agents.
 
-Read this page before Setup to learn the terms used in every module.
+These roles and terms appear in every module.
 
 ---
 
-## Read a Property Graph
+## The Property Graph Model
 
 A property graph stores data with three parts:
 
@@ -55,7 +53,7 @@ through those facts.
 
 ---
 
-## Move from RAG to GraphRAG
+## From RAG to GraphRAG
 
 Retrieval-augmented generation sends selected source material to a model before
 it answers. GraphRAG adds graph facts and connections to that source material.
@@ -71,23 +69,23 @@ The workshop graph keeps a lexical graph and a domain graph, connected to each o
 
 - **Search:** Finds a `Chunk` in the lexical graph.
 - **Expansion:** The retrieval query follows typed relationships into the domain graph.
-- **Provenance:** Keeps the source visible so you can inspect extracted facts.
+- **Provenance:** Links each extracted fact to its source.
 
 ---
 
-## Follow One Grounded Request
+## One Grounded Request
 
 The deployment changes across modules. The retrieval flow stays the same:
 
-:image[A question moves through the Strands agent using Claude on Amazon Bedrock, a search_hotel_knowledge tool call that gets an Amazon Nova query embedding, Neo4j vector and full-text indexes, retrieval query expansion into hotel properties, and returned context, ending in a grounded answer or explicit abstention]{src="../../images/foundations-grounded-request-flow.svg" width=800}
+:image[A question moves through the Strands agent using Claude on Amazon Bedrock, a search_hotel_knowledge tool call that gets an Amazon Nova query embedding, Neo4j vector and full-text indexes, retrieval query expansion into hotel properties, and returned context, ending in a grounded answer or a clear statement that the context cannot answer the question]{src="../../images/foundations-grounded-request-flow.svg" width=800}
 
-- **Answer path:** The model answers from the returned context.
-- **Write path:** A separate command validates the request and writes it.
+- **Answer flow:** The model answers from the returned context.
+- **Reservation command:** A separate command validates the request and writes it.
 - **Rule enforcement:** Neo4j checks the guest limit in the write transaction.
 
 ---
 
-## Know What Each Service Does
+## Service Roles
 
 - **:link[Neo4j AuraDB]{href="https://neo4j.com/product/auradb/" external=true}:** Stores hotel facts, source text, indexes, rules, reservation requests, and graph memory.
 - **:link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true}:** Provides Claude for extraction and reasoning, Amazon Nova for retrieval embeddings, and Titan Text Embeddings V2 for memory.
@@ -101,7 +99,7 @@ The deployment changes across modules. The retrieval flow stays the same:
 
 ---
 
-## Distinguish the AgentCore Capabilities
+## AgentCore Capabilities
 
 AgentCore includes several capabilities. This workshop uses or discusses three:
 
@@ -111,12 +109,12 @@ AgentCore includes several capabilities. This workshop uses or discusses three:
 - **MCP:** Defines how an agent discovers and calls tools.
 - **IAM SigV4:** Confirms that the caller can use the Gateway.
 
-Module 4 and Module 5 show separate patterns. The Module 5 Runtime connects
-directly to Neo4j and bypasses the Module 4 Gateway.
+Module 4 and Module 5 show separate patterns. Module 4 routes remote tools
+through Gateway. The Module 5 Runtime uses Neo4j as its data service.
 
 ---
 
-## Know Which Layer Enforces Each Rule
+## Control Ownership
 
 Each control belongs to a layer that can enforce it:
 

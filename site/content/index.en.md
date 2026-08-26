@@ -3,11 +3,10 @@ title: "GraphRAG with Neo4j on AWS: From Search to Grounded Agents"
 weight: 0
 ---
 
-## Build Agents Grounded in a Connected Graph
-
-A grounded booking agent identifies the hotel and shows the source for its
-answer. Semantic search finds relevant source text. Graph traversal adds
-properties, relationships, and provenance.
+This workshop shows how to build a booking agent that answers from a connected
+graph. Semantic search finds relevant source text. Graph traversal then adds
+properties, relationships, and provenance so the agent can identify the hotel
+and show the source for its answer.
 
 This workshop uses a hotel booking scenario. You will:
 
@@ -37,11 +36,14 @@ arrives pre-configured. Setup guides you through creating a free Neo4j database.
 | **Setup** | Create a Neo4j AuraDB Free database, restore the workshop graph, verify Neo4j and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} access |
 | **Module 1: Build the Graph** | Extract five held-out hotel documents into the graph, define the extraction schema, create both retrieval indexes |
 | **Module 2: From Similarity Search to Graph-Enriched Retrieval** | Semantic search, exact-term search, and graph-enriched retrieval |
-| **Module 3: Build the Grounded Booking Agent** | Grounded answers, abstention, and protected reservation writes |
+| **Module 3: Build the Grounded Booking Agent** | Grounded answers, clear handling of unsupported questions, and protected reservation writes |
 | **Module 4: Production Agent with AgentCore** | AgentCore Gateway, IAM-authenticated MCP, and a Strands agent over remote tools |
 | **Module 5: Deploy to AgentCore Runtime** | Containerize the agent, launch it on Runtime, correlate one request end to end |
 | **Module 6: Neo4j Graph Memory** | Cross-session graph memory, actor-scoped recall, full provenance, and a conceptual AgentCore comparison |
 | **Summary, Production Path, and Wrap-up** | The argument end to end, the decision tables, the work required for production, and where to take it next |
+
+This sequence moves one retrieval design from a local notebook into deployed
+tools, a runtime service, and cross-session memory.
 
 ---
 
@@ -50,7 +52,7 @@ arrives pre-configured. Setup guides you through creating a free Neo4j database.
 :image[Production agent architecture: a Strands agent calls Neo4j retrieval Lambdas through AgentCore Gateway]{src="../images/03-agentcore-architecture.svg" width=800}
 
 Module 5 demonstrates a separate deployment pattern: a packaged agent on
-AgentCore Runtime that connects directly to Neo4j. Module 6 then adds
+AgentCore Runtime that connects to Neo4j itself. Module 6 then adds
 cross-session graph memory.
 
 - **Neo4j:** Stores hotel knowledge, indexes, business rules, reservation requests, and graph memory.
@@ -61,19 +63,19 @@ cross-session graph memory.
 ## What You Will Learn
 
 - **Graph construction:** Use a fixed extraction schema and provenance to build a queryable graph.
-- **Retrieval:** Choose Vector, Hybrid, VectorCypher, or Text2Cypher for each question shape.
+- **Retrieval:** Choose Vector, Hybrid, VectorCypher, or Text2Cypher for each query need.
 - **Grounding:** Answer from the returned context and enforce write rules in one transaction.
 - **Remote tools:** Deploy tools to AgentCore Gateway and call them through IAM-authenticated MCP.
-- **Memory:** Store graph memory that supports audit and correction.
+- **Memory:** Store auditable, correctable graph memory.
 - **Architecture:** Assign clear roles to Neo4j, Bedrock, Strands, Gateway, Runtime, Lambda, and IAM.
 
 ---
 
 ## Prerequisites
 
-- Basic Python and AWS CLI familiarity
-- A :link[Neo4j Aura]{href="https://console.neo4j.io/" external=true} account, free to create, which you set up in the first Setup step
-- Nothing to install on your own machine for the hosted path; the notebooks run in the JupyterLab environment Vocareum provides
+- **Skills:** Use basic Python and AWS CLI commands.
+- **Neo4j Aura:** Create a free account during the first Setup step.
+- **Hosted environment:** Run the notebooks in Vocareum's JupyterLab environment.
 
 :::alert{type="warning" header="Cost"}
 This workshop creates AWS resources that incur charges. Follow the cleanup instructions at the end. Estimated cost\: under $2.
