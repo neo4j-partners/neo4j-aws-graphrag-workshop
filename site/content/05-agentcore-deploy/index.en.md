@@ -47,20 +47,7 @@ Runtime, ECR repository, CodeBuild project, and IAM execution role when you
 finish.
 :::
 
-```
-InvokeAgentRuntime
-        |
-        v
-+------------------------------+
-|  AgentCore Runtime           |
-|  GraphRagBookingAgent        |
-|                              |
-|  booking_agent.py            |
-|   |- search_hotel_knowledge -----> Neo4j hybrid retrieval
-|   |- create_reservation ---------> Neo4j write, rule in-transaction
-|   `- BedrockModel ---------------> Claude on Amazon Bedrock
-+------------------------------+
-```
+:image[Module 5 architecture: an authorized AWS client invokes the packaged agent on AgentCore Runtime, which calls Neo4j and Bedrock directly]{src="../../images/05-agentcore-runtime-architecture.svg" width=800}
 
 Both tools connect directly to Neo4j from the deployed process. Neo4j evaluates
 the maximum-guests rule in the same transaction that writes a reservation

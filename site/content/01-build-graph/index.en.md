@@ -19,15 +19,15 @@ The build keeps these five hotels in the graph so later modules can retrieve the
 
 ## Graph Structure
 
-The build creates two connected layers, each designed for a different retrieval operation.
+The build creates a lexical graph and a domain graph, each designed for a different retrieval operation.
 
-**The lexical layer supports text search.** Each source file becomes one `Document` node. The pipeline divides the text into slices and stores each slice in a `Chunk` node with a 1024-dimension embedding. Vector and keyword searches read these nodes.
+**The lexical graph supports text search.** Each source file becomes one `Document` node. The pipeline divides the text into slices and stores each slice in a `Chunk` node with a 1024-dimension embedding. Vector and keyword searches read these nodes.
 
-**The domain layer supports structured graph queries.** A `Hotel` node stores the name, address, and guest rating as properties. Typed relationships connect each hotel to its `Room`, `Amenity`, `Policy`, and `Service` nodes. The LLM extracts facts from prose, and a deterministic parser reads amenities from the `## Hotel Amenities` list. Cypher queries use this structure to match named fields and relationships.
+**The domain graph supports structured graph queries.** A `Hotel` node stores the name, address, and guest rating as properties. Typed relationships connect each hotel to its `Room`, `Amenity`, `Policy`, and `Service` nodes. The LLM extracts facts from prose, and a deterministic parser reads amenities from the `## Hotel Amenities` list. Cypher queries use this structure to match properties and relationships.
 
-The `FROM_CHUNK` and `FROM_DOCUMENT` relationships connect the layers. After a search finds a chunk, a graph traversal can return its typed facts and source document as connected context.
+The `FROM_CHUNK` and `FROM_DOCUMENT` relationships connect the two graphs. After a search finds a chunk, a graph traversal can return the connected hotel, its properties, and its source document, which is what makes the search graph-enriched.
 
-:image[Two connected layers: the source file becomes a Document and Chunk in the lexical layer, and a Hotel node with typed Room, Amenity, Policy, and Service relationships in the domain layer]{src="../../images/01-graph-structure.svg" width=800}
+:image[The lexical graph and the domain graph: the source file becomes a Document and Chunk in the lexical graph, and a Hotel node with typed Room, Amenity, Policy, and Service relationships in the domain graph]{src="../../images/01-graph-structure.svg" width=800}
 
 Every domain relationship starts at `Hotel`, which gives each document a one-hop star of facts.
 
@@ -43,7 +43,7 @@ Every domain relationship starts at `Hotel`, which gives each document a one-hop
 
 ## Why the Module Extracts Five Documents
 
-The source archive contains the workshop hotel FAQ corpus, and the graph dump restored during Setup contains most of those documents. The preloaded documents use the same pinned schema as this module. Because extracting the full corpus takes hours, you will extract five held-out documents in about four minutes.
+The source archive contains the workshop hotel FAQ corpus, and the graph dump restored during Setup contains most of those documents. The preloaded documents use the same extraction schema as this module. Because extracting the full corpus takes hours, you will extract five held-out documents in about four minutes.
 
 You extract the `-002` document for Tokyo, Sydney, Rio de Janeiro, Cape Town, and Prague. These documents keep your build separate from the fixtures used by later modules\:
 
@@ -65,7 +65,7 @@ For each document, `SimpleKGPipeline` runs the first five stages in the followin
 |-------|-------------------|
 | Split | `FixedSizeSplitter` cuts the document into text slices of at most 12000 characters |
 | Embed | Amazon Nova turns each text slice into a 1024-dimension vector and stores it on the `Chunk` node |
-| Extract | Claude reads the `Chunk` text and returns JSON holding the nodes and relationships it found, restricted to the pinned schema |
+| Extract | Claude reads the `Chunk` text and returns JSON holding the nodes and relationships it found, restricted to the extraction schema |
 | Resolve | Global name-based entity resolution stays off so same-name hotels in different cities remain distinct |
 | Write | The pipeline creates the `Document`, `Chunk`, and entity nodes, then connects them |
 | Amenities | The parser reads the amenity bullets and merges shared `Amenity` nodes by exact name |
@@ -78,7 +78,7 @@ To identify the output from the current run, the build records the existing `Chu
 
 ---
 
-## Why the Schema Is Pinned
+## Why Extraction Uses a Fixed Schema
 
 Without a schema, `SimpleKGPipeline` lets the model choose labels for each `Chunk` from headings that vary across documents. Test runs produced these label differences\:
 
@@ -89,7 +89,7 @@ Without a schema, `SimpleKGPipeline` lets the model choose labels for each `Chun
 | Two names for one thing | `ContactMethod`, `ContactInfo` | Both are reasonable, and a query has to know which one a given document used |
 | Geography expanded into a hierarchy | `City`, `Country` | The city is text inside the address in most documents and a node in a few |
 
-Each structure can represent its source document, yet the variation prevents one Cypher pattern from matching the entire corpus. A pinned schema gives the extraction process one vocabulary for every document.
+Each structure can represent its source document, yet the variation prevents one Cypher pattern from matching the entire corpus. A fixed extraction schema gives the extraction process one vocabulary for every document.
 
 The LLM schema provides the vocabulary for facts extracted from prose\:
 
@@ -99,14 +99,14 @@ The LLM schema provides the vocabulary for facts extracted from prose\:
 (:Hotel)-[:PROVIDES_SERVICE]->(:Service)
 :::
 
-The schema restricts extraction to the listed node types, relationship types, and patterns. Facts outside that structure are omitted, which prevents the model from creating new labels.
+`SimpleKGPipeline` receives this structure through its `schema` argument, which carries `node_types`, `relationship_types`, and `patterns`. The pipeline prunes anything outside that structure before it writes, which prevents the model from creating new labels.
 
 The model also follows the property descriptions in the schema\:
 
 - `address` stores the address only as a `Hotel` property, which prevents the extraction from creating an `Address` node.
 - `guest_rating` converts a value such as `4.6/5.0` into the float `4.6`. Later modules can average the numeric property.
 
-Later modules require this structure. Module 2 compares source retrieval with graph-enriched retrieval that returns `name`, `address`, and `guest_rating` from each `Hotel` node. The pinned schema writes those properties consistently.
+Later modules require this structure. Module 2 compares source retrieval with graph-enriched retrieval that returns `name`, `address`, and `guest_rating` from each `Hotel` node. The fixed extraction schema writes those properties consistently.
 
 ### The deterministic amenity boundary
 
@@ -163,7 +163,7 @@ Open `notebooks/01-build-graph/1.1_build_graph.ipynb` and run the cells in order
 Bedrock can throttle extraction calls, so the build retries them automatically. If a call still fails, rerun the cell. Before each attempt, the build removes data from only these five documents. It preserves all other graph data.
 :::
 
-At the end, the notebook confirms the build by comparing document and hotel counts from before and after extraction. It then lists the extracted hotels with their addresses, ratings, and amenity counts and walks both graph layers for one hotel.
+At the end, the notebook confirms the build by comparing document and hotel counts from before and after extraction. It then lists the extracted hotels with their addresses, ratings, and amenity counts and walks the lexical graph and the domain graph for one hotel.
 
 ## Next
 

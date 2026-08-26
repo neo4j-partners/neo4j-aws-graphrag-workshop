@@ -46,7 +46,7 @@ for participants whose permissions use the workshop policy.
 
 After verifying both tools directly over MCP, the notebook gives the resolved
 Gateway tools to a Strands agent. A trace shows the agent selecting a remote
-tool and using its evidence in the answer. Module 6 later provides the
+tool and using the context it returns in the answer. Module 6 later provides the
 workshop's hands-on cross-session memory lab.
 
 ## Files in This Folder

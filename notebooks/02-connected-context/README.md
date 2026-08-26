@@ -3,8 +3,8 @@
 # Module 2: From Similarity Search to Connected Context
 
 Use semantic search to find the right source, then traverse the graph to return
-compact, connected facts with provenance. The notebook compares retrieval
-evidence directly, so its lessons do not depend on one generated answer.
+compact, connected facts with provenance. The notebook compares the retrieved
+context directly, so its lessons do not depend on one generated answer.
 
 **At a Glance**
 
@@ -29,7 +29,7 @@ independently.
 
 | Notebook | What it demonstrates |
 |---|---|
-| [`2.1_connected_context.ipynb`](2.1_connected_context.ipynb) | Compares vector, hybrid, Vector-Cypher, and structured retrieval evidence |
+| [`2.1_connected_context.ipynb`](2.1_connected_context.ipynb) | Compares vector, hybrid, Vector-Cypher, and structured retrieval results |
 
 Module 1 already prepared the graph. Run the notebook cells in order. The
 **Verify the prepared graph** cell performs the non-destructive readiness check
@@ -41,7 +41,7 @@ top. The Module 2.1 notebook only reads the graph and never clears learner work.
 For the setup that gets you to a prepared graph, see the
 [repository README](../../README.md).
 
-## Evidence and application boundaries
+## Grounding and application boundaries
 
 Graph-enriched results reflect the facts that extraction placed in Neo4j. They
 are not an independent source of truth. The notebook keeps the source

@@ -11,7 +11,7 @@ return connected hotel data. When the graph lacks a requested fact, the
 assistant explains what information is missing. A separate reservation command
 validates business rules and writes approved requests to Neo4j.
 
-:image[Grounded agent architecture: Neo4j supplies connected context and enforces reservation rules; Amazon Bedrock uses the context to answer questions]{src="../../images/03-grounded-agent-architecture-context.png" width=800}
+:image[Grounded agent architecture: Neo4j supplies graph-enriched context and enforces reservation rules; Amazon Bedrock uses the context to answer questions]{src="../../images/03-grounded-agent-architecture-context.png" width=800}
 
 ## Learn the Strands Agent Basics
 
@@ -30,8 +30,8 @@ the tool and explains when the context lacks a required fact.
 ## How the Grounded Agent Works
 
 To answer a hotel question, the model calls `search_hotel_knowledge_tool`. The
-tool runs the `HybridCypherRetriever` selected in Module 2 and returns bounded
-JSON containing connected graph facts and source text. The model uses this
+tool runs the `HybridCypherRetriever` selected in Module 2 and returns JSON
+containing the connected hotel data and the source chunk text. The model uses this
 context to answer the question or explain which information is missing. The
 tool function controls database access and keeps the result format consistent.
 

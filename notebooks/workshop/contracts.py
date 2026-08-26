@@ -67,8 +67,8 @@ class ReservationReason(StrEnum):
     SERVICE_ERROR = "service_error"
 
 
-class HotelEvidence(TypedDict):
-    chunk_evidence: str
+class HotelContext(TypedDict):
+    chunk_text: str
     combined_score: float
     exact_terms: list[str]
     hotel_id: str | None

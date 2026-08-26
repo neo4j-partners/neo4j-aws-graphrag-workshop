@@ -371,7 +371,7 @@ def source_fixture_problems(driver: Driver) -> list[str]:
 
 
 def chicago_filter_records(driver: Driver) -> list[dict[str, Any]]:
-    """Return the deterministic Chicago candidates and filter evidence."""
+    """Return the deterministic Chicago candidates and filter context."""
     with _session(driver) as session:
         return [
             dict(record)

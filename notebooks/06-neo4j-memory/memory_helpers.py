@@ -1,6 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-"""Memory client construction for the inspectable Neo4j memory demo.
+"""Memory client construction for the Neo4j graph memory demo.
 
 Builds a ``neo4j-agent-memory`` :class:`MemoryClient` over the same Aura
 instance as the hotel knowledge graph, so memory nodes (``Conversation``,

@@ -18,13 +18,13 @@ from workshop.hybrid_retrieval import search_hotel_knowledge
 
 
 def handler(event: Mapping[str, Any], context: Any) -> dict[str, Any]:
-    """Return grounded hotel evidence for the Gateway's ``query`` input."""
+    """Return grounded hotel context for the Gateway's ``query`` input."""
     del context
     query = (event or {}).get("query")
     if not isinstance(query, str) or not query:
         return {"error": "query must be a non-empty string"}
     try:
-        return {"evidence": search_hotel_knowledge(query)}
+        return {"context": search_hotel_knowledge(query)}
     except ValueError as error:
         return {"error": str(error)}
 

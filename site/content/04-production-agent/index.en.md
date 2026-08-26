@@ -55,8 +55,8 @@ Both tools import from `notebooks/workshop/hybrid_retrieval.py`.
 function. Each Lambda handler unwraps the Gateway event and calls the matching
 function.
 
-Both interfaces retrieve context from Neo4j. `search_hotel_knowledge` runs
-reviewed static Cypher. `graph_query` validates model-generated Cypher with
+Both interfaces retrieve context from Neo4j. `search_hotel_knowledge` runs the
+fixed `retrieval_query` selected in Module 2. `graph_query` validates model-generated Cypher with
 `EXPLAIN` and executes the statement only when the planner reports a read-only
 query. The reservation command remains outside the Gateway because this
 endpoint serves retrieval operations.

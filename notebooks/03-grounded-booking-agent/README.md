@@ -10,7 +10,7 @@ command to test a rule-enforced write.
 
 **At a Glance**
 
-- **What it demonstrates:** ground an answer in named evidence, abstain when the evidence cannot answer, reject requests that exceed the guest limit, and prevent duplicate writes for a retried `request_id`.
+- **What it demonstrates:** ground an answer in named sources, abstain when the returned context cannot answer, reject requests that exceed the guest limit, and prevent duplicate writes for a retried `request_id`.
 - **Strands Agents:** teaches the `Agent` loop, `BedrockModel`, and `@tool` before you build the local agent.
 - **Neo4j:** reads through the `hotel_chunk_embeddings` and `hotel_chunk_fulltext` indexes; writes one workshop-owned `ReservationRequest` node behind a uniqueness constraint on `request_id`.
 - **AWS:** Amazon Bedrock provides LLM reasoning; Amazon Nova embeds each query.
@@ -32,7 +32,7 @@ command to test a rule-enforced write.
 - **`BedrockModel`:** Connects the agent to the Amazon Bedrock model named by the model ID.
 - **`@tool`:** Marks a Python function as a tool the model can call.
 
-The notebook turns `search_hotel_knowledge` into a tool. The agent calls it for each new hotel question. It answers from the returned facts. It reports missing evidence when required facts are absent.
+The notebook turns `search_hotel_knowledge` into a tool. The agent calls it for each new hotel question. It answers from the returned facts. It says it cannot determine the answer when required facts are absent.
 
 ## The reservation command
 

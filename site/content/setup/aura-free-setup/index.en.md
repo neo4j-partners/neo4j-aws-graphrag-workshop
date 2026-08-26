@@ -76,7 +76,7 @@ That is the same check `environment/verify.py` runs later. It reads one hotel by
 
 ## What the Restored Graph Deliberately Does Not Have
 
-The dump holds the hotel corpus, extracted under the pinned schema Module 1 explains. It does **not** hold the vector index, the full-text index, or five of the hotels. Module 1 creates both indexes and extracts those five hotels live, which is the point of that module. An instance with no indexes is the expected starting state, not a failed restore.
+The dump holds the hotel corpus, extracted under the same extraction schema Module 1 explains. It does **not** hold the vector index, the full-text index, or five of the hotels. Module 1 creates both indexes and extracts those five hotels live, which is the point of that module. An instance with no indexes is the expected starting state, not a failed restore.
 
 ---
 

@@ -47,23 +47,23 @@ from workshop import contracts, graph_connection
 from workshop.bedrock_providers import BedrockEmbeddings, BedrockLLM
 from workshop.graph_schema import GRAPH_SCHEMA
 
-MAX_EVIDENCE_CHARS = 1_200
+MAX_CONTEXT_CHARS = 1_200
 MAX_EXACT_TERMS = 20
 
 GROUNDING_INSTRUCTIONS = """
-Answer hotel questions only from the returned chunk evidence and graph fields.
+Answer hotel questions only from the returned chunk text and graph properties.
 Do not infer live room inventory, guaranteed availability, or a completed
 booking. Wording such as "subject to availability" describes a policy and is
-not evidence that rooms are currently available. If the evidence does not
+not proof that rooms are currently available. If the returned context does not
 support the requested fact, say it cannot determine the answer from the
 available hotel knowledge.
 """.strip()
 
 # ``node`` and ``score`` are supplied by HybridCypherRetriever. The traversal
-# is reviewed, static Cypher: no query text is interpolated and no model writes
+# is fixed, static Cypher: no query text is interpolated and no model writes
 # or generates any part of it.
 #
-# The only two interpolated values are MAX_AMENITIES and MAX_EVIDENCE_CHARS,
+# The only two interpolated values are MAX_AMENITIES and MAX_CONTEXT_CHARS,
 # the named constants the rest of this module already trims to. Written as
 # literals they agreed with the constants by coincidence, so changing a constant
 # left the query returning the old bound. Both are module-level ints, never
@@ -85,7 +85,7 @@ CALL (hotel) {{
     LIMIT {contracts.MAX_AMENITIES}
     RETURN collect(amenity_name) AS amenities
 }}
-RETURN left(coalesce(node.text, ''), {MAX_EVIDENCE_CHARS}) AS chunk_evidence,
+RETURN left(coalesce(node.text, ''), {MAX_CONTEXT_CHARS}) AS chunk_text,
        score AS combined_score,
        hotel.hotel_id AS hotel_id,
        hotel.name AS hotel_name,
@@ -160,9 +160,9 @@ def _get_driver(config: Neo4jConfig):
 
 
 def _format_record(record: Mapping[str, Any]) -> RetrieverResultItem:
-    """Preserve evidence separately from its structured graph enrichment."""
+    """Preserve the chunk text separately from its structured graph enrichment."""
     return RetrieverResultItem(
-        content=record.get("chunk_evidence") or "",
+        content=record.get("chunk_text") or "",
         metadata={
             "combined_score": record.get("combined_score"),
             "hotel_id": record.get("hotel_id"),
@@ -204,20 +204,20 @@ def _get_retriever() -> HybridCypherRetriever:
     return build_retriever(config)
 
 
-def _exact_terms(query: str, evidence: str) -> list[str]:
-    """Return bounded query terms using their verbatim spelling in evidence."""
+def _exact_terms(query: str, chunk_text: str) -> list[str]:
+    """Return bounded query terms using their verbatim spelling in the chunk text."""
     matches: list[str] = []
     seen: set[str] = set()
     for query_match in _TERM_PATTERN.finditer(query):
         term = query_match.group(0)
-        evidence_match = re.search(
+        text_match = re.search(
             rf"(?<!\w){re.escape(term)}(?!\w)",
-            evidence,
+            chunk_text,
             flags=re.IGNORECASE,
         )
-        if evidence_match is None:
+        if text_match is None:
             continue
-        verbatim = evidence_match.group(0)
+        verbatim = text_match.group(0)
         key = verbatim.casefold()
         if key in seen:
             continue
@@ -260,19 +260,19 @@ def _number(value: Any, field: str, *, nullable: bool) -> float | None:
         raise ValueError(f"{field} must be numeric") from error
 
 
-def _to_evidence(query: str, item: RetrieverResultItem) -> contracts.HotelEvidence:
-    evidence = str(item.content or "")[:MAX_EVIDENCE_CHARS]
+def _to_context(query: str, item: RetrieverResultItem) -> contracts.HotelContext:
+    chunk_text = str(item.content or "")[:MAX_CONTEXT_CHARS]
     metadata = item.metadata or {}
     score = metadata.get("combined_score")
     rating = metadata.get("guest_rating")
     return {
-        "chunk_evidence": evidence,
+        "chunk_text": chunk_text,
         "combined_score": _number(
             score,
             "combined_score",
             nullable=False,
         ),
-        "exact_terms": _exact_terms(query, evidence),
+        "exact_terms": _exact_terms(query, chunk_text),
         "hotel_id": _optional_string(metadata.get("hotel_id"), "hotel_id"),
         "hotel_name": _optional_string(
             metadata.get("hotel_name"),
@@ -288,7 +288,7 @@ def _to_evidence(query: str, item: RetrieverResultItem) -> contracts.HotelEviden
     }
 
 
-def search_hotel_knowledge(query: str) -> list[contracts.HotelEvidence]:
+def search_hotel_knowledge(query: str) -> list[contracts.HotelContext]:
     """Search hotel knowledge using the frozen, one-field tool contract."""
     if not isinstance(query, str) or not query.strip():
         raise ValueError("query must be a non-empty string")
@@ -298,12 +298,12 @@ def search_hotel_knowledge(query: str) -> list[contracts.HotelEvidence]:
         top_k=contracts.HYBRID_TOP_K,
         ranker=HybridSearchRanker.NAIVE,
     )
-    evidence = [
-        _to_evidence(query, item)
+    results = [
+        _to_context(query, item)
         for item in result.items[: contracts.HYBRID_TOP_K]
     ]
     return sorted(
-        evidence,
+        results,
         key=lambda item: (
             -item["combined_score"],
             item["hotel_id"] or "\uffff",

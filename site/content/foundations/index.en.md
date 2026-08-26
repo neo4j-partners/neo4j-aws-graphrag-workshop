@@ -62,57 +62,26 @@ it answers. GraphRAG adds graph facts and connections to that source material.
 
 - **Vector search:** Finds text with similar meaning.
 - **Full-text search:** Finds exact names, identifiers, and terms.
-- **Graph expansion:** Adds connected fields, relationships, and provenance.
+- **Graph expansion:** Adds connected entities, their properties, and provenance.
 - **Structured Cypher:** Filters and aggregates known graph fields.
 
-The workshop graph keeps two connected layers:
+The workshop graph keeps a lexical graph and a domain graph, connected to each other:
 
-```text
-Lexical evidence                         Domain facts
+:image[Two connected layers: the source file becomes a Document and Chunk in the lexical graph, and a Hotel node with typed Room, Amenity, Policy, and Service relationships in the domain graph]{src="../../images/01-graph-structure.svg" width=800}
 
-(Document)<-[:FROM_DOCUMENT]-(Chunk)<-[:FROM_CHUNK]-(Hotel)
-                                                        |
-                                                        +--[:HAS_ROOM]-------->(Room)
-                                                        +--[:OFFERS_AMENITY]-->(Amenity)
-                                                        +--[:HAS_POLICY]------>(Policy)
-                                                        `--[:PROVIDES_SERVICE]->(Service)
-```
-
-- **Search:** Finds a `Chunk` in the lexical layer.
-- **Expansion:** Follows reviewed relationships to domain facts.
+- **Search:** Finds a `Chunk` in the lexical graph.
+- **Expansion:** The retrieval query follows typed relationships into the domain graph.
 - **Provenance:** Keeps the source visible so you can inspect extracted facts.
 
 ---
 
 ## Follow One Grounded Request
 
-The deployment changes across modules. The evidence path stays the same:
+The deployment changes across modules. The retrieval flow stays the same:
 
-```text
-Question
-   |
-   v
-Strands agent using Claude on Amazon Bedrock
-   |
-   v
-search_hotel_knowledge tool
-   |
-   +--> Amazon Nova creates the query embedding
-   |
-   v
-Neo4j vector and full-text indexes
-   |
-   v
-Reviewed Cypher expands the matched Chunk into hotel facts
-   |
-   v
-Bounded evidence with source provenance
-   |
-   v
-Grounded answer or explicit abstention
-```
+:image[A question moves through the Strands agent using Claude on Amazon Bedrock, a search_hotel_knowledge tool call that gets an Amazon Nova query embedding, Neo4j vector and full-text indexes, retrieval query expansion into hotel properties, and returned context, ending in a grounded answer or explicit abstention]{src="../../images/foundations-grounded-request-flow.svg" width=800}
 
-- **Answer path:** The model answers from the returned evidence.
+- **Answer path:** The model answers from the returned context.
 - **Write path:** A separate command validates the request and writes it.
 - **Rule enforcement:** Neo4j checks the guest limit in the write transaction.
 
@@ -147,18 +116,18 @@ directly to Neo4j and bypasses the Module 4 Gateway.
 
 ---
 
-## Keep the Control Boundaries Explicit
+## Know Which Layer Enforces Each Rule
 
 Each control belongs to a layer that can enforce it:
 
-- **Retriever:** The application selects one fixed retrieval contract.
-- **Answer:** The model answers from tool evidence or states that evidence is missing.
-- **Graph query:** Reviewed Cypher defines the normal expansion path.
+- **Retriever:** The application selects one retriever and uses it for every question.
+- **Answer:** The model answers from the context the tool returned, or states that the context is missing.
+- **Graph query:** The fixed `retrieval_query` defines the traversal.
 - **Database write:** Neo4j rejects invalid and duplicate requests.
 - **AWS access:** IAM controls deployment and service calls.
 - **Memory access:** Actor-scoped Cypher limits recall to one actor.
 
-You can reuse these boundaries with a different graph schema and domain.
+You can reuse this separation of layers with a different graph schema and domain.
 
 ## Next
 

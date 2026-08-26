@@ -22,7 +22,7 @@ Both paths end at the same place\: a terminal, four Neo4j settings in `CONFIG.tx
 
 ## What You Are Configuring
 
-**Neo4j.** The graph arrives as a database dump that you restore into your own AuraDB Free instance. It already contains the hotel corpus, extracted under the pinned schema Module 1 explains. It deliberately does **not** contain the vector index, the full-text index, or the five hotels you extract yourself. Module 1 creates all of those.
+**Neo4j.** The graph arrives as a database dump that you restore into your own AuraDB Free instance. It already contains the hotel corpus, extracted under the same extraction schema Module 1 explains. It deliberately does **not** contain the vector index, the full-text index, or the five hotels you extract yourself. Module 1 creates all of those.
 
 **Amazon Bedrock.** Three models, all in **us-east-1**\:
 
@@ -97,7 +97,7 @@ Your environment is ready. Open the Module 1 notebook.
 Anything other than `ok` on every line means stop and fix it here. The script exits non-zero, prints what failed, and prints what to do about it.
 
 :::alert{type="info" header="Why it checks a named hotel and not a node count"}
-`environment/verify.py` does not ask Neo4j how many hotels it holds. A count is plausible at any value, so a half-restored dump passes that check. Instead it reads one specific hotel by name and compares its address to the value the later modules depend on. The same rule governs the two embedding checks\: they compare the returned vector width to the frozen contract width, because a model that answers at the wrong width breaks Module 3 silently rather than loudly.
+`environment/verify.py` does not ask Neo4j how many hotels it holds. A count is plausible at any value, so a half-restored dump passes that check. Instead it reads one specific hotel by name and compares its address to the value the later modules depend on. The same rule governs the two embedding checks\: they compare the returned vector width to the expected 1024 dimensions, because a model that answers at the wrong width breaks Module 3 silently rather than loudly.
 :::
 
 ---

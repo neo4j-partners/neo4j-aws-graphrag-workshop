@@ -30,11 +30,11 @@ def lego_progress(completed: int):
     """
     modules = [
         "Module 1: Build the Graph",
-        "Module 2: From Similarity Search to Connected Context",
+        "Module 2: Graph-Enriched Retrieval",
         "Module 3: Build the Grounded Booking Agent",
         "Module 4: Production Agent with AgentCore",
         "Module 5: Deploy to AgentCore Runtime",
-        "Module 6: Inspectable Neo4j Memory",
+        "Module 6: Neo4j Graph Memory",
     ]
     total = len(modules)
     print("\n" + "=" * 56)

@@ -57,9 +57,9 @@ failure.
 - **Exact question:** Confirm that full-text search keeps the exact name or identifier.
 - **Connected question:** Confirm that graph expansion returns the required fields and source.
 - **Structured question:** Confirm that Cypher returns the correct records.
-- **Unsupported question:** Confirm that the tool reports missing evidence and the agent abstains.
+- **Unsupported question:** Confirm that the tool reports that no context came back and the agent abstains.
 - **Retrieval quality:** Measure source coverage, field coverage, rank, and irrelevant context.
-- **Answer quality:** Measure factual use of evidence, exact values, citations, and abstention.
+- **Answer quality:** Measure how faithfully the answer is grounded in the returned context, plus exact values, citations, and abstention.
 - **Regression tracking:** Run the same tests after changes to chunks, models, retrieval settings, Cypher, or prompts.
 
 ---
@@ -113,18 +113,18 @@ application manages that data.
 
 ---
 
-## Keep the Portable Contracts
+## Keep the Portable Pieces
 
-Keep these workshop contracts in production:
+Keep these parts of the workshop in production:
 
-- **Pinned graph schema:** Use one queryable vocabulary for extracted data.
+- **Fixed graph schema:** Use one queryable vocabulary for extracted data.
 - **Source provenance:** Link each derived fact to its source.
-- **Fixed retrieval interface:** Return one bounded result shape to callers.
-- **Grounded answer policy:** State when the evidence cannot answer a question.
-- **Transactional command:** Check rules, prevent duplicates, and write in one boundary.
+- **Fixed retrieval interface:** Return one fixed result shape to callers.
+- **Grounded answer policy:** State when the returned context cannot answer a question.
+- **Transactional command:** Check rules, prevent duplicates, and write in one transaction.
 - **Actor-scoped memory:** Start recall from an authenticated actor.
 
-Test, deploy, and operate each contract as a separate component.
+Test, deploy, and operate each of these as a separate component.
 
 ## Next
 

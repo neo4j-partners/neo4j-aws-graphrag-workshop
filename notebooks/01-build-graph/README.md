@@ -29,14 +29,14 @@ One optional cell extracts a single document with no schema and prints the label
 |---|---|
 | `1.0_verify_environment.ipynb` | Fast, read-only AWS identity and Bedrock model-access gate |
 | `1.1_build_graph.ipynb` | The module notebook |
-| `held_out_documents.py` | Names the five documents held out of the dump and unpacks them from the corpus archive. The Cairo fixture hotel is deliberately not among them because Module 2 starts its retrieval comparison there, and that evidence must not depend on a participant's extraction having succeeded |
+| `held_out_documents.py` | Names the five documents held out of the dump and unpacks them from the corpus archive. The Cairo fixture hotel is deliberately not among them because Module 2 starts its retrieval comparison there, and that comparison must not depend on a participant's extraction having succeeded |
 | `data/` | The five held-out source documents, unpacked |
 
 ## What this module hands forward
 
 - **The pinned schema.** Module 2 compares source retrieval with graph-enriched retrieval that returns `name`, `address`, and `guest_rating` from the `Hotel` node. That contract is possible because extraction was constrained when the data was written.
 - **The deterministic boundary.** The LLM extracts genuinely unstructured facts. The parser reads the authored `## Hotel Amenities` bullets and merges one shared `Amenity` node for each exact label.
-- **Both indexes.** This module builds the vector and full-text indexes for every stored `Chunk`. `workshop/retrieval_setup.py` creates and verifies them. Module 2 compares the retrieval evidence and selects the graph-enriched pattern. Module 3 uses that pattern.
+- **Both indexes.** This module builds the vector and full-text indexes for every stored `Chunk`. `workshop/retrieval_setup.py` creates and verifies them. Module 2 compares the retrieved context and selects the graph-enriched pattern. Module 3 uses that pattern.
 
 ## The workshop page
 

@@ -1,8 +1,8 @@
 [< Back to the workshop README](../../README.md)
 
-# Module 6: Inspectable Neo4j Memory
+# Module 6: Neo4j Graph Memory
 
-This is the workshop's cross-session memory lab. It stores one preference as an inspectable graph record in Neo4j. The same actor recalls it in a new session, while a second actor receives no result. A Cypher query traces the preference to its source message and the `Hotel` node it describes.
+This is the workshop's cross-session memory lab. It stores one preference as a graph record in Neo4j. The same actor recalls it in a new session, while a second actor receives no result. A Cypher query traces the preference to its source message and the `Hotel` node it describes.
 
 The preference connects to its source and hotel through graph relationships. Those relationships provide the audit trail.
 

@@ -51,14 +51,14 @@ SYSTEM_PROMPT = f"""
 You are a grounded hotel-information and reservation-request assistant.
 
 You have exactly two tools:
-- {RETRIEVAL_TOOL} searches hotel evidence and returns a stable hotel ID.
+- {RETRIEVAL_TOOL} searches hotel knowledge and returns a stable hotel ID.
 - {RESERVATION_TOOL} validates policy and records a request. It does not
   reserve inventory, take payment, or confirm a booking.
 
 Rules:
 - Use {RETRIEVAL_TOOL} before creating any reservation request.
 - Treat the tool's grounding_result as binding. When answerable is false,
-  explain the missing fact and do not infer an answer from related evidence.
+  explain the missing fact and do not infer an answer from related context.
 - Pass only a stable hotel ID returned by that search to the command.
 - Use the caller-provided request ID exactly. Never invent or alter one.
 - Never silently reduce the guest count or change dates. Make every policy
@@ -178,24 +178,24 @@ class ToolResultRecorder(HookProvider):
 
 def _grounding_result(
     query: str,
-    evidence: list[dict[str, Any]],
+    results: list[dict[str, Any]],
 ) -> dict[str, Any]:
-    """Describe whether bounded hotel evidence can answer the question.
+    """Describe whether the returned hotel context can answer the question.
 
     The graph holds hotel knowledge, not live inventory, so a question about
-    availability is unanswerable no matter how much evidence came back. That
+    availability is unanswerable no matter how much context came back. That
     case is decided here rather than left to the model, because a model looking
-    at a rich evidence record will reliably find something to say.
+    at a rich context record will reliably find something to say.
     """
     normalized_query = query.casefold()
     asks_for_live_availability = any(
         term in normalized_query
         for term in ("availability", "available", "vacancy", "vacancies", "inventory")
     )
-    evidence_ids = list(
+    hotel_ids = list(
         dict.fromkeys(
             item["hotel_id"]
-            for item in evidence
+            for item in results
             if isinstance(item.get("hotel_id"), str) and item["hotel_id"]
         )
     )
@@ -207,22 +207,22 @@ def _grounding_result(
             ("guest_rating", "guest_rating"),
             ("amenities", "amenities"),
         )
-        if any(item.get(field) not in (None, "", []) for item in evidence)
+        if any(item.get(field) not in (None, "", []) for item in results)
     ]
 
     if asks_for_live_availability:
         answerable = False
         missing_fact = "live_room_availability"
     else:
-        answerable = bool(evidence)
-        missing_fact = None if answerable else "matching_hotel_evidence"
+        answerable = bool(results)
+        missing_fact = None if answerable else "matching_hotel_context"
 
     # The top hit's checkable fields travel back to the caller alongside the
     # verdict. A refusal and a dead index look identical from outside: both
     # produce no answer. A test can only tell them apart if some real, specific
     # value from the graph crosses this boundary, so every verdict carries one.
-    top = evidence[0] if evidence else {}
-    top_evidence = {
+    top = results[0] if results else {}
+    top_result = {
         field: top.get(field)
         for field in ("hotel_id", "hotel_name", "address", "guest_rating")
     }
@@ -231,14 +231,14 @@ def _grounding_result(
         "answerable": answerable,
         "supported_facts": supported_facts,
         "missing_fact": missing_fact,
-        "evidence_ids": evidence_ids,
-        "top_evidence": top_evidence,
+        "hotel_ids": hotel_ids,
+        "top_result": top_result,
     }
 
 
 @tool(name=RETRIEVAL_TOOL)
 def search_hotel_knowledge(query: str) -> str:
-    """Search bounded hotel evidence and graph-enriched facts.
+    """Search hotel knowledge and return graph-enriched context.
 
     Use this before answering hotel questions or creating a reservation
     request. The returned hotel_id is the only hotel identity accepted by the
@@ -248,14 +248,14 @@ def search_hotel_knowledge(query: str) -> str:
         query: Natural-language hotel question.
 
     Returns:
-        JSON containing the unchanged bounded evidence records and a structured
+        JSON containing the unchanged context records and a structured
         answerability verdict.
     """
-    evidence = _search_hotel_knowledge(query)
+    results = _search_hotel_knowledge(query)
     return json.dumps(
         {
-            "evidence": evidence,
-            "grounding_result": _grounding_result(query, evidence),
+            "context": results,
+            "grounding_result": _grounding_result(query, results),
         },
         ensure_ascii=False,
     )
@@ -358,7 +358,7 @@ def invoke(
     the agent may create a reservation request.
 
     The returned `grounding_result` and `command_result` are the tools' own
-    structured verdicts. They let a caller assert on evidence and graph
+    structured verdicts. They let a caller assert on context and graph
     behaviour rather than on the model's prose, which is the difference between
     a test that fails when the write breaks and one that fails when the model
     rephrases.

@@ -1,6 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-"""Scoped cleanup for the inspectable Neo4j memory demo.
+"""Scoped cleanup for the Neo4j graph memory demo.
 
 Removes exactly what the scenario notebook wrote:
 

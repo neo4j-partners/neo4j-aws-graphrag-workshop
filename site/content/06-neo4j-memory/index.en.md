@@ -1,14 +1,14 @@
 ---
-title: "Module 6: Inspectable Neo4j Memory"
+title: "Module 6: Neo4j Graph Memory"
 weight: 70
 ---
 
-## Add Inspectable Memory with Neo4j
+## Store Agent Memory as a Graph
 
 Module 6 adds long-term hotel preference memory to Neo4j so the agent can recall
 a preference across sessions. Each stored preference links to its actor, source
-message, session, and hotel. These relationships make the memory inspectable and
-allow you to trace or correct it directly.
+message, session, and hotel. These relationships let you trace a
+preference to its source or correct it directly.
 
 :image[AgentCore Memory and Neo4j graph memory: two approaches to long-term preference memory]{src="../../images/04-memory-comparison.svg" width=800}
 
