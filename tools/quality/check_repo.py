@@ -35,6 +35,7 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 NOTEBOOKS = REPO_ROOT / "notebooks"
 CONTENT = REPO_ROOT / "site" / "content"
+SLIDES = REPO_ROOT / "slides"
 
 # Cells beginning with a shell escape or a line magic are not Python and never
 # parse. Cells using top-level `await` are valid in ipykernel but not in
@@ -106,6 +107,19 @@ LINK_PATTERN = re.compile(r"\]\(([^)]+)\)")
 SRC_PATTERN = re.compile(r'src="([^"]+)"')
 
 
+SLIDES_LINK = re.compile(r"(?:\.{1,2}/)+slides/([^/]+)/$")
+
+
+def _resolves_to_a_deck(target: str) -> bool:
+    """A `../slides/<deck>/` link points at a page `build-slides.mjs` generates.
+
+    The wrapper page does not exist in the content tree, so resolve the link
+    against the Marp source directory the deck is built from instead.
+    """
+    match = SLIDES_LINK.match(target)
+    return match is not None and (SLIDES / match.group(1)).is_dir()
+
+
 def content_references_resolve() -> list[str]:
     """Every relative markdown link and image src in the content tree must exist."""
     problems: list[str] = []
@@ -114,6 +128,8 @@ def content_references_resolve() -> list[str]:
         targets = LINK_PATTERN.findall(text) + SRC_PATTERN.findall(text)
         for target in targets:
             if target.startswith(("http://", "https://", "#", "mailto:")):
+                continue
+            if _resolves_to_a_deck(target):
                 continue
             resolved = (path.parent / target.split("#", 1)[0]).resolve()
             if not resolved.exists():

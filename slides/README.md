@@ -31,6 +31,11 @@ npx @marp-team/marp-cli@latest slides/overview-graphrag --server
 
 Press <kbd>P</kbd> in the browser to open the presenter view with speaker notes.
 
+The workshop diagrams show as broken icons in that preview. Every deck
+references them as `../images/NAME.svg`, and they live in `site/images/`, which
+the build script resolves and the preview server does not. Build the deck and
+open the generated HTML to check a diagram.
+
 Build every deck the way the site does:
 
 ```bash
@@ -41,8 +46,7 @@ That writes the rendered HTML into `site/modules/ROOT/attachments/slides/` and
 an Antora wrapper page per deck into `site/modules/ROOT/pages/slides/`. The full
 `npm run build` runs content preparation, then the slides, then Antora.
 
-> Marp CLI needs Node 22 LTS. It fails on Node 25 and later. The GitHub Pages
-> workflow already pins Node 22.
+> The GitHub Pages workflow pins Node 22 LTS. Newer releases work locally.
 
 ## Images
 

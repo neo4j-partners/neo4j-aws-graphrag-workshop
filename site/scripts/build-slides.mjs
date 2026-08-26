@@ -168,10 +168,14 @@ function wrapperPage(deck) {
   const reverse = deck.page
     ? `\n\nxref:${deck.page}[Open the ${deck.pairsWith} page]`
     : ''
+  // The passthrough needs `subs` for `{attachmentsdir}` to resolve. Without it
+  // the iframe src stays literal and resolves against the wrapper page's own
+  // directory, two levels below the attachments root.
   return `= ${deck.title} (Slides)
 
+[subs="attributes+"]
 ++++
-<iframe src="_attachments/slides/${deck.key}/${html}"
+<iframe src="{attachmentsdir}/slides/${deck.key}/${html}"
   style="width:100%;aspect-ratio:16/9;border:1px solid var(--panel-border-color,#e1e1e1);border-radius:4px;"
   title="${deck.title}"
   allowfullscreen>
