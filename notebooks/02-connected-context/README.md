@@ -48,11 +48,12 @@ are not an independent source of truth. The notebook keeps the source
 `Document`, matched `Chunk`, and relationship provenance visible so you can
 inspect an omission or merge against the authored source.
 
-The comparison closes by selecting the fixed `HybridCypherRetriever` behind
-`workshop.hybrid_retrieval.search_hotel_knowledge`. The application question
-needs exact hotel-name support plus connected graph fields. Module 3 applies
-that selected function and focuses on grounding, abstention, and the protected
-reservation command.
+The comparison closes by separating two application needs. The fixed
+`HybridCypherRetriever` behind `workshop.hybrid_retrieval.search_hotel_knowledge`
+preserves source passages and connected graph fields. The guarded Text2Cypher
+path calculates over structured records. Module 3 exposes both through narrow
+read tools and focuses on model-driven routing, grounding evidence, and the
+protected reservation command.
 
 ## Files in this folder
 

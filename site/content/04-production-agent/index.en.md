@@ -65,12 +65,12 @@ the end of this module therefore looks almost identical to Module 3.
 | Aspect | Module 3 local `@tool` | Module 4 Gateway MCP tool |
 |---|---|---|
 | Where the code runs | The notebook process | An AWS Lambda function |
-| How the model learns the tool | Strands reads the function signature and docstring | The client calls `tools/list` |
+| How the model learns the tool | `@tool` exposes a generated tool specification | The client calls `tools/list` |
 | Where the description comes from | The Python docstring | The tool schema on the target |
 | Who holds the Neo4j credential | The notebook process | The Lambda, from Secrets Manager |
 | Who checks the caller | Nobody, the caller is the process itself | IAM checks the SigV4 signature |
 | How a failure appears | A Python exception | A network error, an IAM denial, or a function error |
-| What the agent passes to Strands | `tools=[search_hotel_knowledge_tool]` | `tools=gateway_mcp.list_tools_sync()` |
+| What the agent passes to Strands | `tools=list(READ_TOOLS)` | `tools=gateway_mcp.list_tools_sync()` |
 
 ### Transport and Sessions
 
@@ -428,9 +428,9 @@ picks a remote tool, answers from the returned context, and records the
 selected tool in the trace. This is the same model and tool loop as Module 3,
 with Lambda and Gateway replacing local Python calls.
 
-One line changes. `tools=agent_mcp.list_tools_sync()` replaces
-`tools=[search_hotel_knowledge_tool]`. Strands sees a name, a JSON schema, and
-a callable operation in both cases.
+The tool source changes. `tools=agent_mcp.list_tools_sync()` replaces
+`tools=list(READ_TOOLS)`. Strands sees names, descriptions, input schemas, and
+callable operations in both cases.
 
 ## Where Each Piece Runs
 

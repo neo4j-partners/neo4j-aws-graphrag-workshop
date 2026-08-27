@@ -314,7 +314,7 @@ One graph now holds hotel facts, the documents behind them, reservation requests
 - **The Production Path page** covers read-only database users, secret handling, and the controls this workshop simplified
 - **The Summary page** collects every pattern from today in one list you can take back
 
-Every module today was one design: the layer that can enforce a rule is the layer that owns it.
+Every module follows one control principle: the layer that can enforce a rule owns it.
 
 <!--
 Close on the synthesis, not a recap.

@@ -13,7 +13,7 @@ the slide holds the fragments and the note holds what you say.
 | 3 | `overview-architecture` | The dataset, the environment, and who owns which control | Setup |
 | 4 | `overview-documents-to-graph` | Extraction, schema drift, and the indexes that power search | Module 1 |
 | 5 | `overview-graphrag` | Vector, full-text, hybrid, and graph-enriched retrieval | Module 2 |
-| 6 | `overview-agent` | Strands, one fixed tool, abstention, and the write path | Module 3 |
+| 6 | `overview-agent` | Strands, automatic read-tool routing, grounding evidence, and the write path | Module 3 |
 | 7 | `overview-mcp-gateway` | Moving the retrieval tools out of the notebook process | Module 4 |
 | 8 | `overview-agentcore-runtime` | The container contract, sessions, and observability | Module 5 |
 | 9 | `overview-agent-memory` | Preference memory with provenance and actor-scoped recall | Module 6 |

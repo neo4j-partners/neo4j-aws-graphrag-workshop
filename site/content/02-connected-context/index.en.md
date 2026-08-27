@@ -83,7 +83,7 @@ Module 4 places the application retrievers' `search()` calls inside Lambda funct
 * **Vector search:** Embeds the question and uses cosine similarity to find the closest vectors in `hotel_chunk_embeddings`.
 * **`top_k`:** Sets the number of chunks returned. The notebook uses 3 for the arrival question and 5 for the vector and hybrid postal-code comparison.
 
-A large chunk keeps the complete hotel in a single extraction prompt, but it also returns a whole document during search. `workshop/hybrid_retrieval.py` limits returned chunk text to 1,200 characters. A production design can use large extraction chunks and smaller retrieval chunks.
+A large chunk keeps the complete hotel in a single extraction prompt, but it also returns a whole document during search. `workshop/hybrid_retrieval.py` bounds returned chunk text at 8,000 characters, enough to preserve every current hotel document and its full policy sections. A production design can use large extraction chunks and smaller retrieval chunks.
 
 The first question asks when "standard arrival processing" begins at AnyCompany Cairo Nile View. The source text says "Standard check-in time." Vector search still finds the Cairo chunk because both phrases carry the same meaning. The result includes `3:00 PM`.
 
@@ -232,7 +232,7 @@ hybrid_cypher_retriever = HybridCypherRetriever(
 )
 :::
 
-The retrieval query receives `node` and the fused `score`. It can then return the source chunk, hotel properties, connected amenities, and provenance in one result. The booking application uses this retriever through `search_hotel_knowledge` in `notebooks/workshop/hybrid_retrieval.py` because hotel questions can contain both paraphrased language and exact names.
+The retrieval query receives `node` and the fused `score`. It can then return the source chunk, hotel properties, connected amenities, and provenance in one result. The booking application's passage tool uses this retriever through `search_hotel_knowledge` in `notebooks/workshop/hybrid_retrieval.py` because hotel questions can contain both paraphrased language and exact names.
 
 The function accepts only query text. It fixes the index names, the `NAIVE` ranker, `top_k=5`, and the graph traversal so every tool call uses the tested retrieval configuration.
 
@@ -264,9 +264,12 @@ The notebook returns three result groups\:
 
 This result shape records why each hotel passed or failed. "Reviewed fixed Cypher" describes this workshop's implementation; **Cypher Templates** is the Neo4j GraphRAG pattern name.
 
-## 8. Optional Text2Cypher with Text2CypherRetriever
+## 8. Text2Cypher with Text2CypherRetriever
 
-`Text2CypherRetriever` asks a model to write a query from the extraction schema. The optional notebook cell demonstrates the same Text2Cypher flow explicitly so each validation step remains visible\:
+`Text2CypherRetriever` asks a model to write a query from the extraction schema.
+The optional Module 2 notebook cell demonstrates the flow explicitly so each
+validation step remains visible. Module 3 uses this pattern in its structured
+record tool\:
 
 1. Add the schema and three examples to the prompt.
 2. Ask the model for Cypher and remove any code fence.
@@ -294,18 +297,22 @@ The prompt asks for read-only Cypher. The application checks the planned query t
 | 7 | Cypher Templates | Executes a reviewed parameterized query | Known structured conditions | Candidate, qualifier, and exclusion records |
 | 8 | `Text2CypherRetriever` | Generates Cypher from the question and schema | Flexible structured questions | Generated Cypher and database records |
 
-The booking application selects `HybridCypherRetriever`. It needs exact hotel-name support, semantic matching, and connected hotel properties in the same context record.
+The booking application keeps two complementary patterns. `HybridCypherRetriever`
+supports source passages and connected hotel facts. `Text2CypherRetriever`
+supports counts, averages, rankings, filters, and relationship questions across
+many records.
 
 ## Who Decides What to Retrieve
 
 | Stage | Pattern | Who decides what to retrieve |
 |-------|---------|------------------------------|
 | Module 2 notebook | Direct retrieval calls, one per exercise | You do, by choosing the cell |
-| Module 3 | `search_hotel_knowledge` as a Strands tool | The model decides when; the retriever fixes how |
-| Module 4 | The same function behind a Lambda and an AgentCore Gateway | The model, over IAM-authenticated MCP |
-| Module 5 | The packaged agent on AgentCore Runtime | The model, inside a deployed container |
+| Module 3 | `search_hotel_passages` and `query_hotel_records` | The model chooses from two tool specifications |
+| Module 4 | Two retrieval functions behind Lambda and AgentCore Gateway | The model chooses remote MCP tools |
+| Module 5 | A deployment-oriented agent on AgentCore Runtime | The model chooses from the packaged tool set |
 
-The caller changes across the modules, but the retrieval configuration stays fixed. The same `hybrid_retrieval.py` therefore runs in a notebook, a Lambda, and a container.
+The passage configuration and the structured query guard stay in application
+code. The tool set and transport differ across modules.
 
 ## Pattern Reference
 
@@ -313,11 +320,13 @@ This module uses three named patterns from Neo4j's :link[GraphRAG Pattern Catalo
 
 * **Graph-Enhanced Vector Search:** Finds a chunk through vector similarity and follows a reviewed graph traversal. `VectorCypherRetriever` implements this pattern directly. Full-text and hybrid retrieval can use the same graph-enrichment structure with different entry searches.
 * **Cypher Templates:** Runs reviewed, parameterized Cypher for known structured question shapes.
-* **Text2Cypher:** Asks a model to create Cypher at request time. This flexible path remains optional because every generated query requires validation.
+* **Text2Cypher:** Asks a model to create Cypher at request time. Its Module 2
+  teaching cell is optional; Module 3 uses the guarded implementation for its
+  structured record tool.
 
 ## Run It
 
-Open `notebooks/02-connected-context/2.1_connected_context.ipynb` and run the cells in order. The **Verify the prepared graph** cell checks the Module 1 fixtures and both indexes before it creates a retriever. The notebook runs the core vector, hybrid, vector-Cypher, Cypher Template, and optional Text2Cypher exercises. The page also explains standalone full-text retrieval, full-text retrieval with Cypher traversal, and the `HybridCypherRetriever` selected for Module 3.
+Open `notebooks/02-connected-context/2.1_connected_context.ipynb` and run the cells in order. The **Verify the prepared graph** cell checks the Module 1 fixtures and both indexes before it creates a retriever. The notebook runs the core vector, hybrid, vector-Cypher, Cypher Template, and optional Text2Cypher exercises. The page also explains standalone full-text retrieval and full-text retrieval with Cypher traversal. Module 3 turns Hybrid Cypher and Text2Cypher into its two read tools.
 
 If the readiness check fails, complete Module 1 and restart this notebook. Module 2 reads the graph and preserves the Module 1 data.
 

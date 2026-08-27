@@ -3,37 +3,45 @@ title: "Module 3: Build the Grounded Booking Agent"
 weight: 40
 ---
 
-Module 3 builds a local hotel assistant with the Strands Agents SDK. The agent
-answers hotel questions from Neo4j context and says when the graph lacks a
-requested fact. A separate reservation command checks business rules before it
-writes an approved request to Neo4j.
+Module 3 builds a local hotel assistant with the Strands Agents SDK. A plain
+Strands agent chooses between two read tools, inspects what the selected tools
+return, and writes its response from that evidence. A separate reservation
+command checks business rules before it writes an approved request to Neo4j.
 
 **Brief overview**
 
-* **Grounded answers:** The agent must call a retrieval tool before it answers.
-  The tool runs `HybridCypherRetriever` from Module 2 and hands the model only
-  chunk text and graph properties, so the model cannot invent facts.
-* **A stated limit:** The system prompt tells the agent to say when the graph
-  does not contain a requested fact, instead of guessing.
+* **Automatic tool selection:** The model reads two tool specifications and
+  chooses passage search, a structured graph query, both, or no tool when the
+  turn needs no hotel fact.
+* **Observable grounding:** The system prompt directs the model to use tool
+  evidence before stating hotel facts. A trace records each tool call, and both
+  read tools return the same structured answerability verdict.
+* **An explicit limit:** Live room inventory is absent from the graph. The
+  returned verdict marks that fact as missing instead of relying on a phrase in
+  the model's answer.
 * **A separate write path:** A reservation command, not the model, validates a
   reservation request and writes it to Neo4j in one transaction.
 * **Safe retries:** A caller-supplied `request_id` lets a retried request
   return the original result instead of creating a second `ReservationRequest`
   node.
 
-:image[Grounded agent architecture: the agent reads hotel facts from Neo4j through one tool, and a separate command writes reservations back to Neo4j]{src="../../images/03-grounded-agent-overview.svg" width=800}
+:image[Grounded agent architecture: the model chooses passage search or a structured record query for reads, while a separate application command writes reservations]{src="../../images/03-grounded-agent-overview.svg" width=800}
 
-The agent has one way to read the graph and no way to write to it. A separate
-command handles reservations.
+The agent has two ways to read the graph and no registered write tool. A
+separate command handles the notebook's reservation examples.
 
 * **Strands agent:** Runs Claude on Amazon Bedrock. It reads the question and
   picks the tool to call.
-* **`search_hotel_knowledge` tool:** The agent's only tool. It runs the
-  Module 2 hybrid search and returns hotel facts as JSON.
+* **`search_hotel_passages`:** Runs the Module 2 hybrid search and returns up to
+  five source passages with linked hotel facts. It fits amenities, rooms,
+  policies, services, and location details.
+* **`query_hotel_records`:** Uses `Text2CypherRetriever` for counts, averages,
+  rankings, filters, and relationship questions. It returns the generated
+  Cypher beside the database records.
 * **Neo4j:** Stores the hotel graph, both search indexes, and the
   maximum-guests rule.
-* **Grounded answer:** The agent answers from the returned facts. When those
-  facts do not cover the question, it says the graph does not have the answer.
+* **Grounded response policy:** The model is instructed to answer from returned
+  facts and state what is missing when the evidence does not support an answer.
 * **Reservation command:** Plain Python code. It checks the rule and writes the
   request in one transaction, so the model never writes to the graph.
 
@@ -53,10 +61,9 @@ what happens next, not the developer.
   about what it needs, acts by calling a tool, observes the tool's result, and
   repeats until it can answer. Each turn of the loop is one round trip to the
   model.
-* **Why this workshop uses it:** The grounding rule, answer only from
-  retrieved context, only holds if a tool call happens before every answer.
-  Strands lets the workshop enforce that with a small model subclass instead of
-  a custom orchestration loop.
+* **Why this workshop uses it:** Strands makes the model's routing decision
+  visible without a custom orchestration loop. The notebook can inspect the
+  selected tools and their structured results directly.
 
 The notebook uses these parts:
 
@@ -64,66 +71,85 @@ The notebook uses these parts:
   whichever tool the model selects.
 * **`BedrockModel`:** Connects the agent to the Amazon Bedrock model named by
   the model ID.
-* **`@tool`:** Turns a Python function and its docstring into a tool definition
-  the model can select. The docstring is the only description the model sees,
-  so it has to state what the tool does and what it returns.
+* **`@tool`:** Turns a Python function into a tool specification the model can
+  select. The specification contains a name, a description derived mostly from
+  the docstring, and an input schema.
+* **`ToolTraceHook`:** Prints each tool call and records its complete bounded
+  result for the notebook checks.
 * **System prompt:** Defines which facts the model may use and when it must say
   that the graph lacks an answer.
 
-The notebook exposes `search_hotel_knowledge` as
-`search_hotel_knowledge_tool`. Its docstring tells the model that the function
-searches hotel context and returns JSON facts. A small `BedrockModel` subclass
-forces one tool call for every new hotel question, so the model cannot skip
-retrieval and answer from memory. After the tool returns, the model can write
-the final answer.
+The notebook prints the final specification for both read tools before it
+creates an agent. This is the interface the model actually receives. The
+descriptions explain the routing boundary between passage questions and
+structured questions, and both schemas require one natural-language `query`.
+
+Module 3 uses `BedrockModel` directly. Nothing forces a tool call. The system
+prompt says to use a tool before stating a hotel fact, but a greeting or thank
+you can receive a direct answer. Routing is a model decision, so the notebook
+uses fresh agents and traces to make variation visible.
 
 ## How the Grounded Agent Works
 
-The agent follows the same four steps for every hotel question:
+For a hotel question, the normal agent loop is:
 
-1. The model calls `search_hotel_knowledge_tool` with the user's question.
-2. The tool runs hybrid search and the fixed `retrieval_query` from Module 2.
-3. The retrieval query follows `FROM_CHUNK` from the matched chunk to its
-   `Hotel`, and returns the hotel's properties along with the source chunk
-   text.
-4. The model answers using only that returned context.
+1. The model reads each tool's name, description, and input schema.
+2. It chooses `search_hotel_passages`, `query_hotel_records`, or both and sends
+   the user's question as `query`.
+3. Strands runs the selected tool and returns its JSON evidence to the model.
+4. The model writes a response. The trace shows which path ran and what came
+   back.
 
 * **Why the tool owns the driver session:** The model receives data, not
   database credentials. It cannot run its own Cypher.
-* **What every result contains:** The same eight keys: `chunk_text`,
-  `combined_score`, `exact_terms`, `hotel_id`, `hotel_name`, `address`,
-  `guest_rating`, and `amenities`.
-* **Result limits:** At most five results, at most 1,200 characters of
-  `chunk_text` per result, and at most 12 amenities per hotel.
-* **The grounding rule in practice:** "Subject to availability" is a policy
-  sentence stored in the graph, not proof that a room is open right now. The
-  system prompt tells the agent to treat policy text and live availability as
-  different things, so it says the available hotel knowledge cannot answer a
-  live inventory question.
+* **Passage result:** `ok`, up to five `passages`, `hotel_ids`, `top_result`,
+  and `grounding_result`. Each passage keeps at most 8,000 characters of source
+  text and 12 amenities.
+* **Record result:** `ok`, generated `cypher`, at most 25 list `records`,
+  `row_count`, and `grounding_result`. An aggregate can still cover every
+  matching graph record.
+* **Shared verdict:** On a successful read, `grounding_result` contains exactly
+  `answerable` and `missing_fact`. Empty records and a failed query remain
+  distinct outcomes.
+
+### The Nested Model Call in `query_hotel_records`
+
+The structured path reaches a model twice. First, the agent model chooses the
+tool. Inside the tool, `Text2CypherRetriever` asks a model to generate Cypher
+from the pinned graph schema. Neo4j plans the statement with `EXPLAIN` and runs
+it only when the plan is read-only. The tool returns the generated Cypher for
+inspection because a query can run successfully and still express the wrong
+meaning.
 
 Open `notebooks/03-grounded-booking-agent/3.1_grounded_booking_agent.ipynb`.
 
-### Query 1: Retrieve Amenities and a Guest Rating
+### Route Questions by Evidence Shape
 
 > **"What amenities and guest rating does AnyCompany Cairo Nile View have?"**
 
-* **What it tests:** Whether graph-enriched retrieval can pull two different
-  fields, amenities and a rating, for the same hotel in one answer.
-* **Why it works:** Full-text search matches the hotel name exactly. Vector
-  search matches the meaning of "amenities and a rating." `HybridCypherRetriever`
-  combines both signals, then the fixed retrieval query returns the connected
-  hotel's amenity list and its exact `guest_rating` property.
+This named-hotel question should reach `search_hotel_passages`. The notebook
+also routes an average rating and a hotel count to `query_hotel_records`, then
+routes a request for recorded cancellation-policy wording back to
+`search_hotel_passages`. Each case gets a fresh agent. A mismatch produces a
+warning because automatic model routing can vary; it does not make the notebook
+fail.
 
 ### Query 2: A Question the Graph Cannot Answer
 
 > **"Does AnyCompany Cairo Nile View guarantee room availability next weekend?"**
 
-* **What it tests:** The grounding rule, not retrieval.
-* **Why the agent abstains:** Neo4j stores descriptive hotel facts and
-  policies, not live room inventory. Retrieval still succeeds and returns
-  policy text, but that text cannot confirm next weekend's availability, so
-  the agent says the available hotel knowledge cannot answer the question
-  instead of guessing.
+* **What it tests:** Whether a read tool ran and returned the explicit missing
+  fact, without grading the model's wording.
+* **Why the evidence is insufficient:** Neo4j stores descriptive hotel facts,
+  policies, and total room capacity, not live room inventory. Either read tool
+  can return real hotel evidence, but its verdict reports
+  `missing_fact: live_room_availability`.
+
+The next example sends `thanks, that is all`. Because it needs no hotel fact,
+the expected behavior is a direct reply with no tool call. Together, these
+checks demonstrate the intended policy and expose deviations during the lab;
+they are not a hard runtime guarantee that the model will always route or word
+an answer correctly.
 
 ## The Reservation Command
 

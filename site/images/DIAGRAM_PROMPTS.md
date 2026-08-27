@@ -62,21 +62,25 @@ export. Edit the SVG directly and the site picks the change up on the next build
 **Design contract:**
 ```
 TITLE: "The Grounded Booking Agent"
-SUBTITLE: "One tool reads the graph. A separate command writes to it."
+SUBTITLE: "The model chooses a read path. A separate application command writes."
 
-TOP LANE, "READ PATH: ANSWER A QUESTION", left to right:
-You -> Strands agent (Claude on Amazon Bedrock) -> search_hotel_knowledge
-(the agent's only tool) -> Neo4j (hotel graph and indexes).
-A return arrow carries "hotel facts, as JSON" from Neo4j back to the agent.
-A dark bar closes the lane: the agent answers from those facts only, and says
-the graph does not have the answer when they do not cover the question.
+TOP LANE, "READ PATH: ANSWER A QUESTION":
+You -> Strands agent, which reads both tool specifications and chooses one or
+both of these paths:
+1. search_hotel_passages -> source text and linked hotel facts.
+2. query_hotel_records -> model-generated Cypher whose plan is checked with
+EXPLAIN before Neo4j runs it.
+Both paths reach Neo4j. A return arrow carries bounded JSON evidence and a
+shared grounding verdict back to the agent. A dark bar closes the lane with
+the prompt policy and the trace boundary: answer from evidence or state what is
+missing; inspect the trace to see whether a tool call and verdict happened.
 
-BOTTOM LANE, "WRITE PATH: MAKE A RESERVATION", left to right:
-Reservation command (your Python code, not the model) -> Rule check in Neo4j
+BOTTOM LANE, "WRITE PATH: RECORD A RESERVATION REQUEST", left to right:
+Reservation command (application code, not an agent tool) -> Rule check in Neo4j
 (at most 10 guests) -> Write in one transaction (one request_id, one saved
 request).
 
-FOOTER: "The model never writes to the graph."
+FOOTER: "Module 3 registers no write tool."
 
 Style: white background, Helvetica stack, flat fills, Neo4j blue for graph
 boxes, teal for the tool, dark navy for the outcome bar.

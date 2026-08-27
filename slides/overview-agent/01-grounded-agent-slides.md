@@ -29,12 +29,12 @@ ol > li {
 
 # The Grounded Booking Agent
 
-One tool it must call, and one thing it cannot do
+Two read paths it can choose, and one write path it cannot reach
 
 <!--
-This deck has two hinges, not one. "One Tool, On Purpose" argues for a single
-tool. "Writes Do Not Go Through the Model" argues that the write path does not
-go through the model at all.
+This deck has two hinges. "Two Read Tools, One Boundary" shows a normal Strands
+agent routing by tool specification. "Writes Do Not Go Through the Model"
+keeps the notebook's reservation command outside that agent.
 
 Most agent talks cover the first half of this deck and stop. The reservation
 half is where the workshop says something the room has probably not heard, so
@@ -70,21 +70,20 @@ write function is a system where a wrong token becomes a row in a database.
 
 > Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
 
-1. **Reason:** I need hotel facts. I have one tool that returns them
-2. **Act:** I call `search_hotel_knowledge_tool` with the question
-3. **Observe:** the tool returns five results, each with hotel name, address, rating, amenities, and chunk text
-4. **Reason:** the context names the hotel and the policy. The hold is not something I can do
+1. **Reason:** the filter needs records; the policy needs source wording
+2. **Act:** call `query_hotel_records`, then `search_hotel_passages`
+3. **Observe:** one result carries rows and Cypher; the other carries passages and linked facts
+4. **Reason:** the evidence identifies the hotel and its policy. The hold needs a separate command
 5. **Respond:** I answer the first two clauses from context, and I say the third needs a reservation
 
 Each turn of the loop is one round trip to the model.
 
 <!--
-Step 5 is the whole deck in miniature. The agent answers what the context
-supports and declines the part that would require a write.
+Step 2 is the routing lesson. One user question can need both evidence shapes,
+and the system prompt explicitly permits more than one tool call.
 
-The last line is the practical note. Every loop turn costs a Bedrock call, so
-the number of tools is not free. That is the argument the next slide makes on
-different grounds.
+The structured tool adds another Bedrock call inside the tool to generate
+Cypher. The returned Cypher is visible so the participant can inspect what ran.
 -->
 
 ---
@@ -94,26 +93,27 @@ different grounds.
 ```python
 agent = Agent(
     model=BedrockModel(model_id=...),
-    tools=[search_hotel_knowledge_tool],
-    system_prompt=GROUNDING_INSTRUCTIONS,
+    tools=list(READ_TOOLS),
+    system_prompt=BASE_GROUNDING_PROMPT,
+    hooks=[trace],
 )
 ```
 
 - **`Agent`** runs the loop and calls whichever tool the model selects
 - **`BedrockModel`** connects it to Claude on Amazon Bedrock
-- **`@tool`** turns a Python function into a tool definition. The docstring is the only description the model sees
+- **`@tool`** builds a specification with a name, description, and input schema
 - **The system prompt** states which facts the model may use and when it must abstain
+- **`ToolTraceHook`** records the selected tool and its bounded result
 
 Model-driven, not developer-scripted. You do not write "retrieve, then answer."
 
 <!--
-The docstring point catches people. It is not a comment. It is the tool's
-interface as far as the model is concerned, and a vague one produces an agent
-that calls the wrong tool or calls nothing.
+The notebook prints the final tool specifications before building the agent.
+The docstring supplies most of the description, but the model receives the
+generated specification, not the raw Python source.
 
-search_hotel_knowledge_tool's docstring says it searches hotel context and
-returns JSON facts. That is enough, because there is only one tool to choose
-from, which is the next slide.
+Names and descriptions matter because the model must distinguish source wording
+from counts, averages, rankings, filters, and relationship questions.
 -->
 
 ---
@@ -130,31 +130,30 @@ relationships. Right-sized context returns only the small graph slice needed
 for this question.
 
 Neo4j complements Strands. It strengthens the context that the Strands agent
-can use. The next slide narrows that design to one retrieval tool.
+can use. The next slide shows the two read interfaces Module 3 exposes.
 -->
 
 ---
 
-## One Tool, On Purpose
+## Two Read Tools, One Boundary
 
-This agent has exactly one retrieval tool. That is the design, not a simplification.
+The model chooses the evidence shape that fits the question.
 
-- **Nothing to route:** the agent cannot pick the wrong retriever for a question
-- **Nothing to widen:** the tool takes query text, not an index name, a `top_k`, or a ranker
-- **One path to test:** every answer in the workshop came through the same code
+| Tool | Best fit | Evidence returned |
+|---|---|---|
+| **`search_hotel_passages`** | Amenities, rooms, policies, services, locations, source wording | Up to five passages and linked hotel facts |
+| **`query_hotel_records`** | Counts, averages, rankings, filters, relationships | Generated read-only Cypher and bounded records |
 
-The hard part of an agent is not adding tools. It is trusting the answer.
+Both take one natural-language `query`. Neither exposes credentials or a write.
 
 <!--
-Expect pushback here, and welcome it. Real systems have many tools.
+The distinction is question shape, not implementation fashion. Passage search
+preserves source wording. Structured queries let the database calculate across
+the full matching set.
 
-The honest answer is that many tools is a routing problem, and routing is a
-model decision, and this workshop is about moving decisions out of the model.
-Add tools when the questions genuinely need different retrieval, and know that
-each one you add is a decision you handed back.
-
-Module 4 adds a second tool, graph_query, and it comes with a guard for exactly
-this reason.
+Routing remains a model decision. Clear, contrasting specifications make that
+decision inspectable, and a fresh trace for every example keeps the evidence
+from one case out of the next.
 -->
 
 ---
@@ -162,61 +161,60 @@ this reason.
 ![bg contain](../images/03-grounded-agent-overview.svg)
 
 <!--
-The shape to point at is the asymmetry. One arrow into Neo4j through the tool,
-reading. One arrow into Neo4j from the reservation command, writing. They do
-not touch.
+Point first at the fork. The agent can use passage search, the structured record
+query, or both. Both paths only read Neo4j.
 
-The model sits on the read arrow only. It cannot reach the write arrow, and
-that is not a permission setting. It is that the write function was never
-registered as a tool.
+Then point at the asymmetry. The model sits on the read lane only. The write
+command is separate because it was never registered as a Module 3 tool.
 -->
 
 ---
 
-## Forcing the Read
+## Automatic Selection Is Observable
 
-A small `BedrockModel` subclass requires one tool call for every new hotel question.
+Module 3 uses a plain `BedrockModel`. Nothing forces a tool call.
 
-- **Without it:** the model can decide it already knows the answer and skip retrieval
-- **With it:** retrieval happens, then the model writes the answer
-- **Why a subclass:** Strands lets you enforce this in a few lines instead of a custom orchestration loop
+- **Hotel facts:** the system prompt directs the model to use tool evidence first
+- **No hotel fact:** greetings and thanks can receive a direct reply
+- **Routing evidence:** the trace names every selected tool and records what came back
+- **Variation:** the routing table reports a warning when the model chooses an unexpected path
 
-The grounding rule only holds if a tool call happens before every answer.
+A prompt states policy. The lab checks whether the observed turn followed it.
 
 <!--
-This is the difference between a system prompt that asks and a mechanism that
-enforces, and it is the same distinction as pinning the extraction schema in
-Module 1.
+Do not call this enforcement. Automatic tool choice can vary, and the model can
+produce a response without a tool if it does not follow the prompt.
 
-A prompt saying "always search first" works almost always. The failure case is
-the question the model finds easy, which is precisely the question it is most
-likely to answer from training data about a real hotel chain that is not this
-fictional one.
+The notebook makes that boundary explicit. Fresh agents isolate routing cases,
+the trace records tool calls, and the availability check fails if no read tool
+returned the expected structured verdict.
 -->
 
 ---
 
-## The Result Contract
+## Two Evidence Shapes, One Verdict
 
-Every result, every time, the same eight keys:
+| Read path | Tool-specific evidence |
+|---|---|
+| **Passages** | `passages`, `hotel_ids`, `top_result` |
+| **Records** | `cypher`, `records`, `row_count` |
 
-`chunk_text`, `combined_score`, `exact_terms`, `hotel_id`, `hotel_name`, `address`, `guest_rating`, `amenities`
+Both successful paths return `ok: true` and the same `grounding_result`:
 
-Three caps:
+`answerable`, `missing_fact`
 
-- **At most five results** per call
-- **At most 1,200 characters** of `chunk_text` per result
-- **At most 12 amenities** per hotel
+Empty records are a successful read with zero rows. A query error is a separate error result.
 
-The tool owns the driver session. The model receives data, never credentials.
+The model receives bounded JSON evidence, never Neo4j credentials.
 
 <!--
-The caps are the context-rot slide from deck 5, applied. Five results with
-trimmed text and a bounded amenity list is a predictable context budget, and
-predictable is what makes the agent's behavior repeatable.
+The passage path returns at most five passages, with at most 8,000 characters
+of source text and 12 amenities in each matching record. The structured path
+returns at most 25 list rows, while an aggregate can cover all matches.
 
-The last line is worth stating plainly. There is no scenario in which the model
-holds a Neo4j connection. It gets JSON. It cannot run Cypher of its own.
+The `cypher` field is there for inspection. A read-only query that executes can
+still ask the wrong question, so successful execution is not proof of semantic
+correctness.
 -->
 
 ---
@@ -229,7 +227,7 @@ holds a Neo4j connection. It gets JSON. It cannot run Cypher of its own.
 - **Vector** matches the meaning of "amenities and a rating"
 - **The traversal** returns the connected amenity list and the exact `guest_rating` property
 
-Two different fields, for the same hotel, in one answer, returned alongside the chunk text that matched.
+`search_hotel_passages` returns both fields beside the source text that matched.
 
 <!--
 This question is chosen to exercise both arms of the hybrid retriever at once,
@@ -246,24 +244,26 @@ number the model read out of a sentence.
 
 > "Does AnyCompany Cairo Nile View guarantee room availability next weekend?"
 
-Retrieval succeeds. The agent still declines.
+Either read path can return real hotel evidence. Neither has live inventory.
 
 - **The graph holds** descriptive facts and policies, not live room inventory
 - **"Subject to availability"** is a policy sentence, not proof that a room is open
-- **The system prompt** tells the agent to treat policy text and live availability as different things
+- **The tool verdict** returns `answerable: false` and `missing_fact: live_room_availability`
+- **The notebook check** verifies that a tool ran and returned that verdict
 
-A correct "I cannot answer that" is a feature of the system, not a gap in it.
+The check reads structured evidence, not a required phrase in the final answer.
 
 <!--
-This slide tests the grounding rule rather than the retrieval, and it is the
-one that gets the most comment in the room.
+This slide tests the observable grounding contract rather than one exact model
+sentence, and it is the one that gets the most comment in the room.
 
 The subtlety is that the retriever did its job. It found relevant text. The
 failure mode being prevented is the model reading "subject to availability" and
 producing a confident sentence about next weekend, which is exactly the kind of
 plausible answer deck 1 opened with.
 
-Run this one live if you run anything live.
+The check detects a bad turn during the lab. It does not prevent every possible
+bad response in a deployed agent. Run this one live if you run anything live.
 -->
 
 ---
@@ -348,49 +348,51 @@ is the only layer that can.
 ---
 
 <style scoped>
-/* Four rows of two-column prose plus framing. */
-section { font-size: 25px; }
+/* Five rows of two-column prose plus framing. */
+section { font-size: 22px; }
 </style>
 
 ## Who Enforces What
 
 | Layer | What it owns |
 |---|---|
-| **The model** | Proposes. Answers from returned context, or says it cannot |
-| **The tool** | Fixes the retriever, the traversal, and the result shape |
+| **The model** | Chooses read tools and writes the final response under prompt policy |
+| **Tool specifications** | Describe the routing boundary and one-field input schema |
+| **Read tools** | Validate input and return bounded evidence plus a verdict |
+| **Query guard** | Plans generated Cypher and allows only read plans |
 | **The command** | Validates the five inputs and opens the transaction |
 | **Neo4j** | Holds the maximum-guests rule and rejects a duplicate `request_id` |
 
-Each rule sits in the layer that can actually enforce it.
+The model decides. Code and the database enforce the hard boundaries.
 
 <!--
-This is deck 3's control-ownership table, now with an implementation behind
-every row. Say that connection out loud.
+This corrects an important distinction. The prompt governs the model's intended
+answer behavior, but input validation, the read-only planning guard, and the
+transaction are mechanisms in code or Neo4j.
 
-The row people argue with is the first one. Proposing sounds weak for something
-called an agent. It is the strongest guarantee on the slide, because a system
-where the model only proposes has no failure mode where a wrong token becomes a
-committed write.
+The model still cannot commit a reservation in Module 3. Its role ends with the
+read response; the application calls the reservation command separately.
 -->
 
 ---
 
 ## Correct and Safe, and Running on Your Laptop
 
-The agent is grounded, it abstains when it should, and it cannot write to the graph.
+The agent chooses between two read paths, exposes its evidence, and cannot write to the graph.
 
-Everything is still in one notebook process: the retriever, the driver, the tool, the agent.
+Everything is still local: the agent, both read tools, their drivers, the trace, and the command.
 
 - **Module 4** moves the tools out, behind an AgentCore Gateway
 - **Module 5** moves the whole agent out, onto AgentCore Runtime
 
-The design does not change. Only where it runs does.
+The core boundaries persist even where later modules package the tools differently.
 
 <!--
 Synthesis, not restatement. The point is that the interesting work is done, and
 the next two modules are deployments of it.
 
-Say the last line clearly, because the room is about to see two new
-architecture diagrams and could reasonably conclude the design is changing
-underneath them. It is not. The same hybrid_retrieval.py runs in all three.
+Say the last line carefully. Module 4 publishes the two retrieval capabilities
+under Gateway tool names. Module 5 is a deployment-oriented variant with a
+read tool and a reservation tool. The exact tool sets differ, while read
+evidence, guarded writes, and explicit results remain the throughline.
 -->

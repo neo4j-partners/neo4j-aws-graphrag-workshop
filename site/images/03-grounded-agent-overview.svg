@@ -24,66 +24,74 @@
   <!-- Header -->
   <rect x="30" y="20" width="840" height="56" rx="8" fill="#F5F5F5" stroke="#D6D6D6"/>
   <text x="450" y="45" text-anchor="middle" font-size="17" font-weight="700" fill="#1A1A1A">The Grounded Booking Agent</text>
-  <text x="450" y="64" text-anchor="middle" font-size="12" fill="#555555">One tool reads the graph. A separate command writes to it.</text>
+  <text x="450" y="64" text-anchor="middle" font-size="12" fill="#555555">The model chooses a read path. A separate application command writes.</text>
 
   <!-- Read path lane -->
-  <rect x="30" y="92" width="840" height="228" rx="10" fill="#FAFAFA" stroke="#E4E4E4"/>
+  <rect x="30" y="92" width="840" height="245" rx="10" fill="#FAFAFA" stroke="#E4E4E4"/>
   <text x="48" y="114" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#6E7681">READ PATH: ANSWER A QUESTION</text>
 
   <!-- Return leg -->
-  <path d="M751,150 V124 H349 V150" fill="none" stroke="#4581C3" stroke-width="2" marker-end="url(#arrowSteel3)"/>
-  <text x="550" y="118" text-anchor="middle" font-size="10.5" fill="#1F4E7A">hotel facts, as JSON</text>
+  <path d="M777,142 V124 H302 V166" fill="none" stroke="#4581C3" stroke-width="2" marker-end="url(#arrowSteel3)"/>
+  <text x="540" y="118" text-anchor="middle" font-size="10.5" fill="#1F4E7A">bounded JSON evidence + grounding verdict</text>
 
   <!-- Step 1: user -->
-  <rect x="60" y="150" width="174" height="64" rx="8" fill="#F0F0F0" stroke="#8A8A8A" stroke-width="1.5"/>
-  <text x="147" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#3A3A3A">You</text>
-  <text x="147" y="198" text-anchor="middle" font-size="10.5" fill="#555555">ask a hotel question</text>
-  <line x1="234" y1="182" x2="262" y2="182" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+  <rect x="50" y="166" width="130" height="58" rx="8" fill="#F0F0F0" stroke="#8A8A8A" stroke-width="1.5"/>
+  <text x="115" y="192" text-anchor="middle" font-size="13" font-weight="700" fill="#3A3A3A">You</text>
+  <text x="115" y="209" text-anchor="middle" font-size="10.5" fill="#555555">ask a question</text>
+  <line x1="180" y1="195" x2="215" y2="195" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
 
   <!-- Step 2: agent -->
-  <rect x="262" y="150" width="174" height="64" rx="8" fill="#FFFFFF" stroke="#8A8A8A" stroke-width="1.5" filter="url(#sh3)"/>
-  <use href="#icon-strands3" x="272" y="159" width="18" height="18"/>
-  <text x="349" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1A1A">Strands agent</text>
-  <text x="349" y="198" text-anchor="middle" font-size="10.5" fill="#555555">Claude on Amazon Bedrock</text>
-  <line x1="436" y1="182" x2="464" y2="182" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+  <rect x="215" y="166" width="170" height="58" rx="8" fill="#FFFFFF" stroke="#8A8A8A" stroke-width="1.5" filter="url(#sh3)"/>
+  <use href="#icon-strands3" x="226" y="176" width="18" height="18"/>
+  <text x="300" y="192" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1A1A">Strands agent</text>
+  <text x="300" y="209" text-anchor="middle" font-size="10.5" fill="#555555">reads both tool specs</text>
 
-  <!-- Step 3: tool -->
-  <rect x="464" y="150" width="174" height="64" rx="8" fill="#FFFFFF" stroke="#01A88D" stroke-width="1.5" filter="url(#sh3)"/>
-  <text x="551" y="180" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">search_hotel_knowledge</text>
-  <text x="551" y="198" text-anchor="middle" font-size="10.5" fill="#555555">the agent's only tool</text>
-  <line x1="638" y1="182" x2="666" y2="182" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+  <!-- Step 3: automatic read-tool choice -->
+  <path d="M385,188 H405 V158 H425" fill="none" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+  <path d="M385,202 H405 V232 H425" fill="none" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+
+  <rect x="425" y="134" width="240" height="56" rx="8" fill="#FFFFFF" stroke="#01A88D" stroke-width="1.5" filter="url(#sh3)"/>
+  <text x="545" y="158" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">search_hotel_passages</text>
+  <text x="545" y="176" text-anchor="middle" font-size="10.5" fill="#555555">source text + linked hotel facts</text>
+
+  <rect x="425" y="204" width="240" height="56" rx="8" fill="#FFFFFF" stroke="#D69200" stroke-width="1.5" filter="url(#sh3)"/>
+  <text x="545" y="228" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">query_hotel_records</text>
+  <text x="545" y="246" text-anchor="middle" font-size="10.2" fill="#555555">generated Cypher; EXPLAIN checks the plan</text>
+
+  <line x1="665" y1="162" x2="710" y2="178" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+  <line x1="665" y1="232" x2="710" y2="212" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
 
   <!-- Step 4: Neo4j -->
-  <rect x="666" y="150" width="174" height="64" rx="8" fill="#EEF4FB" stroke="#4581C3" stroke-width="1.5"/>
-  <use href="#icon-neo4j3" x="676" y="159" width="18" height="18" fill="#4581C3"/>
-  <text x="753" y="180" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E7A">Neo4j</text>
-  <text x="753" y="198" text-anchor="middle" font-size="10.5" fill="#1F4E7A">hotel graph and indexes</text>
+  <rect x="710" y="166" width="135" height="58" rx="8" fill="#EEF4FB" stroke="#4581C3" stroke-width="1.5"/>
+  <use href="#icon-neo4j3" x="721" y="176" width="18" height="18" fill="#4581C3"/>
+  <text x="778" y="192" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E7A">Neo4j</text>
+  <text x="778" y="209" text-anchor="middle" font-size="10.2" fill="#1F4E7A">graph + indexes</text>
 
   <!-- Answer -->
-  <line x1="349" y1="214" x2="349" y2="244" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
-  <rect x="60" y="244" width="780" height="56" rx="8" fill="#232F3E" filter="url(#sh3)"/>
-  <text x="450" y="269" text-anchor="middle" font-size="13.5" font-weight="700" fill="#FFFFFF">The agent answers from those facts only.</text>
-  <text x="450" y="288" text-anchor="middle" font-size="11.5" fill="#D5DBE2">When the facts do not cover the question, it says the graph does not have the answer.</text>
+  <line x1="300" y1="224" x2="300" y2="274" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+  <rect x="50" y="274" width="795" height="44" rx="8" fill="#232F3E" filter="url(#sh3)"/>
+  <text x="448" y="292" text-anchor="middle" font-size="12.8" font-weight="700" fill="#FFFFFF">Prompt policy: answer from tool evidence or state what is missing.</text>
+  <text x="448" y="308" text-anchor="middle" font-size="10.8" fill="#D5DBE2">The trace shows whether a tool call and verdict actually happened.</text>
 
   <!-- Write path lane -->
-  <rect x="30" y="344" width="840" height="140" rx="10" fill="#FAFAFA" stroke="#E4E4E4"/>
-  <text x="48" y="366" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#6E7681">WRITE PATH: MAKE A RESERVATION</text>
+  <rect x="30" y="354" width="840" height="130" rx="10" fill="#FAFAFA" stroke="#E4E4E4"/>
+  <text x="48" y="376" font-size="10.5" font-weight="700" letter-spacing="1.2" fill="#6E7681">WRITE PATH: RECORD A RESERVATION REQUEST</text>
 
-  <rect x="60" y="388" width="240" height="68" rx="8" fill="#FFFFFF" stroke="#8A8A8A" stroke-width="1.5" filter="url(#sh3)"/>
-  <text x="180" y="418" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1A1A">Reservation command</text>
-  <text x="180" y="436" text-anchor="middle" font-size="10.5" fill="#555555">your Python code, not the model</text>
-  <line x1="300" y1="422" x2="330" y2="422" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+  <rect x="60" y="396" width="240" height="58" rx="8" fill="#FFFFFF" stroke="#8A8A8A" stroke-width="1.5" filter="url(#sh3)"/>
+  <text x="180" y="421" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1A1A">Reservation command</text>
+  <text x="180" y="438" text-anchor="middle" font-size="10.5" fill="#555555">application code, not an agent tool</text>
+  <line x1="300" y1="425" x2="330" y2="425" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
 
-  <rect x="330" y="388" width="240" height="68" rx="8" fill="#EEF4FB" stroke="#4581C3" stroke-width="1.5"/>
-  <use href="#icon-neo4j3" x="340" y="397" width="18" height="18" fill="#4581C3"/>
-  <text x="450" y="418" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E7A">Rule check in Neo4j</text>
-  <text x="450" y="436" text-anchor="middle" font-size="10.5" fill="#1F4E7A">at most 10 guests</text>
-  <line x1="570" y1="422" x2="600" y2="422" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
+  <rect x="330" y="396" width="240" height="58" rx="8" fill="#EEF4FB" stroke="#4581C3" stroke-width="1.5"/>
+  <use href="#icon-neo4j3" x="340" y="405" width="18" height="18" fill="#4581C3"/>
+  <text x="450" y="421" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E7A">Rule check in Neo4j</text>
+  <text x="450" y="438" text-anchor="middle" font-size="10.5" fill="#1F4E7A">at most 10 guests</text>
+  <line x1="570" y1="425" x2="600" y2="425" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
 
-  <rect x="600" y="388" width="240" height="68" rx="8" fill="#EEF4FB" stroke="#4581C3" stroke-width="1.5"/>
-  <use href="#icon-neo4j3" x="610" y="397" width="18" height="18" fill="#4581C3"/>
-  <text x="720" y="418" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E7A">Write in one transaction</text>
-  <text x="720" y="436" text-anchor="middle" font-size="10.5" fill="#1F4E7A">one request_id, one saved request</text>
+  <rect x="600" y="396" width="240" height="58" rx="8" fill="#EEF4FB" stroke="#4581C3" stroke-width="1.5"/>
+  <use href="#icon-neo4j3" x="610" y="405" width="18" height="18" fill="#4581C3"/>
+  <text x="720" y="421" text-anchor="middle" font-size="13" font-weight="700" fill="#1F4E7A">Write in one transaction</text>
+  <text x="720" y="438" text-anchor="middle" font-size="10.5" fill="#1F4E7A">one request_id, one saved request</text>
 
-  <text x="450" y="514" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3A3A3A">The model never writes to the graph.</text>
+  <text x="450" y="515" text-anchor="middle" font-size="12.5" font-weight="700" fill="#3A3A3A">Module 3 registers no write tool.</text>
 </svg>

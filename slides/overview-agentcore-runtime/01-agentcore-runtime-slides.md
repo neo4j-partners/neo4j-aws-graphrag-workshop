@@ -57,7 +57,7 @@ section { font-size: 25px; }
 | Reachable only from Jupyter | Invoked through `InvokeAgentRuntime` by authorized AWS clients |
 | The session is your kernel's memory | Each invocation carries a caller-provided session ID |
 
-Same retrieval, same reservation rule. Only the request handling is new.
+The hybrid passage search and reservation rule carry forward. The packaged tool set is different.
 
 <!--
 The hero question, which Chicago hotel has both a spa and a swimming pool,
@@ -72,10 +72,10 @@ exactly one caller. A
 service has many, and it needs to be told which conversation a request belongs
 to.
 
-One difference from Module 3 worth naming: there, the reservation command was
-plain Python the notebook called directly. Here both operations are exposed as
-tools, and the guest-limit rule is still enforced by Neo4j inside the write
-transaction.
+Module 3 registered two read tools and called the reservation command directly.
+This deployment-oriented variant registers one passage-search tool and the
+reservation command as agent tools. The guest-limit rule is still enforced by
+Neo4j inside the write transaction.
 -->
 
 ---
@@ -332,10 +332,11 @@ error breakdown per session.
 Three architectures, one graph underneath. This is synthesis, not restatement,
 so do not walk the modules again.
 
-The left two panels are the same agent deployed two ways. Module 4 moves the
-tools out and keeps the agent local. Module 5 packages the agent and keeps the
-tools in-process. The same hybrid_retrieval.py runs in both. What changed is
-where the code executed and who was allowed to invoke it.
+The left two panels are two deployment patterns over the same graph. Module 4
+moves read tools out and keeps its agent local. Module 5 packages a
+deployment-oriented agent with one passage read tool and the reservation tool
+in-process. They share retrieval and command code, but not an identical tool
+set.
 
 Ask the room which of those two they would ship. There is no right answer, and
 the discussion surfaces what they actually care about: reuse, blast radius,

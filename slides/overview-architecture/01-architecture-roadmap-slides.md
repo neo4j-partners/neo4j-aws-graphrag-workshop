@@ -56,13 +56,13 @@ section { font-size: 24px; }
 Six modules, six verbs:
 
 1. **Build** a knowledge graph from hotel documents into your own Aura instance
-2. **Compare** eight retrieval patterns and pick one for the application
-3. **Ground** an agent in that retriever, and give it a write path it cannot reach
+2. **Compare** eight retrieval patterns and identify complementary question shapes
+3. **Ground** an agent in two bounded read tools, and keep its write path separate
 4. **Publish** the retrieval tools through AgentCore Gateway, on the Model Context Protocol
 5. **Deploy** the whole agent to AgentCore Runtime as a container
 6. **Remember** guest preferences in the same graph, with provenance
 
-Modules 3, 4, and 5 are three deployments of one design, not three designs.
+Modules 3, 4, and 5 reuse the same boundaries while packaging their tools differently.
 
 To start you need an Aura instance, an AWS account with Bedrock access in **us-east-1**, a filled-in `CONFIG.txt`, and a passing `environment/verify.py`. Setup has the steps.
 
@@ -241,18 +241,17 @@ to the exact request path that participants build today.
 Walk this end to end, once, slowly. It is the only time today the whole path
 is on one slide.
 
-A question arrives at the Strands agent running Claude on Bedrock. The agent
-calls search_hotel_knowledge. That tool embeds the query with Amazon Nova and
-hits two Neo4j indexes, vector and full-text. The retrieval query then expands
-from the matched chunk into the hotel and its properties. Context comes back,
-and the model either answers from it or says the context cannot answer the
-question.
+A question arrives at the Strands agent running a model on Bedrock. The model
+reads two tool specifications. It can choose passage search, which uses Nova,
+the vector and full-text indexes, and a reviewed traversal, or a structured
+record query, which adds a model call to generate Cypher and an `EXPLAIN`
+read-plan check. Bounded evidence and a shared verdict come back to the model.
 
 The reservation write is not on this path at all. It runs beside the agent,
 and the next slide is where you say who owns it.
 
-The deployment changes three times across the day. This flow does not change
-once.
+The packaging changes across later modules. Module 3's key lesson is the
+model-driven choice between two local read tools.
 -->
 
 ---
@@ -262,39 +261,32 @@ once.
 section { font-size: 21px; }
 </style>
 
-## The Model Owns One Row
+## The Model Chooses Inside Guarded Boundaries
 
-| Control | Enforced by | If the model owned it instead |
-|---|---|---|
-| Which retriever runs | The application, chosen once in code | Eight retrievers described in a prompt, re-picked on every request |
-| What the traversal returns | A fixed `retrieval_query` the model cannot edit | Cypher written by a text generator, against your live database |
-| Rejecting an invalid or duplicate write | Neo4j, inside the transaction | You ask it nicely in the system prompt not to book a room that does not exist |
-| Who can call AWS services | IAM, on the execution role | A credential handed to the model as a tool argument |
-| Whose memory comes back | Cypher anchored at one guest | A prompt line asking it to ignore the other guests it can see |
-| Answer or abstain | The model, from returned context only | Correct as it stands. Judging whether context answers a question is a language task |
+| Decision or constraint | Owner |
+|---|---|
+| Which read tool fits the question | The model, from two tool specifications |
+| Passage-search configuration and traversal | Application code, fixed inside `search_hotel_passages` |
+| Whether generated Cypher has a read plan | The `EXPLAIN` guard, backed by a read-only database identity in production |
+| Whether live availability is supported | The shared tool verdict, computed from the question and graph boundary |
+| Rejecting an invalid or duplicate write | Neo4j, inside the reservation transaction |
+| Who can call AWS services | IAM, on the execution role |
 
-In most agents shipped today, four of these six live in the right-hand column. Here, one does.
+The model routes and writes prose. Code and the database own the hard constraints.
 
 <!--
-This is the workshop's signature slide. Everything after it is an
-implementation of one row.
+This is the control-ownership correction to emphasize. Module 3 deliberately
+returns one decision to the model: which evidence shape fits the question.
 
-Ask the room where these controls live in their current agent, and wait. The
-usual honest answer is the right-hand column, in a prompt, which is why that
-column is written the way it is. None of those are straw men. Every one of them
-ships.
+The passage tool still owns a fixed retrieval configuration. The structured
+tool does allow a model to generate Cypher, but the query is returned for
+inspection and Neo4j runs it only after the planner reports a read plan. A
+valid read query can still have the wrong meaning, so this is a safety boundary,
+not a correctness guarantee.
 
-The right-hand column is what makes the left one mean something. Ownership
-without an alternative is just a description of the system.
-
-Row two is the one to defend if someone pushes back. A fixed retrieval_query is
-a security boundary, not a convenience. The alternative is not slower or
-sloppier retrieval, it is arbitrary Cypher from a text generator running
-against a live database, and no prompt makes that safe.
-
-The model's row is the narrowest one and it is the one it is genuinely good at.
-It answers from context, or it says it cannot. It does not choose the
-retriever, write the traversal, or touch the database.
+The availability verdict is deterministic data from the tool. The final prose
+and whether the agent follows its prompt remain model behavior, which the lab
+observes through traces rather than claiming to enforce.
 
 This table reuses cleanly with a different schema and a different domain, which
 is the takeaway to name out loud.

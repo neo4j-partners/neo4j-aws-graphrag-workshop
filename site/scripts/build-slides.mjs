@@ -75,7 +75,7 @@ const DECKS = [
     key: 'overview-agent',
     source: '01-grounded-agent-slides.md',
     title: 'The Grounded Booking Agent',
-    covers: 'Strands, one fixed tool, abstention, and the write path',
+    covers: 'Strands, automatic read-tool routing, grounding evidence, and the write path',
     pairsWith: 'Module 3',
     page: '03-grounded-booking-agent/index.adoc',
   },

@@ -194,9 +194,9 @@ does the same thing to the hotel documents with a pinned schema.
 
 Retrieval decides what the model sees. Grounding decides what it is allowed to do with it.
 
-- **One fixed tool:** the application picks the retriever once, for every question
-- **Answer from context only:** the model may not fill a gap from its training data
-- **Abstain when the graph is silent:** "I don't have that" is a correct answer
+- **Two bounded read tools:** the model routes by tool name, description, and input schema
+- **Answer from tool evidence:** the prompt directs the model not to fill a gap from training data
+- **Expose missing facts:** both read tools return the same structured answerability verdict
 - **Never write:** the model only proposes an action. Application code validates it, and the database enforces the rule inside the write transaction
 
 <!--
@@ -204,11 +204,13 @@ This slide has no equivalent in most GraphRAG decks, and it is the one that
 distinguishes this workshop. Everything after it is an implementation of these
 four rules.
 
-Point out that three of the four are constraints on the model, not features
-added to it. Grounding is mostly subtraction.
+Point out which statements are policy and which are mechanisms. The prompt
+directs answer behavior. Tool input validation, the Text2Cypher read-plan guard,
+and the reservation transaction are enforced in code or the database.
 
-Module 3 demonstrates all four in one notebook: the forced tool call, a
-grounded answer, a refusal, and a rejected fifteen-guest reservation.
+Module 3 demonstrates all four in one notebook: automatic tool selection with a
+trace, structured evidence and verdicts, an unsupported availability case, and
+a rejected fifteen-guest reservation. No model subclass forces retrieval.
 -->
 
 ---
@@ -242,7 +244,7 @@ refuse this one on purpose.
 By the end of the workshop you will have built and deployed exactly this:
 
 - A **knowledge graph** in your own Neo4j Aura instance, with five hotels you extract from source documents yourself
-- A **Strands agent** on **Amazon Bedrock**, grounded in one fixed retrieval tool
+- A **Strands agent** on **Amazon Bedrock**, choosing between passage and structured read tools
 - **Retrieval tools published through AgentCore Gateway** as IAM-authenticated MCP
 - The **agent itself deployed to AgentCore Runtime** as an arm64 container
 - **Preference memory** written back into the same graph, with provenance

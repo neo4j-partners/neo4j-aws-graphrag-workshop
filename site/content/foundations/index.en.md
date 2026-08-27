@@ -75,11 +75,14 @@ The workshop graph keeps a lexical graph and a domain graph, connected to each o
 
 ## One Grounded Request
 
-The deployment changes across modules. The retrieval flow stays the same:
+Module 3 turns two retrieval patterns into model-selectable read tools:
 
-:image[A question moves through the Strands agent using Claude on Amazon Bedrock, a search_hotel_knowledge tool call that gets an Amazon Nova query embedding, Neo4j vector and full-text indexes, retrieval query expansion into hotel properties, and returned context, ending in a grounded answer or a clear statement that the context cannot answer the question]{src="../../images/foundations-grounded-request-flow.svg" width=800}
+:image[A hotel question reaches a plain Strands agent, which reads two tool specifications and chooses passage search using hybrid indexes and a reviewed traversal, or a structured record query using model-generated Cypher and an EXPLAIN read-plan check; Neo4j returns bounded evidence and a shared verdict that the trace records before the model writes its response]{src="../../images/foundations-grounded-request-flow.svg" width=800}
 
-- **Answer flow:** The model answers from the returned context.
+- **Tool selection:** The model reads each tool's name, description, and input
+  schema. Nothing forces a call, so the lab observes routing with a trace.
+- **Answer flow:** The prompt directs the model to answer from returned evidence
+  or state what is missing.
 - **Reservation command:** A separate command validates the request and writes it.
 - **Rule enforcement:** Neo4j checks the guest limit in the write transaction.
 
@@ -118,9 +121,10 @@ through Gateway. The Module 5 Runtime uses Neo4j as its data service.
 
 Each control belongs to a layer that can enforce it:
 
-- **Retriever:** The application selects one retriever and uses it for every question.
-- **Answer:** The model answers from the context the tool returned, or states that the context is missing.
-- **Graph query:** The fixed `retrieval_query` defines the traversal.
+- **Read-tool choice:** The model chooses between two application-defined tool specifications.
+- **Answer policy:** The prompt directs the model to use returned evidence; the trace and structured verdict make each lab turn inspectable.
+- **Passage query:** A fixed `retrieval_query` defines the reviewed traversal.
+- **Structured query:** Text2Cypher generates Cypher, and the `EXPLAIN` guard allows only read plans.
 - **Database write:** Neo4j rejects invalid and duplicate requests.
 - **AWS access:** IAM controls deployment and service calls.
 - **Memory access:** Actor-scoped Cypher limits recall to one actor.

@@ -12,7 +12,7 @@
 
 > Semantic search finds relevant source text. Graph traversal turns that entry point into compact, connected evidence with explicit provenance.
 
-A hands-on workshop in six modules. You build a hotel knowledge graph, compare semantic, exact-term, graph-enriched, and structured retrieval, apply a fixed retriever in a grounded booking agent, deploy its tools through Amazon Bedrock AgentCore, and add graph memory whose provenance you can inspect and correct.
+A hands-on workshop in six modules. You build a hotel knowledge graph, compare semantic, exact-term, graph-enriched, and structured retrieval, let a grounded booking agent choose between passage and record tools, deploy retrieval capabilities through Amazon Bedrock AgentCore, and add graph memory whose provenance you can inspect and correct.
 
 ---
 

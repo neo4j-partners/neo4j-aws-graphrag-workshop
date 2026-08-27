@@ -11,8 +11,8 @@ and show the source for its answer.
 This workshop uses a hotel booking scenario. You will:
 
 - **Compare retrieval:** Test four retrieval patterns.
-- **Select a retriever:** Choose one fixed pattern for the application.
-- **Build an agent:** Ground answers in the Neo4j graph.
+- **Shape retrieval tools:** Turn complementary passage and structured patterns into bounded interfaces.
+- **Build an agent:** Let the model route between those tools and inspect its grounding evidence.
 - **Deploy tools and the agent:** Use :link[Amazon Bedrock AgentCore]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}.
 - **Add memory:** Store agent memory as a graph in :link[Neo4j]{href="https://neo4j.com/" external=true}.
 
@@ -36,14 +36,14 @@ arrives pre-configured. Setup guides you through creating a free Neo4j database.
 | **Setup** | Create a Neo4j AuraDB Free database, restore the workshop graph, verify Neo4j and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} access |
 | **Module 1: Build the Graph** | Extract five held-out hotel documents into the graph, define the extraction schema, create both retrieval indexes |
 | **Module 2: From Vector Search to Graph-Enriched Retrieval** | Semantic search, exact-term search, and graph-enriched retrieval |
-| **Module 3: Build the Grounded Booking Agent** | Grounded answers, clear handling of unsupported questions, and protected reservation writes |
+| **Module 3: Build the Grounded Booking Agent** | Automatic routing between passage and structured reads, explicit grounding verdicts, and protected reservation writes |
 | **Module 4: Production Agent with AgentCore** | AgentCore Gateway, IAM-authenticated MCP, and a Strands agent over remote tools |
 | **Module 5: Deploy to AgentCore Runtime** | Containerize the agent, launch it on Runtime, correlate one request end to end |
 | **Module 6: Neo4j Graph Memory** | Cross-session graph memory, actor-scoped recall, full provenance, and a conceptual AgentCore comparison |
 | **Summary, Production Path, and Wrap-up** | The argument end to end, the decision tables, the work required for production, and where to take it next |
 
-This sequence moves one retrieval design from a local notebook into deployed
-tools, a runtime service, and cross-session memory.
+This sequence moves the retrieval capabilities from local tools into production
+deployment patterns, then adds cross-session memory.
 
 ---
 
@@ -64,7 +64,7 @@ cross-session graph memory.
 
 - **Graph construction:** Use a fixed extraction schema and provenance to build a queryable graph.
 - **Retrieval:** Choose Vector, Hybrid, VectorCypher, or Text2Cypher for each query need.
-- **Grounding:** Answer from the returned context and enforce write rules in one transaction.
+- **Grounding:** Inspect tool selection and structured evidence, state missing facts, and enforce write rules in one transaction.
 - **Remote tools:** Deploy tools to AgentCore Gateway and call them through IAM-authenticated MCP.
 - **Memory:** Store auditable, correctable graph memory.
 - **Architecture:** Assign clear roles to Neo4j, Bedrock, Strands, Gateway, Runtime, Lambda, and IAM.

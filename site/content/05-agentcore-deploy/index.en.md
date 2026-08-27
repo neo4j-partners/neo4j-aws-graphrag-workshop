@@ -28,14 +28,14 @@ The deployment changes where the agent runs and where its credentials live:
 | Reachable only from Jupyter | Invoked through `InvokeAgentRuntime` by authorized AWS clients |
 | Session is your kernel's memory | Each invocation uses a caller-provided session ID |
 
-The deployed agent keeps the same retrieval and reservation behavior. Runtime
-request handling only changes how a caller sends a request and receives a
-result.
+The deployed variant keeps Module 3's hybrid passage search and reservation
+transaction. Runtime request handling changes how a caller sends a request and
+receives a result, and the packaged agent uses a different tool set.
 
-Module 3.1 gives the agent one retrieval tool and calls the reservation command
-as a local Python operation in the write examples. Module 5 exposes both
-operations as tools. The system prompt requires the agent to state when Neo4j
-lacks the required context.
+Module 3.1 gives the agent two read tools and calls the reservation command as a
+local Python operation in the write examples. Module 5 packages one passage
+read tool and exposes the reservation command as a second tool. Its system
+prompt directs the model to state when Neo4j lacks the required context.
 
 ## What AgentCore Runtime Provides
 

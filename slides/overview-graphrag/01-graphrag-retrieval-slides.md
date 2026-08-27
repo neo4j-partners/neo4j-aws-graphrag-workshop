@@ -98,12 +98,12 @@ How much text goes into one searchable unit is a real trade-off:
 
 This corpus uses one chunk per document. The splitter is set to 12000 characters and the largest document is 7,442 bytes.
 
-`hybrid_retrieval.py` then caps returned chunk text at 1,200 characters.
+`hybrid_retrieval.py` then caps returned chunk text at 8,000 characters.
 
 <!--
-The cap is the honest fix for the large-chunk cost. Extraction wanted the whole
-hotel in one prompt. Retrieval does not want to return the whole hotel every
-time, so the returned text is trimmed at the application boundary.
+The cap keeps each returned passage bounded while preserving this corpus's full
+hotel documents. It was raised from 1,200 because that shorter limit cut the
+cancellation policy mid-word and made a grounded quotation impossible.
 
 A production design can decouple these completely: large chunks for extraction,
 smaller chunks for retrieval, two different chunk sets over the same documents.
@@ -438,7 +438,8 @@ Walk the grid one cell at a time. Rows are the entry search,
 vector or vector-plus-full-text. Columns are what happens next, return the
 chunk or run the traversal. Four classes, four cells.
 
-This is the one the booking application uses, and the closing slide says why.
+This is the passage path the booking application uses. The structured path uses
+Text2Cypher, and the closing slide explains why Module 3 exposes both.
 -->
 
 ---
@@ -541,9 +542,9 @@ Three questions to ask: is the entry term literal or fuzzy, does the answer need
 The three questions at the bottom are the takeaway, more than the table. They
 transfer to any corpus. The table only applies to this one.
 
-Note that the rows are not exclusive. A real application picks one default and
-adds a template for the question shapes that come up constantly, which is
-exactly what this workshop does.
+Note that the rows are not exclusive. Module 3 exposes two complementary paths:
+Hybrid Cypher for source text and linked facts, and guarded Text2Cypher for
+structured questions across many records.
 -->
 
 ---
@@ -553,30 +554,28 @@ exactly what this workshop does.
 section { font-size: 25px; }
 </style>
 
-## What This Application Uses, and Who Decides
+## What Module 3 Uses, and Who Decides
 
-The booking application selects **`HybridCypherRetriever`**, with fixed index names, the `NAIVE` ranker, `top_k=5`, and one reviewed traversal.
+The booking agent exposes two bounded read tools with different evidence shapes.
 
-| Stage | Who decides what to retrieve |
-|---|---|
-| **Module 2 notebook** | You do, by choosing the cell |
-| **Module 3** | The model decides *when*. The retriever fixes *how* |
-| **Module 4** | The model, over IAM-authenticated MCP |
-| **Module 5** | The model, inside a deployed container |
+| Tool | Implementation | Best fit |
+|---|---|---|
+| **`search_hotel_passages`** | Fixed `HybridCypherRetriever`, `top_k=5`, reviewed traversal | Source wording and linked hotel facts |
+| **`query_hotel_records`** | `Text2CypherRetriever`, generated query planned with `EXPLAIN` | Counts, averages, rankings, filters, relationships |
 
-The caller changes three times. The retrieval configuration never does. The same `hybrid_retrieval.py` runs in a notebook, a Lambda, and a container.
+Module 2 lets you call each pattern directly. Module 3 lets the model choose by reading the two tool specifications.
 
 <!--
-This is the slide the rest of the day hangs from, and it is the answer to deck
-1's promise that the application chooses the retriever once.
+This is the handoff to Module 3. The application fixes the implementation and
+input contract of each path; the model chooses between those paths.
 
 search_hotel_knowledge accepts query text and nothing else. Not an index name,
 not a top_k, not a ranker. The model cannot widen its own search, and that is a
 deliberate constraint rather than a missing feature.
 
-Hybrid Cypher is chosen because hotel questions carry both paraphrased language
-and exact hotel names, and the answers need connected properties in the same
-record.
+Hybrid Cypher fits hotel text because questions mix paraphrased language and
+exact names. Text2Cypher fits aggregates and flexible filters because five top
+passages cannot represent every matching record.
 
-Next: Module 3 puts this retriever behind an agent.
+Next: Module 3 puts both read paths behind one agent and traces its choice.
 -->

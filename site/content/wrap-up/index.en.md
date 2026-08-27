@@ -25,9 +25,9 @@ from that context, protect database writes, and preserve provenance.
 
 ### Module 3: Built the Grounded Booking Agent
 
-- **Fixed retriever:** Applied the selected retrieval configuration to every hotel question.
-- **Hybrid retrieval:** Combined a vector arm, a full-text arm, and the traversal in `retrieval_query`.
-- **Grounded answer policy:** Returned a clear unsupported response when the context could not answer a question.
+- **Automatic routing:** Let the model choose between passage search and a structured record query from their tool specifications.
+- **Inspectable evidence:** Traced the selected tools and read their bounded JSON results.
+- **Grounding verdict:** Verified that live room availability was reported as a missing fact without grading final-answer wording.
 - **Protected reservation command:** Checked booking rules and wrote the request in one transaction.
 
 ### Modules 4 and 5: Built Production Infrastructure

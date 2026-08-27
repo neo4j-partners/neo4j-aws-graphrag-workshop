@@ -86,10 +86,10 @@ section { font-size: 24px; }
 | Aspect | Module 3, local `@tool` | Module 4, Gateway MCP tool |
 |---|---|---|
 | Where the code runs | The notebook process | An AWS Lambda function |
-| How the model learns the tool | Strands reads the signature and the docstring | The client calls `tools/list` |
+| How the model learns the tool | `@tool` exposes a generated tool specification | The client calls `tools/list` |
 | Who holds the Neo4j credential | The notebook process | The Lambda, from Secrets Manager |
 | Who checks the caller | Nobody. The caller is the process | IAM checks the SigV4 signature |
-| What the agent passes to Strands | `tools=[search_hotel_knowledge_tool]` | `tools=gateway_mcp.list_tools_sync()` |
+| What the agent passes to Strands | `tools=list(READ_TOOLS)` | `tools=gateway_mcp.list_tools_sync()` |
 
 The agent stays local. The tools go remote.
 
@@ -98,7 +98,8 @@ Row four is the one that matters. In Module 3 there is no caller to check,
 because the caller and the tool are the same process. The moment the tool moves
 out, "who is allowed to call this" becomes a real question, and IAM answers it.
 
-Row five is the whole code diff. One line.
+Row five is the transport change. Module 3 passes two decorated Python tools;
+Module 4 passes the two tools discovered through MCP.
 -->
 
 ---
@@ -171,12 +172,12 @@ Each tool is one Lambda function and one Gateway target.
 The reservation command stays outside this Gateway. Both tools only read.
 
 <!--
-This is the second tool the workshop adds, and deck 5 flagged that Text2Cypher
-would arrive here behind the same EXPLAIN guard. Slide 9 is that guard.
+These are the same two retrieval capabilities Module 3 taught, exposed here
+under Gateway base names. Slide 9 is the Text2Cypher guard.
 
-Both tools import from the same hybrid_retrieval.py. The first reuses the exact
-function Module 3 called. The second turns Module 2's Text2Cypher pattern into
-a reusable function.
+Both tools import from the same hybrid_retrieval.py. Module 3 wraps those
+implementations as `search_hotel_passages` and `query_hotel_records`; this
+module exposes `search_hotel_knowledge` and `graph_query` through Gateway.
 
 The last line is deliberate and worth saying out loud. Nothing about moving
 tools to a Gateway changed the rule that the model does not write.
@@ -327,21 +328,22 @@ the first time the function runs.
 
 ---
 
-## The Same Agent, Remote Tools
+## The Same Agent Loop, Remote Tools
 
 ```python
 agent = Agent(tools=gateway_mcp.list_tools_sync(), ...)
 ```
 
-One line changes from Module 3. Strands sees a name, a JSON schema, and a callable operation in both cases.
+Strands receives local tool specifications in Module 3 and MCP tool specifications here.
 
 > Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
 
-Same question, same answer. The tool now runs in Lambda.
+Same question and model-driven routing. The selected tools now run in Lambda.
 
 <!--
 This is the payoff, and it is deliberately anticlimactic. Everything hard in
-this module was deployment and identity. The agent code barely moved.
+this module was deployment and identity. The Strands loop stays the same while
+the tool provider changes.
 
 That is the point of a protocol. The agent does not know or care that its tool
 is now a Lambda behind a signed HTTPS endpoint.

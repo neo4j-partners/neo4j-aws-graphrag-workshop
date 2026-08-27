@@ -2,11 +2,13 @@
 # SPDX-License-Identifier: MIT-0
 """Module 5 AgentCore Runtime entry point.
 
-The same grounded booking agent Module 3.1 runs in a notebook kernel, with the
-same two tools and the same rules, moved into a container that AgentCore
-Runtime starts. Nothing about how the agent reasons changes here. What changes
-is who holds the Neo4j credentials, where the model call originates, and
-whether a caller can reach the agent without a Python interpreter.
+This deployment-oriented variant carries Module 3.1's hybrid passage search
+and reservation command into a container that AgentCore Runtime starts. Its
+tool set differs from Module 3: the local lesson registers two read tools and
+keeps the command outside the agent, while this container registers one read
+tool and the reservation command. Runtime also changes who holds the Neo4j
+credentials, where the model call originates, and how a caller reaches the
+agent.
 
 Both tools run in-process against Neo4j, and this module deliberately holds no
 Gateway or MCP client. The maximum-guests rule is enforced inside the same
@@ -383,7 +385,9 @@ def invoke(
             model_id=default_model_id(),
             region_name=aws_region(),
         )
-        # Same grounded booking agent Module 3.1 built. Only its runtime changes.
+        # Deployment-oriented variant: one passage read tool plus the write
+        # command. Module 3's local lesson instead registers two read tools and
+        # calls the command directly from notebook code.
         hotel_agent = Agent(
             name="hotel_agent",
             model=model,
