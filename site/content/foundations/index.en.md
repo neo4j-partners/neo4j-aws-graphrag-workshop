@@ -23,6 +23,8 @@ A property graph stores data with three parts:
 - **Relationship:** A named connection between nodes, such as `OFFERS_AMENITY`.
 - **Property:** A named value, such as a hotel name or guest rating.
 
+:image[Property graph anatomy showing hotel, amenity, policy, and source chunk nodes connected by named relationships]{src="../../images/property-graph-anatomy.svg" width=800}
+
 The pattern below says that a hotel offers an amenity:
 
 :::code{language=cypher}
@@ -50,6 +52,21 @@ RETURN h.name AS hotel, collect(a.name) AS amenities
 
 Neo4j stores facts and their connections. Cypher retrieves the required path
 through those facts.
+
+---
+
+## Same Hotel Business, Two Question Shapes
+
+| Question | Best fit | Why |
+|---|---|---|
+| What is the average nightly rate next month? | Relational database, SQL aggregation | Group and average many rate rows |
+| Which rooms are available for four guests tonight? | Relational database, SQL filter | Check dates, inventory, and room capacity |
+| How many reservation requests were accepted this week? | Relational database, SQL aggregation | Count time-stamped transaction rows |
+| Which Chicago hotel has both a spa and a pool? | Neo4j, Cypher pattern | Both amenities must connect to the same hotel |
+| What cancellation policy applies to that hotel? | Neo4j, Cypher traversal | Follow the hotel to its policy |
+| Which source document supports the answer? | Neo4j, GraphRAG | Follow the hotel to its chunk and document |
+
+**Together:** SQL answers availability and transaction questions. Neo4j answers how hotel facts connect and where they came from.
 
 ---
 

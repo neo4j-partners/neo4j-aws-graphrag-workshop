@@ -111,6 +111,21 @@ Each source document contains a `## Hotel Amenities` bullet list. An LLM can rew
 3. The trimmed bullet text becomes `Amenity.name`.
 4. Neo4j merges that exact name into one shared node and connects it to the source hotel with `OFFERS_AMENITY`.
 
+### Shared Amenity Nodes Connect Hotels
+
+`Full-Service Spa` is one shared `Amenity` node. Every hotel that offers it connects through `OFFERS_AMENITY`.
+
+:::code{language=cypher}
+MATCH (a:Amenity {name: "Full-Service Spa"})
+      <-[:OFFERS_AMENITY]-(h:Hotel)
+RETURN a.name, collect(h.name) AS hotels
+:::
+
+* **One shared entity:** `MERGE` creates one node for the normalized amenity name.
+* **Two-way traversal:** Start at a hotel to list amenities, or start at an amenity to find hotels.
+* **Connected context:** Continue from each hotel to rooms, policies, services, chunks, and documents.
+* **Composable paths:** Module 2 starts from a matching chunk and walks through these relationships to assemble connected context.
+
 The section rule also prevents a sentence such as "Pool facilities are not available at this property" from creating a Pool relationship. The parser reads only the authoritative amenity list.
 
 This division assigns prose extraction to the LLM and preserves authored labels through deterministic parsing. The prebuilt graph and the five documents you add follow the same rule.
