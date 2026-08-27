@@ -5,11 +5,22 @@
 These are the values that have to agree between the module that writes the
 graph and the modules that read it. A disagreement returns wrong results with
 no error, so each one is defined here and nowhere else.
+
+The readiness fixtures in ``retrieval_setup.py`` use this contract to describe
+the expected embedding width and index names. The setup queries compare those
+expectations with the live graph before a learner runs retrieval examples.
 """
 
+# The chunk embedding settings form one contract. Graph construction uses them
+# to write vectors, and the retrieval fixtures use them to reject missing or
+# incorrectly sized vectors before search begins.
 EMBEDDING_MODEL_ID = "amazon.nova-2-multimodal-embeddings-v1:0"
 EMBEDDING_PURPOSE = "GENERIC_INDEX"
 EMBEDDING_DIMENSIONS = 1024
+
+# These names are shared by index creation, fixture readiness checks, and the
+# retriever. Keeping them here prevents those three users from naming different
+# indexes while all of their individual calls still succeed.
 CHUNK_VECTOR_INDEX = "hotel_chunk_embeddings"
 CHUNK_FULLTEXT_INDEX = "hotel_chunk_fulltext"
 DOCUMENT_SOURCE_FILENAME_INDEX = "workshop_document_source_filename"

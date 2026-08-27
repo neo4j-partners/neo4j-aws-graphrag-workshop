@@ -111,6 +111,10 @@ ORDER BY combined_score DESC,
          coalesce(hotel_name, '\uffff')
 """.strip()
 
+# Split the query into Unicode letter/number terms while keeping internal
+# apostrophes and hyphens, such as "hotel's" and "family-friendly". These
+# terms annotate retrieved chunks with exact lexical matches; they do not
+# influence the hybrid vector/full-text retrieval itself.
 _TERM_PATTERN = re.compile(r"[^\W_]+(?:['’-][^\W_]+)*", re.UNICODE)
 
 
@@ -222,6 +226,8 @@ def _exact_terms(query: str, chunk_text: str) -> list[str]:
     """Return bounded query terms using their verbatim spelling in the chunk text."""
     matches: list[str] = []
     seen: set[str] = set()
+    # Check each parsed query term against the retrieved chunk as a complete
+    # word, then preserve the chunk's original spelling in the response.
     for query_match in _TERM_PATTERN.finditer(query):
         term = query_match.group(0)
         text_match = re.search(

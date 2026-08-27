@@ -4,6 +4,11 @@
 
 The notebook only retrieves. Graph preparation owns index creation and checks
 the deterministic fixtures every Module 1 build path needs.
+
+A fixture is a fixed input plus the graph facts expected from that input. The
+source fixtures below describe known workshop documents, hotels, and amenities.
+Readiness queries load the actual graph data, and validation functions compare
+it with those fixtures so later notebook examples start from repeatable facts.
 """
 
 from __future__ import annotations
@@ -28,12 +33,14 @@ from workshop.retrieval_contract import (
 
 DOCUMENT_SOURCE_FILENAME_INDEX_DDL = f"""
 CYPHER 25
+// Create the lookup index used to resolve a fixture from its source filename.
 CREATE RANGE INDEX {DOCUMENT_SOURCE_FILENAME_INDEX} IF NOT EXISTS
 FOR (document:Document) ON (document.source_filename)
 """.strip()
 
 HOTEL_NAME_INDEX_DDL = f"""
 CYPHER 25
+// Create the lookup index used when workshop queries select a Hotel by name.
 CREATE RANGE INDEX {HOTEL_NAME_INDEX} IF NOT EXISTS
 FOR (hotel:Hotel) ON (hotel.name)
 """.strip()
@@ -59,6 +66,8 @@ REQUIRED_SOURCE_FILES = (
 
 SOURCE_READINESS_QUERY = """
     CYPHER 25
+    // Walk every required source through Chunk and Hotel to Amenity, then
+    // return the counts and values that source fixture validation compares.
     UNWIND $sources AS source
     OPTIONAL MATCH (document:Document {source_filename: source.source_filename})
     OPTIONAL MATCH (chunk:Chunk)-[:FROM_DOCUMENT]->(document)
@@ -88,6 +97,7 @@ SOURCE_READINESS_QUERY = """
 
 CHICAGO_FILTER_QUERY = """
     CYPHER 25
+    // Find Chicago Hotels and report whether each offers both a spa and pool.
     MATCH (document:Document)<-[:FROM_DOCUMENT]-(chunk:Chunk)<-[:FROM_CHUNK]-(hotel:Hotel)
     WHERE hotel.address IS NOT NULL
       AND toLower(hotel.address) CONTAINS toLower($city)
@@ -131,7 +141,12 @@ FITNESS_AMENITY = "24-" "Hour Fitness Center"
 
 @dataclass(frozen=True)
 class SourceFixture:
-    """Exact source-backed graph facts needed by a Module 2 example."""
+    """Expected graph facts for one stable source document.
+
+    ``source_fixture_problems`` compares these values with rows returned by
+    ``SOURCE_READINESS_QUERY``. Notebook checks also reuse the same fixture to
+    validate retrieved text and expanded graph context.
+    """
 
     source_filename: str
     hotel_name: str
@@ -197,7 +212,11 @@ class ReadinessError(RuntimeError):
 
 @dataclass(frozen=True)
 class Fixture:
-    """One graph fact required by a learner-facing question."""
+    """One executable graph check required by a learner-facing question.
+
+    ``build_health_problems`` runs the Cypher with its parameters and verifies
+    that the returned ``actual`` count reaches ``minimum``.
+    """
 
     name: str
     query: str
@@ -209,6 +228,7 @@ BUILD_HEALTH_FIXTURES = (
     Fixture(
         name="Paris ratings for aggregation",
         query="""
+            // Count Paris Hotels that can participate in the rating example.
             MATCH (h:Hotel)
             WHERE toLower(h.address) CONTAINS 'paris'
               AND h.guest_rating IS NOT NULL
@@ -220,6 +240,7 @@ BUILD_HEALTH_FIXTURES = (
     Fixture(
         name="hotel-to-pool relationship for counting",
         query="""
+            // Count Hotels connected to an Amenity whose name contains pool.
             MATCH (h:Hotel)-[:OFFERS_AMENITY]->(a:Amenity)
             WHERE toLower(a.name) CONTAINS 'pool'
             RETURN count(DISTINCT h) AS actual
@@ -229,6 +250,7 @@ BUILD_HEALTH_FIXTURES = (
     Fixture(
         name="Cairo spa-and-pool connected traversal result",
         query="""
+            // Count rated Cairo Hotels connected to both spa and pool amenities.
             MATCH (h:Hotel)-[:OFFERS_AMENITY]->(spa:Amenity),
                   (h)-[:OFFERS_AMENITY]->(pool:Amenity)
             WHERE toLower(h.address) CONTAINS 'cairo'
@@ -242,6 +264,7 @@ BUILD_HEALTH_FIXTURES = (
     Fixture(
         name="Windward Mile Tower hotel at postal code 60611",
         query="""
+            // Confirm the named Hotel exists at the expected postal code.
             MATCH (h:Hotel)
             WHERE h.name = $hotel_name AND h.address CONTAINS $postal_code
             RETURN count(h) AS actual
@@ -254,6 +277,7 @@ BUILD_HEALTH_FIXTURES = (
     Fixture(
         name="embedded Windward Mile Tower chunk containing 60611",
         query="""
+            // Confirm the source Chunk has expected text and a valid-size vector.
             MATCH (c:Chunk)
             WHERE c.text CONTAINS $hotel_name
               AND c.text CONTAINS $postal_code
@@ -628,6 +652,7 @@ def verify_retrieval_indexes(driver: Driver) -> None:
         records = list(
             session.run(
                 """
+                // Read the state and schema of each index in the shared contract.
                 SHOW INDEXES
                 YIELD name, type, state, labelsOrTypes, properties, options
                 WHERE name IN $names
@@ -646,14 +671,21 @@ def graph_counts(driver: Driver) -> tuple[int, int, dict[str, int], dict[str, in
     """Return document, chunk, extracted-label, and relationship counts."""
     with _session(driver) as session:
         document_count = session.run(
-            "MATCH (d:Document) RETURN count(d) AS count"
+            """
+            // Count all source Document nodes created by graph construction.
+            MATCH (d:Document) RETURN count(d) AS count
+            """
         ).single()["count"]
-        chunk_count = session.run("MATCH (c:Chunk) RETURN count(c) AS count").single()[
-            "count"
-        ]
+        chunk_count = session.run(
+            """
+            // Count all Chunk nodes so readiness can compare them with Documents.
+            MATCH (c:Chunk) RETURN count(c) AS count
+            """
+        ).single()["count"]
         node_counts = session.run(
             """
             CYPHER 25
+            // Count each extracted entity label independently through subqueries.
             CALL () { MATCH (hotel:Hotel) RETURN count(hotel) AS hotels }
             CALL () { MATCH (room:Room) RETURN count(room) AS rooms }
             CALL () { MATCH (amenity:Amenity) RETURN count(amenity) AS amenities }
@@ -678,6 +710,7 @@ def graph_counts(driver: Driver) -> tuple[int, int, dict[str, int], dict[str, in
             for record in session.run(
                 """
                 CYPHER 25
+                // Count each workshop relationship type for the readiness report.
                 MATCH ()-[r:HAS_ROOM|OFFERS_AMENITY|HAS_POLICY|PROVIDES_SERVICE]->()
                 RETURN type(r) AS relationship, count(*) AS count
                 ORDER BY relationship
@@ -708,6 +741,7 @@ def hotel_provenance_problems(driver: Driver) -> list[str]:
             session.run(
                 """
                 CYPHER 25
+                // Find Documents that do not resolve to exactly one Hotel.
                 MATCH (document:Document)
                 OPTIONAL MATCH (chunk:Chunk)-[:FROM_DOCUMENT]->(document)
                 OPTIONAL MATCH (hotel:Hotel)-[:FROM_CHUNK]->(chunk)
@@ -726,6 +760,7 @@ def hotel_provenance_problems(driver: Driver) -> list[str]:
             session.run(
                 """
                 CYPHER 25
+                // Find Hotel nodes incorrectly shared by multiple source Documents.
                 MATCH (document:Document)<-[:FROM_DOCUMENT]-(chunk:Chunk)<-[:FROM_CHUNK]-(hotel:Hotel)
                 WITH hotel,
                      collect(DISTINCT coalesce(

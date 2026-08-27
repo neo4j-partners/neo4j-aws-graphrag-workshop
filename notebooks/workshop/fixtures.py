@@ -1,6 +1,11 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-"""Idempotent Neo4j preparation and readiness checks for the reservation fixtures.
+"""Idempotent Neo4j preparation and readiness checks for reservation fixtures.
+
+A fixture is a small, deterministic set of data and expected facts that makes
+an example repeatable. Here, the fixture manifest maps two known source files
+to stable hotel IDs. Setup applies those IDs and the maximum-guests rule, then
+readiness checks compare the live graph with the same fixture definition.
 
 This module verifies the indexes Module 1 owns. It only writes the two fixture
 hotel IDs, ordinary uniqueness constraints, and the maximum-guests rule.
@@ -57,24 +62,29 @@ FOR_HOTEL_PATTERN = "(:ReservationRequest)-[:FOR_HOTEL]->(:Hotel)"
 
 HOTEL_ID_CONSTRAINT = """
 CYPHER 25
+// Keep the stable fixture ID unique across all Hotel nodes.
 CREATE CONSTRAINT demo06_fixture_hotel_id IF NOT EXISTS
 FOR (hotel:Hotel) REQUIRE hotel.hotel_id IS UNIQUE
 """.strip()
 
 REQUEST_ID_CONSTRAINT = """
 CYPHER 25
+// Prevent retries from creating duplicate reservation request IDs.
 CREATE CONSTRAINT demo06_reservation_request_id IF NOT EXISTS
 FOR (request:ReservationRequest) REQUIRE request.request_id IS UNIQUE
 """.strip()
 
 RULE_ID_CONSTRAINT = """
 CYPHER 25
+// Ensure each workshop rule has one unique identifier.
 CREATE CONSTRAINT demo06_rule_id IF NOT EXISTS
 FOR (rule:Rule) REQUIRE rule.rule_id IS UNIQUE
 """.strip()
 
 FIXTURE_RESOLUTION_QUERY = """
 CYPHER 25
+// Resolve every manifest source through its Chunk to its Hotel, then return
+// counts and IDs so readiness checks can detect missing or ambiguous paths.
 UNWIND $fixtures AS fixture
 OPTIONAL MATCH (document:Document {source_filename: fixture.source_filename})
 OPTIONAL MATCH (document)<-[:FROM_DOCUMENT]-(chunk:Chunk)
@@ -91,6 +101,7 @@ ORDER BY source_filename
 
 APPLY_FIXTURE_IDS_QUERY = """
 CYPHER 25
+// Follow each verified source path and assign its manifest ID to the Hotel.
 UNWIND $fixtures AS fixture
 MATCH (document:Document {source_filename: fixture.source_filename})
 MATCH (document)<-[:FROM_DOCUMENT]-(chunk:Chunk)
@@ -102,6 +113,7 @@ RETURN count(DISTINCT hotel) AS updated
 
 UPSERT_RULE_QUERY = """
 CYPHER 25
+// Create or update the single maximum-guests rule used by reservation checks.
 MERGE (rule:Rule {rule_id: $rule_id})
 SET rule.rule_type = 'MAXIMUM_GUESTS',
     rule.max_guests = $max_guests,
@@ -114,6 +126,7 @@ RETURN rule.rule_id AS rule_id
 """.strip()
 
 INDEX_QUERY = """
+// Return only the indexes that the readiness check needs to validate.
 SHOW INDEXES
 YIELD name, type, state, labelsOrTypes, properties, options
 WHERE name IN $names
@@ -121,6 +134,7 @@ RETURN name, type, state, labelsOrTypes, properties, options
 """.strip()
 
 CONSTRAINT_QUERY = """
+// Return only the fixture constraints that the readiness check validates.
 SHOW CONSTRAINTS
 YIELD name, type, labelsOrTypes, properties
 WHERE name IN $names
@@ -129,6 +143,7 @@ RETURN name, type, labelsOrTypes, properties
 
 HERO_QUERY = """
 CYPHER 25
+// Load the known hero Hotel and its amenities for exact fixture validation.
 MATCH (hotel:Hotel {hotel_id: $hotel_id})
 OPTIONAL MATCH (hotel)-[:OFFERS_AMENITY]->(amenity:Amenity)
 WHERE amenity.name IS NOT NULL
@@ -140,6 +155,7 @@ RETURN hotel.name AS name,
 
 RULE_QUERY = """
 CYPHER 25
+// Load the rule as one summary row, including a zero count when it is absent.
 OPTIONAL MATCH (rule:Rule {rule_id: $rule_id})
 WITH collect(rule) AS rules
 RETURN size(rules) AS rule_count,
@@ -153,6 +169,8 @@ RETURN size(rules) AS rule_count,
 
 @dataclass(frozen=True)
 class FixtureManifest:
+    """Stable source-file-to-hotel-ID inputs used by setup and readiness checks."""
+
     version: int
     hotels: Mapping[str, str]
 
