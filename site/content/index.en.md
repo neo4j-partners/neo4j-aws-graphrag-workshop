@@ -21,6 +21,18 @@ AgentCore are new to you.
 
 **Source code:** :link[Open the workshop repository on GitHub]{href="https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop" external=true}.
 
+## Why Grounding Matters
+
+A booking agent needs evidence for its answers and controls for its actions.
+
+- **Wrong answer:** The agent promises an amenity that the hotel does not offer.
+- **Wrong action:** The agent holds a room for more guests than it can accommodate.
+- **Missing provenance:** The team cannot trace a claim to its source document.
+- **Workshop challenge:** Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
+
+You will connect the answer to its sources and enforce booking rules before the
+agent writes a reservation request.
+
 :::alert{type="info" header="Region"}
 This workshop runs in **us-east-1**, the N. Virginia region. Your AWS account
 arrives pre-configured. Setup guides you through creating a free Neo4j database.
