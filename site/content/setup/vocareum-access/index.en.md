@@ -11,12 +11,6 @@ weight: 2
 
 Vocareum provisions an AWS account for you and supplies its credentials to the lab environment.
 
-When VS Code opens, select the **Python 3.10** interpreter shown below before
-you run a notebook. Click the kernel or interpreter picker in the upper-right
-corner of the notebook, then select that Python version.
-
-:image[VS Code's Python interpreter picker with Python 3.10 selected]{src="../../../images/python-310.png" width=643}
-
 :::alert{type="info" header="Where your AWS credentials come from"}
 The lab environment carries the AWS credentials the notebooks use. You do not run `aws configure` and you do not paste an access key anywhere. Modules 4, 5, and 6 create AWS resources under that lab account, and everything lands in **us-east-1**.
 :::
@@ -57,10 +51,15 @@ The username and the database name are already `neo4j`, which is what every Aura
 ## Step 5: Verify the Environment
 
 In the `notebooks/01-build-graph/` folder, open
-`1.0_verify_environment.ipynb`. Confirm its kernel is still **Python 3.10** as
-shown above, then run every cell. This notebook checks that the supplied
-Vocareum credentials can reach the Bedrock models the workshop uses. It does
-not create any resources.
+`1.0_verify_environment.ipynb`. Before you run the notebook, click the kernel
+or interpreter picker in the upper-right corner and select the **Python 3.10**
+interpreter shown below.
+
+:image[VS Code's Python interpreter picker with Python 3.10 selected]{src="../../../images/python-310.png" width=643}
+
+Run every cell. This notebook checks that the supplied Vocareum credentials
+can reach the Bedrock models the workshop uses. It does not create any
+resources.
 
 When `1.0` completes successfully, stay in the same folder and open
 `1.1_build_graph.ipynb` to begin Module 1. Run each later notebook with the
