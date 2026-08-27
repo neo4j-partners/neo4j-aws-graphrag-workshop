@@ -166,8 +166,6 @@ their own.
 - **Graph identity prevents copies.** One canonical `Hotel` accumulates facts, conversations, preferences, and actions
 - **History remains visible.** New memories can supersede old ones while both stay inspectable
 
-The graph stores not only what the agent remembers, but how that memory connects to the world.
-
 <!--
 This is the thesis of the deck. Graph memory is valuable when the relationship
 between a conversation and domain data matters as much as the text itself.
