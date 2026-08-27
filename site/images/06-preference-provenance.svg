@@ -16,8 +16,8 @@
   <rect x="40" y="32" width="880" height="484" rx="16" fill="#FFFFFF" stroke="#E7E4DB" filter="url(#sh)"/>
 
   <!-- ============ HEADER ============ -->
-  <text x="64" y="62" fill="#16233A" font-size="20" font-weight="700">A preference points back at the message it came from</text>
-  <text x="64" y="82" fill="#16233A" font-size="10.5">The library writes the memory nodes. Two workshop relationships are what make one preference traceable.</text>
+  <text x="64" y="62" fill="#16233A" font-size="19" font-weight="700">Module 6 connects conversation and durable memory to one Hotel</text>
+  <text x="64" y="82" fill="#16233A" font-size="10.5">Entity linking records what the turn is about. Promotion policy decides what becomes a preference.</text>
 
   <!-- ============ BAND A: THE RECORD ============ -->
   <rect x="64" y="96" width="832" height="154" rx="12" fill="#EEF4FB" stroke="#6E86CF"/>
@@ -82,9 +82,13 @@
   <line x1="480" y1="224" x2="480" y2="342" stroke="#2E6DB4" stroke-width="1.8" marker-end="url(#arrowBlue)"/>
   <text x="492" y="286" fill="#5C6470" font-size="7.5" font-weight="700" letter-spacing="0.2">DERIVED_FROM</text>
 
+  <!-- The source message and durable preference resolve to the same Hotel. -->
+  <path d="M 632 379 L 650 379 L 650 260 L 780 216" fill="none" stroke="#2E6DB4" stroke-width="1.8" marker-end="url(#arrowBlue)"/>
+  <text x="660" y="278" fill="#5C6470" font-size="7.5" font-weight="700" letter-spacing="0.2">MENTIONS</text>
+
   <!-- ============ LEGEND ============ -->
   <line x1="64" y1="470" x2="94" y2="470" stroke="#8A8A8A" stroke-width="1.5" marker-end="url(#arrowGray)"/>
   <text x="104" y="473" fill="#16233A" font-size="8">written by the neo4j-agent-memory library</text>
   <line x1="320" y1="470" x2="350" y2="470" stroke="#2E6DB4" stroke-width="1.8" marker-end="url(#arrowBlue)"/>
-  <text x="360" y="473" fill="#16233A" font-size="8">written by memory_helpers.py, and what makes a preference traceable</text>
+  <text x="360" y="473" fill="#16233A" font-size="8">canonical topic and provenance links written by memory_helpers.py</text>
 </svg>

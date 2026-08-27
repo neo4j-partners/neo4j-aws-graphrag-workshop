@@ -14,7 +14,7 @@ provenance, booking rules, reservation requests, and cross-session memory.
 | **Cypher** | Expresses connected patterns, structured filters, provenance paths, and transactional rules |
 | **Vector and full-text indexes** | Combine semantic similarity with exact names, identifiers, and terms |
 | **GraphRAG** | Expands a matched text chunk into connected hotel facts and their sources |
-| **Graph memory** | Links actor-scoped preferences to conversations, messages, and real domain entities |
+| **Agent memory** | Links actor-scoped preferences to conversations, messages, and real domain entities |
 | **Drivers, connectors, and MCP** | Connect application code, data pipelines, and agents to the graph |
 
 ---
@@ -33,6 +33,48 @@ the source chunk that supports the answer. Cypher describes that shape directly.
 The graph transaction is also where the application-owned reservation command
 checks the hotel's guest limit and writes the request. Model behavior is not
 the final control.
+
+---
+
+## Enterprise Knowledge Layer
+
+An Enterprise Knowledge Layer gives agents one shared place to find business
+meaning, trusted data, and past experience. Agents query the layer while they
+work. This keeps definitions, sources, rules, and memory consistent across
+applications.
+
+:image[The Enterprise Knowledge Layer serves applications, agents, and tools through three pillars: ontology, enterprise data, and agent memory]{src="../../images/enterprise-knowledge-layer.svg" width=800}
+
+### Ontology
+
+The ontology defines how the business works.
+
+- **Business concepts:** The important people, products, events, and terms.
+- **Relationships:** The connections between those concepts.
+- **Rules:** The policies and processes that guide access and action.
+- **System mappings:** The links from business terms to technical data sources.
+
+### Enterprise Data
+
+Enterprise data supplies the facts that ground the ontology.
+
+- **Reference data:** The approved values for concepts such as countries or account types.
+- **Business records:** The master and transaction data used to answer questions.
+- **Data access:** The layer can query data in its source system or bring selected data into the graph.
+
+### Agent Memory
+
+Agent memory stores context, facts, and past decisions.
+
+- **Short-term memory:** The context from the current conversation.
+- **Long-term memory:** Facts and preferences that remain across sessions.
+- **Reasoning memory:** Tool use, decisions, and outcomes from earlier work.
+- **Decision trace:** The recorded path that explains why the agent chose an action.
+
+Ontology defines the meaning. Enterprise data supplies current facts. Agent
+memory carries useful experience into the next request.
+
+:link[Read Jesús Barrasa's article, The knowledge layer for enterprise AI]{href="https://neo4j.com/blog/agentic-ai/enterprise-knowledge-layer/" external=true}.
 
 ---
 
@@ -72,7 +114,7 @@ make the behavior inspectable.
 
 ---
 
-## Graph Memory
+## Agent Memory in This Workshop
 
 Module 6 extends the same graph with `User`, `Conversation`, `Message`, and
 `Preference` nodes. A saved preference links to the message it came from and to
@@ -85,9 +127,8 @@ This structure makes memory:
 - **Correctable:** The application can update a specific graph record directly.
 - **Connected:** Recalled information can traverse to current domain data.
 
-Neo4j graph memory complements the AWS agent infrastructure. AgentCore can host
-the agent, while Neo4j provides memory the application can query and govern as
-connected data.
+Neo4j stores agent memory as connected data. AgentCore can host the agent. The
+application can query and govern the memory in Neo4j.
 
 ---
 

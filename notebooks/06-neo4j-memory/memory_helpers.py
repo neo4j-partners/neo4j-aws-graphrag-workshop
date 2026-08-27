@@ -37,6 +37,12 @@ Two choices are specific to this demo:
   ``user_identifier``, and the store raises ``ValueError`` for any write that
   omits one. That makes the demo's actor-isolation lesson structural rather
   than conventional.
+- **Entity linking is explicit:** released ``neo4j-agent-memory`` 0.5.0 does
+  not reliably retain every ``MENTIONS`` edge from its automatic extraction
+  path. The demo therefore links the source ``Message`` directly to the
+  canonical ``Hotel`` node after the application has resolved that hotel. It
+  still records what the conversation is about without creating a parallel
+  ``Entity`` copy or asking a model to rediscover a known identifier.
 
 No credentials are read and no connection is opened at import time; both
 happen inside :func:`load_config` and ``MemoryClient.connect``.
@@ -108,6 +114,7 @@ HERO_HOTEL_NAME = "AnyCompany Cairo Nile View"
 # no equivalent for preferences.
 PROVENANCE_RELATIONSHIP = "DERIVED_FROM"
 HOTEL_RELATIONSHIP = "ABOUT_HOTEL"
+MENTION_RELATIONSHIP = "MENTIONS"
 
 PREPARATION_HINT = (
     "Fill in NEO4J_URI, NEO4J_USERNAME, and NEO4J_PASSWORD in CONFIG.txt at "
@@ -178,11 +185,11 @@ def load_config() -> MemoryDemoConfig:
 def build_memory_settings(config: MemoryDemoConfig) -> MemorySettings:
     """Assemble ``MemorySettings`` for the bolt (direct-driver) path.
 
-    Embedding-only configuration: Titan V2 supplies the vectors, no LLM is
-    constructed, and entity extraction is off (``ExtractorType.NONE``). The
-    demo writes memory explicitly, so nothing needs a model to extract
-    entities from text. ``multi_tenant=True`` makes every write require a
-    ``user_identifier``.
+    Embedding-only configuration: Titan V2 supplies the vectors and no LLM is
+    constructed. Automatic model extraction is off (``ExtractorType.NONE``),
+    but entity linking is not: the scenario explicitly links the source
+    message to the canonical Hotel after resolving it. ``multi_tenant=True``
+    makes every write require a ``user_identifier``.
     """
     # 0.5.0 requires this object to size the indexes even though its settings
     # layer emits a migration warning saying the same shape is deprecated.
@@ -312,6 +319,44 @@ def link_preference_to_message_and_hotel(
         """,
         {
             "preference_id": preference_id,
+            "message_id": message_id,
+            "hotel_name": hotel_name,
+            "owner": WORKSHOP_OWNER,
+        },
+        write=True,
+        driver=driver,
+    )
+    return bool(rows and rows[0]["linked"])
+
+
+def link_message_to_hotel(
+    config: MemoryDemoConfig,
+    message_id: str,
+    hotel_name: str,
+    *,
+    driver: Driver | None = None,
+) -> bool:
+    """Link a conversation message to the canonical Hotel it mentions.
+
+    The workshop already resolved the hotel before this write, so the known
+    domain node is safer than asking the pinned automatic extractor to create
+    or resolve a second entity. Returns ``False`` unless the message and
+    exactly one Hotel match.
+    """
+    rows = _run_query(
+        config,
+        f"""
+        CYPHER 25
+        MATCH (m:Message {{id: $message_id}})
+        MATCH (h:Hotel {{name: $hotel_name}})
+        WITH m, collect(h) AS hotels
+        WHERE size(hotels) = 1
+        WITH m, head(hotels) AS h
+        MERGE (m)-[mentions:{MENTION_RELATIONSHIP}]->(h)
+        SET mentions.workshop_owner = $owner
+        RETURN count(*) AS linked
+        """,
+        {
             "message_id": message_id,
             "hotel_name": hotel_name,
             "owner": WORKSHOP_OWNER,

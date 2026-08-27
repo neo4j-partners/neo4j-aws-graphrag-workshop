@@ -41,8 +41,9 @@ from that context, protect database writes, and preserve provenance.
 
 - **Actor-scoped recall:** Recalled a preference for the same actor in a new session while isolating a second actor.
 - **Graph memory:** Stored each preference as a graph node.
-- **Full provenance:** Linked every `Preference` to its source `Message` and the real `Hotel` node.
-- **Direct correction:** Corrected one preference with a single `SET` operation.
+- **Conversation entities:** Linked the source `Message` to the real `Hotel` it mentions.
+- **Full provenance:** Linked every `Preference` to its source `Message` and the same `Hotel` node.
+- **Retained history:** Replaced changed preferences by appending and superseding instead of overwriting stale text and embeddings.
 - **Memory comparison:** Compared Neo4j memory with AgentCore Memory by write timing, auditability, correction, and operational ownership.
 
 ---
@@ -52,7 +53,7 @@ from that context, protect database writes, and preserve provenance.
 - **Complementary retrieval signals:** Semantic similarity finds relevant language, exact terms protect identifiers, and graph structure adds connected entities and their properties.
 - **Structural precision:** Properties and relationships support precise queries, filters, and commands while retaining provenance.
 - **MCP tool interface:** Gateway tools enter the Strands agent through the same `tools` interface as local functions. Module 5 uses a separate pattern in which a packaged Runtime agent connects to Neo4j itself.
-- **Auditable graph memory:** Provenance links a wrong preference to its source and makes a direct correction possible.
+- **Auditable graph memory:** Entity links capture what a turn is about, and provenance keeps durable memory tied to its evidence.
 
 ---
 

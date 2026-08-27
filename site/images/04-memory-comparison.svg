@@ -128,11 +128,11 @@
 
   <!-- Right: explicit graph writes description -->
   <rect x="795" y="505" width="580" height="145" rx="10" fill="#EEF4FB" stroke="#2E6DB4" stroke-width="1.5"/>
-  <text x="1085" y="533" text-anchor="middle" font-size="15" font-weight="700" fill="#1F4E7A">Explicit graph writes</text>
-  <text x="1085" y="562" text-anchor="middle" font-size="12.5" fill="#3A3A3A">The Lambda writes each preference synchronously, as a graph</text>
-  <text x="1085" y="582" text-anchor="middle" font-size="12.5" fill="#3A3A3A">node connected to its source message and the hotel it concerns.</text>
-  <text x="1085" y="612" text-anchor="middle" font-size="12.5" fill="#3A3A3A">Recall is a Cypher match; correction is a direct SET on the</text>
-  <text x="1085" y="632" text-anchor="middle" font-size="12.5" fill="#3A3A3A">property, alongside the rest of the domain data.</text>
+  <text x="1085" y="533" text-anchor="middle" font-size="15" font-weight="700" fill="#1F4E7A">Application-controlled graph memory</text>
+  <text x="1085" y="562" text-anchor="middle" font-size="12.5" fill="#3A3A3A">The application links conversation entities to canonical graph</text>
+  <text x="1085" y="582" text-anchor="middle" font-size="12.5" fill="#3A3A3A">nodes, then promotes confirmed preferences with provenance.</text>
+  <text x="1085" y="612" text-anchor="middle" font-size="12.5" fill="#3A3A3A">Recall is a Cypher match; changes append and supersede old</text>
+  <text x="1085" y="632" text-anchor="middle" font-size="12.5" fill="#3A3A3A">preferences so history and evidence remain visible.</text>
 
   <!-- Neo4j Aura (outside AWS Cloud) -->
   <path d="M1450,360 a90,18 0 0,0 180,0 v140 a90,18 0 0,1 -180,0 z" fill="#DAE8FC" stroke="#4581C3" stroke-width="2"/>

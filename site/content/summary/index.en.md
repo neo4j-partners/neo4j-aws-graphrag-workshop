@@ -18,7 +18,7 @@ GraphRAG combines these signals to match the retrieval method to each query need
 | **3. Build the Grounded Booking Agent** | Clear tool specifications let a model choose the evidence shape a question needs | You traced routing between passage and structured reads, inspected shared grounding verdicts, and protected a reservation write inside one transaction |
 | **4. Production Agent** | Tools keep the same agent interface when they move out of the notebook | You put retrieval behind an :link[AgentCore]{href="https://aws.amazon.com/bedrock/agentcore/" external=true} Gateway over IAM-authenticated MCP, then passed the remote tools to a Strands agent |
 | **5. Deploy to AgentCore Runtime** | A deployment-oriented agent runs as a service | You containerized the agent, launched it on Runtime, and correlated one request end to end |
-| **6. Neo4j Graph Memory** | Actor-scoped memory makes recall auditable and correctable | You recalled a preference in a new session, traced it back to its source message, and followed its link to the real `Hotel` node |
+| **6. Neo4j Graph Memory** | Conversation entities and durable memory share canonical domain nodes | You linked a source turn and its confirmed preference to the same `Hotel`, then traced the memory back to its evidence |
 
 Together, the modules keep retrieval, answer generation, commands, deployment,
 and memory as separate components with clear responsibilities.
@@ -72,14 +72,14 @@ operations.
 
 | | AgentCore Memory | Neo4j graph memory |
 |---|---|---|
-| How it is written | The service extracts memory from the transcript | The application writes each memory record |
+| How it is written | The service extracts memory from the transcript | The application controls extraction, canonical linking, and preference promotion |
 | When it is recallable | Recall starts after asynchronous extraction finishes | Recall starts when the application write commits |
 | Auditability | The application retrieves records through the service API | A Cypher query returns the memory and its source message |
-| Correction path | The application uses the Memory service API | The application uses `SET` on one property |
-| Link to domain data | The application resolves domain links separately | A relationship points to the real `Hotel` node |
+| Correction path | The application uses the Memory service API | Append a replacement and supersede the old preference |
+| Link to domain data | The application resolves domain links separately | `MENTIONS` and `ABOUT_HOTEL` point to the real `Hotel` node |
 | Operations | AWS runs it | You run it |
 
-The stores serve different needs. Managed extraction is the shorter path to a working prototype. Graph memory is useful for facts that need explicit provenance and direct correction. A production system can use managed memory for recency and graph memory for records that must be explainable.
+The stores serve different needs. Managed extraction is the shorter path to a working prototype. Graph memory is useful when conversation entities and durable records need canonical domain links, explicit provenance, and retained history. A production system can use managed memory for recency and graph memory for records that must be explainable.
 
 ---
 

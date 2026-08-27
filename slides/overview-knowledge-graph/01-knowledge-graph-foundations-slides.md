@@ -136,6 +136,19 @@ filename with the answer.
 
 ---
 
+![bg contain](../images/enterprise-knowledge-layer.svg)
+
+<!--
+The Enterprise Knowledge Layer gives applications, agents, and tools one shared
+source. The ontology defines meaning. Enterprise data supplies current facts.
+Agent memory carries useful experience into the next request.
+
+The full overview comes from Jesús Barrasa's article, The knowledge layer for
+enterprise AI. The Graph Intelligence Platform page links to the article.
+-->
+
+---
+
 <style scoped>
 /* Six comparison rows plus one takeaway. */
 section { font-size: 22px; }

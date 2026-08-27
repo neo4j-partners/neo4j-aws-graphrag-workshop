@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" font-family="'Helvetica Neue', Helvetica, Arial, sans-serif">
+  <title>The Enterprise Knowledge Layer has three pillars: ontology, enterprise data, and agent memory</title>
+  <defs>
+    <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1A1A1A" flood-opacity="0.12"/>
+    </filter>
+    <marker id="arrow" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto">
+      <path d="M0,0 L8,4 L0,8 z" fill="#4581C3"/>
+    </marker>
+  </defs>
+
+  <rect width="1000" height="560" fill="#FFFFFF"/>
+  <text x="500" y="38" text-anchor="middle" font-size="25" font-weight="700" fill="#16233A">Enterprise Knowledge Layer</text>
+  <text x="500" y="64" text-anchor="middle" font-size="13" fill="#5C6470">One shared layer for applications, agents, and tools</text>
+
+  <g filter="url(#shadow)">
+    <rect x="80" y="92" width="240" height="58" rx="10" fill="#FFFFFF" stroke="#59636E" stroke-width="1.5"/>
+    <rect x="380" y="92" width="240" height="58" rx="10" fill="#FFFFFF" stroke="#59636E" stroke-width="1.5"/>
+    <rect x="680" y="92" width="240" height="58" rx="10" fill="#FFFFFF" stroke="#59636E" stroke-width="1.5"/>
+  </g>
+  <text x="200" y="128" text-anchor="middle" font-size="17" font-weight="700" fill="#16233A">Applications</text>
+  <text x="500" y="128" text-anchor="middle" font-size="17" font-weight="700" fill="#16233A">Agents</text>
+  <text x="800" y="128" text-anchor="middle" font-size="17" font-weight="700" fill="#16233A">Tools</text>
+
+  <line x1="200" y1="150" x2="200" y2="181" stroke="#4581C3" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="500" y1="150" x2="500" y2="181" stroke="#4581C3" stroke-width="2" marker-end="url(#arrow)"/>
+  <line x1="800" y1="150" x2="800" y2="181" stroke="#4581C3" stroke-width="2" marker-end="url(#arrow)"/>
+
+  <rect x="45" y="188" width="910" height="300" rx="16" fill="#EEF4FB" stroke="#4581C3" stroke-width="2"/>
+  <text x="500" y="222" text-anchor="middle" font-size="19" font-weight="700" fill="#1F4E7A">Shared business knowledge</text>
+
+  <g filter="url(#shadow)">
+    <rect x="75" y="244" width="260" height="210" rx="12" fill="#FFFFFF" stroke="#01A88D" stroke-width="1.5"/>
+    <rect x="370" y="244" width="260" height="210" rx="12" fill="#FFFFFF" stroke="#01A88D" stroke-width="1.5"/>
+    <rect x="665" y="244" width="260" height="210" rx="12" fill="#FFFFFF" stroke="#01A88D" stroke-width="1.5"/>
+  </g>
+
+  <rect x="75" y="244" width="260" height="48" rx="12" fill="#B7DF7A"/>
+  <rect x="370" y="244" width="260" height="48" rx="12" fill="#B7DF7A"/>
+  <rect x="665" y="244" width="260" height="48" rx="12" fill="#B7DF7A"/>
+  <text x="205" y="275" text-anchor="middle" font-size="16" font-weight="700" fill="#16233A">Ontology</text>
+  <text x="500" y="275" text-anchor="middle" font-size="16" font-weight="700" fill="#16233A">Enterprise Data</text>
+  <text x="795" y="275" text-anchor="middle" font-size="16" font-weight="700" fill="#16233A">Agent Memory</text>
+
+  <g font-size="13" fill="#16233A">
+    <rect x="95" y="310" width="220" height="34" rx="7" fill="#F6F8FA" stroke="#D6DCE2"/>
+    <rect x="95" y="355" width="220" height="34" rx="7" fill="#F6F8FA" stroke="#D6DCE2"/>
+    <rect x="95" y="400" width="220" height="34" rx="7" fill="#F6F8FA" stroke="#D6DCE2"/>
+    <text x="205" y="332" text-anchor="middle">Business concepts</text>
+    <text x="205" y="377" text-anchor="middle">Relationships and rules</text>
+    <text x="205" y="422" text-anchor="middle">Source mappings</text>
+
+    <rect x="390" y="310" width="220" height="34" rx="7" fill="#F6F8FA" stroke="#D6DCE2"/>
+    <rect x="390" y="355" width="220" height="34" rx="7" fill="#F6F8FA" stroke="#D6DCE2"/>
+    <rect x="390" y="400" width="220" height="34" rx="7" fill="#F6F8FA" stroke="#D6DCE2"/>
+    <text x="500" y="332" text-anchor="middle">Reference data</text>
+    <text x="500" y="377" text-anchor="middle">Business records</text>
+    <text x="500" y="422" text-anchor="middle">Source systems or graph</text>
+
+    <rect x="685" y="310" width="220" height="34" rx="7" fill="#F6F8FA" stroke="#D6DCE2"/>
+    <rect x="685" y="355" width="220" height="34" rx="7" fill="#F6F8FA" stroke="#D6DCE2"/>
+    <rect x="685" y="400" width="220" height="34" rx="7" fill="#F6F8FA" stroke="#D6DCE2"/>
+    <text x="795" y="332" text-anchor="middle">Short-term context</text>
+    <text x="795" y="377" text-anchor="middle">Long-term facts</text>
+    <text x="795" y="422" text-anchor="middle">Reasoning and decisions</text>
+  </g>
+
+  <rect x="150" y="510" width="700" height="34" rx="9" fill="#232F3E"/>
+  <text x="500" y="532" text-anchor="middle" font-size="13" font-weight="700" fill="#FFFFFF">Shared meaning · trusted facts · useful experience</text>
+</svg>

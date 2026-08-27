@@ -20,11 +20,9 @@ those tools and the agent from a notebook into managed AWS endpoints.
 | **Neo4j** | Store the hotel knowledge graph, combine semantic and exact retrieval with graph traversal, return provenance, run transactional booking checks, and store auditable memory |
 | **Strands Agents** | Present application-defined tools to the model and run the tool-selection loop across the two platforms |
 
-Neither side is a substitute for the other. A foundation model can interpret a
-question and decide what to do, but it does not provide the workshop's
-authoritative hotel facts or their relationships. Neo4j can retrieve and
-enforce those connected facts, but it does not replace the model, agent runtime,
-IAM boundary, or serverless application services.
+AWS provides the models and application infrastructure that interpret requests,
+run tools, secure access, and host the agent. Neo4j stores and retrieves the
+authoritative hotel facts, relationships, provenance, booking rules, and memory.
 
 ---
 
@@ -37,7 +35,7 @@ IAM boundary, or serverless application services.
 3. **The tool reaches Neo4j.** It can connect directly with a Neo4j driver or run through AgentCore Gateway and Lambda.
 4. **Neo4j returns connected evidence.** Vector and full-text indexes find source text, while Cypher adds hotel facts, relationships, and provenance.
 5. **The model writes the answer.** The prompt requires the answer to use the returned evidence or state what is missing.
-6. **Application commands and memory remain explicit.** The reservation command checks its rules inside a Neo4j transaction. Graph memory stores actor-scoped preferences with links to their source.
+6. **Application commands and memory remain explicit.** The reservation command checks its rules inside a Neo4j transaction. Agent memory stores actor-scoped preferences with links to their source.
 
 The division of labor stays consistent as the workshop progresses. What changes
 is where the agent and tools run.

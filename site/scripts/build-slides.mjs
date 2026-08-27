@@ -99,7 +99,7 @@ const DECKS = [
     key: 'overview-agent-memory',
     source: '01-agent-memory-slides.md',
     title: 'Agent Memory with Neo4j',
-    covers: 'Preference memory with provenance and actor-scoped recall',
+    covers: 'Conversation entities, durable memory, and provenance',
     pairsWith: 'Module 6',
     page: '06-neo4j-memory/index.adoc',
   },

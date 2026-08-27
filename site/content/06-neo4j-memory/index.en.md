@@ -18,8 +18,10 @@ each actor as a `User` node, and every memory write names one.
 **Brief overview**
 
 * **Preference:** The graph stores one statement about what an actor wants.
-* **Application-controlled write:** The application writes the exact preference
-  text, so the value is readable as soon as the transaction commits.
+* **Entity linking:** The source message points to the canonical `Hotel` it is
+  about.
+* **Application-controlled promotion:** A confirmed preference becomes durable
+  memory in a separate write.
 * **Actor-scoped read:** A Cypher query starts at one `User` node and follows
   only that actor's relationships.
 * **Provenance:** Relationships connect each preference to its source message,
@@ -73,23 +75,26 @@ documents.
 
 ## What the Module Stores
 
-The module writes one preference and connects it to the two things it came
-from.
+The module stores the conversation topic first, then promotes one confirmed
+preference and connects it to the evidence it came from.
 
 :::code{language=cypher showCopyAction=true}
 (u:User)-[:HAS_PREFERENCE]->(p:Preference)-[:DERIVED_FROM]->(m:Message)
+(m)-[:MENTIONS]->(h:Hotel)
 (p)-[:ABOUT_HOTEL]->(h:Hotel)
 :::
 
 * **`DERIVED_FROM`:** This relationship links the preference to the message
   that supplied it.
+* **`MENTIONS`:** This relationship records which canonical hotel the source
+  message is about.
 * **`ABOUT_HOTEL`:** This relationship links the preference to the hotel it
   describes.
 
 One query then returns the preference, the message behind it, the session that
 message belongs to, and the hotel, all in a single row.
 
-:image[A stored preference and the message it came from: the User owns a Preference, DERIVED_FROM links it to the Message in its Conversation, and ABOUT_HOTEL links it to the Hotel]{src="../../images/06-preference-provenance.svg" width=800}
+:image[Module 6 memory graph: the source Message MENTIONS a Hotel, while the confirmed Preference points to the same Message and Hotel]{src="../../images/06-preference-provenance.svg" width=800}
 
 These are the nodes and relationships that make up the memory half of the
 graph.
@@ -102,32 +107,35 @@ graph.
 | `(:Preference)` | One durable statement, in `preference`, grouped by `category` |
 | `(:User)-[:HAS_CONVERSATION]->(:Conversation)` | Which actor was talking |
 | `(:Conversation)-[:HAS_MESSAGE]->(:Message)` | The turns in that session |
+| `(:Message)-[:MENTIONS]->(:Hotel)` | Which canonical hotel a turn is about |
 | `(:User)-[:HAS_PREFERENCE]->(:Preference)` | Which actor owns the preference |
 | `(:Preference)-[:DERIVED_FROM]->(:Message)` | Where the preference came from |
 | `(:Preference)-[:ABOUT_HOTEL]->(:Hotel)` | Which hotel the preference is about |
 
-The library writes everything above except the last two relationships.
-`memory_helpers.py` writes those, and they are what makes a preference
-traceable.
+The library writes the conversation and preference records.
+`memory_helpers.py` links the message and preference to the canonical `Hotel`,
+which keeps the conversation topic, durable memory, and domain data in one
+graph.
 
-## Why the Module Writes Memory by Hand
+## From Conversation to Durable Memory
 
-The library can send a transcript to a model and extract entities from it. This
-module turns that off and writes every value directly.
+Entity extraction and durable memory are separate decisions. Extraction answers
+what a turn is about. A memory policy decides which candidate facts and
+preferences are safe and useful to retain.
 
-* **Extraction is off:** The client sets `ExtractorType.NONE`, and each message
-  write passes `extraction_mode="skip"`. No model identifies preferences from
-  the message text.
-* **Embedding:** Titan Text Embeddings V2 still creates a vector when the
-  notebook saves a preference.
-* **The application already knows the facts:** It just handled a request naming
-  a specific hotel. Paying a model to rediscover that name costs time and can
-  return the wrong hotel.
-* **The stored text is exact:** The application supplies the preference string,
-  so the value in the graph is the value you can read in the code.
+1. **Store the turn:** Keep the user's exact words and session.
+2. **Link its subjects:** A free-form conversation can use an entity extractor.
+   When an agent or tool has already resolved a hotel, link that known subject
+   directly to the canonical `Hotel` node.
+3. **Promote deliberately:** A policy or confirmation step decides which
+   candidate preferences become long-term memory.
+4. **Keep the evidence:** Every stored `Preference` points to its source
+   `Message` and the `Hotel` it concerns.
 
-Use model extraction for free text nobody has parsed yet. Write memory directly
-when the application already holds the facts.
+The workshop pins `neo4j-agent-memory` 0.5.0. Its automatic extraction path does
+not reliably retain every `MENTIONS` edge, so this deterministic scenario uses
+explicit canonical linking. That is a version-specific implementation choice,
+not a reason to discard entity extraction in a production agent.
 
 ### Why `ABOUT_HOTEL` and Not the Library's Own Relationship
 
@@ -192,22 +200,23 @@ Two checks confirm the scope holds:
 
 Run this query to see the full provenance path. It returns the actor, the
 stored preference, the source message, the source session, and the hotel in one
-row.
+row. The two routes to `h` confirm that the message subject and durable memory
+resolve to the same node.
 
 :::code{language=cypher showCopyAction=true}
 CYPHER 25
 MATCH (u:User {identifier: $actor})
       -[:HAS_PREFERENCE]->(p:Preference)
-      -[:DERIVED_FROM]->(m:Message)
-      <-[:HAS_MESSAGE]-(c:Conversation),
-      (p)-[:ABOUT_HOTEL]->(h:Hotel {name: $hotel_name})
+      -[:DERIVED_FROM]->(m:Message)-[:MENTIONS]->(h:Hotel),
+      (m)<-[:HAS_MESSAGE]-(c:Conversation),
+      (p)-[:ABOUT_HOTEL]->(h {name: $hotel_name})
 RETURN u.identifier AS actor, p.preference AS preference, m.content AS source_message,
        c.session_id AS source_session, h.name AS hotel
 :::
 
-Correct a stored value with
-`SET p.preference = "high floor, away from elevator"`. The next recall reads
-the updated property from the same `Preference` node.
+When a preference changes, append a replacement and supersede the old node.
+That preserves history and gives the replacement a fresh embedding and source,
+instead of leaving an embedding calculated from stale text.
 
 ### Explore the Memory Graph Yourself
 
@@ -264,15 +273,16 @@ directly, which keeps every write visible while you learn the pattern.
 | | AgentCore Memory | :link[Neo4j graph memory]{href="https://neo4j.com/" external=true} |
 |---|---|---|
 | Long-term availability | Extracted memories become available after background processing | Explicit preferences become available when the transaction commits |
-| Extraction | A model extracts memory from the transcript | The application writes the exact memory value |
+| Extraction | A model extracts memory from the transcript | The application controls extraction, canonical entity linking, and preference promotion |
 | Auditability | The application reads memory through the API and operational logs through :link[Amazon CloudWatch]{href="https://aws.amazon.com/cloudwatch/" external=true} | A Cypher query returns the memory and its source message |
-| Correction path | The application uses the Memory service API | The application uses `SET` on one property |
-| Domain link | The application resolves domain links separately | `[:ABOUT_HOTEL]` points to the existing `Hotel` node |
+| Correction path | The application uses the Memory service API | Append and supersede while retaining history |
+| Domain link | The application resolves domain links separately | `[:MENTIONS]` and `[:ABOUT_HOTEL]` point to the existing `Hotel` node |
 | Operations | AWS manages it | You own it |
 
 Choose AgentCore Memory when managed extraction and managed operations fit the
-application. Choose Neo4j graph memory when the application needs explicit
-writes, immediate recall, direct correction, and relationships to domain data.
+application. Choose Neo4j graph memory when the application needs controlled
+promotion, immediate recall, retained history, and relationships to domain
+data.
 
 A production system can use both. Managed memory can carry recent conversation
 state, and graph memory can carry the records that have to be explainable.
