@@ -5,7 +5,8 @@
 # Used for: a maintainer's rare local gate before publishing a prebuilt dump.
 #
 # Restores a prebuilt candidate into an isolated local Neo4j and runs every
-# offline artifact gate. This never calls Bedrock or connects to Aura.
+# offline artifact gate, then runs the idempotent workshop index setup against
+# that disposable restore. This never calls Bedrock or connects to Aura.
 #
 # Usage: tools/release/validate_prebuilt_candidate.sh [candidate.dump]
 #
@@ -119,6 +120,7 @@ run_validator() {
 
 run_validator "$REPO_ROOT/tools/release/validate_graph_amenities.py" --mode prebuilt
 run_validator "$REPO_ROOT/tools/release/validate_prebuilt_candidate.py"
+run_validator "$REPO_ROOT/tools/release/validate_post_restore_indexes.py"
 
 cleanup
 trap - EXIT

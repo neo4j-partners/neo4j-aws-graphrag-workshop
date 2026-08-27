@@ -39,6 +39,7 @@ NOTEBOOKS_DIR = REPO_ROOT / "notebooks"
 if str(NOTEBOOKS_DIR) not in sys.path:
     sys.path.insert(0, str(NOTEBOOKS_DIR))
 
+from workshop.amenities import POOL_AMENITY_NAMES
 from workshop.graph_connection import (
     graph_database,
     neo4j_auth,
@@ -65,13 +66,13 @@ CALL () {
   RETURN count(amenity) AS amenities
 }
 CALL () {
-  MATCH ()-[offer:OFFERS_AMENITY]->(amenity:Amenity)
+  MATCH (:Hotel)-[offer:OFFERS_AMENITY]->(amenity:Amenity)
   WITH DISTINCT offer.source_filename AS source, amenity.name AS amenity
   RETURN count(*) AS amenity_assertions
 }
 CALL () {
-  MATCH ()-[offer:OFFERS_AMENITY]->(amenity:Amenity)
-  WHERE toLower(amenity.name) CONTAINS 'pool'
+  MATCH (:Hotel)-[offer:OFFERS_AMENITY]->(amenity:Amenity)
+  WHERE amenity.name IN $pool_amenity_names
   RETURN count(DISTINCT offer.source_filename) AS pool_sources
 }
 RETURN documents, hotels, amenities, amenity_assertions, pool_sources
@@ -121,7 +122,10 @@ def graph_counts() -> dict[str, int]:
         GraphDatabase.driver(neo4j_uri(), auth=neo4j_auth()) as driver,
         driver.session(database=graph_database()) as session,
     ):
-        record = session.run(COUNTS_QUERY).single()
+        record = session.run(
+            COUNTS_QUERY,
+            pool_amenity_names=list(POOL_AMENITY_NAMES),
+        ).single()
     if record is None:
         raise RuntimeError("the graph count query returned no row")
     return {name: int(record[name]) for name in FULL_COUNTS}

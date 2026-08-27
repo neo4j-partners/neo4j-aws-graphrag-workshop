@@ -11,11 +11,17 @@ from __future__ import annotations
 
 import re
 from dataclasses import dataclass
+from typing import Final
 
 from neo4j import Driver, ManagedTransaction
 from neo4j.exceptions import Neo4jError
 
 AMENITY_HEADING = "## Hotel Amenities"
+
+# Exact authored identities in the committed corpus that belong to the pool
+# release category. Corpus-parity tests keep this set and the 172/175 source
+# count contract synchronized when source documents change.
+POOL_AMENITY_NAMES: Final = ("Outdoor Swimming Pool",)
 
 _HEADING = re.compile(r"^#{1,6}(?:\s+|$)")
 _BULLET = re.compile(r"^-[ \t]+(.*?)\s*$")

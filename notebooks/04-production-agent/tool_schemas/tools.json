@@ -1,14 +1,14 @@
 [
   {
-    "name": "search_hotel_knowledge",
-    "description": "Search grounded hotel documents and enrich the matching chunks with reviewed Neo4j hotel facts. Use for semantic questions about a hotel's rooms, amenities, policies, and services. Does not provide live inventory or guaranteed availability, and never writes.",
+    "name": "search_hotel_passages",
+    "description": "Find up to five hotel passages and linked facts. Use for amenities, room descriptions, policies, services, and location details about one or a few hotels, or when the answer needs source wording. Send counts, averages, rankings, and filters across many hotels to query_hotel_records. Neither read tool has live room availability.",
     "input_schema": {
       "type": "object",
       "properties": {
         "query": {
           "type": "string",
           "minLength": 1,
-          "description": "Natural-language hotel question."
+          "description": "The guest's natural-language hotel question. Must not be empty."
         }
       },
       "required": [
@@ -18,15 +18,15 @@
     }
   },
   {
-    "name": "graph_query",
-    "description": "Answer a structured hotel question with read-only Cypher generated against the pinned graph schema. Use for counts, averages, filters, and connected traversals that need the database to calculate over the full matching set rather than return top-k text. Returns the generated Cypher alongside its records, and never writes.",
+    "name": "query_hotel_records",
+    "description": "Run model-generated read-only Cypher over stored hotel facts. Use for counts, averages, rankings, filters, and relationship questions. Send questions that need source wording to search_hotel_passages. Aggregates can cover all matching records; list results return at most 25 rows. Empty records mean the generated query returned no rows, not that the graph lacks the requested fact. Neither read tool has live room availability.",
     "input_schema": {
       "type": "object",
       "properties": {
         "query": {
           "type": "string",
           "minLength": 1,
-          "description": "Natural-language question about counts, averages, or relationships across hotels."
+          "description": "The guest's natural-language hotel question. Must not be empty."
         }
       },
       "required": [

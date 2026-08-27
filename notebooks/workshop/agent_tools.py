@@ -31,12 +31,11 @@ from __future__ import annotations
 
 from typing import Any, Final
 
-from neo4j.exceptions import ClientError
-from neo4j_graphrag.exceptions import LLMGenerationError, Text2CypherRetrievalError
 from strands import tool
 
 from workshop import grounding
 from workshop.hybrid_retrieval import (
+    EXPECTED_QUERY_ERRORS,
     MAX_GRAPH_QUERY_RECORDS,
     graph_query,
     search_hotel_knowledge,
@@ -44,21 +43,6 @@ from workshop.hybrid_retrieval import (
 
 PASSAGE_TOOL: Final = "search_hotel_passages"
 RECORD_TOOL: Final = "query_hotel_records"
-
-# The failures a structured read is expected to produce, as opposed to an
-# outage. `Text2CypherRetrievalError` is what the read-only `EXPLAIN` guard
-# raises when the generated Cypher would write, and what the retriever raises
-# for Cypher the database reports as a syntax error. `LLMGenerationError` is a
-# failure in the nested model call that writes the Cypher. `ClientError` is
-# what the driver raises for a statement the database rejects for any other
-# reason, such as a property the schema does not have; `CypherSyntaxError` is
-# one of its subclasses. Anything else is left to propagate, because an outage
-# should stay visible as an outage rather than arrive as a tidy error code.
-EXPECTED_QUERY_ERRORS: Final = (
-    Text2CypherRetrievalError,
-    LLMGenerationError,
-    ClientError,
-)
 
 
 def _success(payload: dict[str, Any]) -> dict[str, Any]:
@@ -77,12 +61,14 @@ def _failure(error_code: str, message: object) -> dict[str, Any]:
 def _rejected_query(query: object) -> dict[str, Any] | None:
     """Return an error result when `query` is not usable, otherwise None.
 
-    The generated Strands input schema can say that `query` is a required
-    string. It cannot say that the string has to contain something, so an
-    empty or whitespace-only query reaches the tool body and is rejected here.
+    The nonblank rule and its wording are `grounding.validated_query` and
+    `grounding.INVALID_QUERY_MESSAGE`, which the Module 4 Lambdas apply at
+    their own boundary. Only the Strands envelope is added here. A Lambda takes
+    a whole event and additionally rejects any key other than `query`; a
+    Strands tool is handed the bare argument, so there are no other keys.
     """
-    if not isinstance(query, str) or not query.strip():
-        return _failure(grounding.INVALID_QUERY, "query must be a non-empty string")
+    if grounding.validated_query(query) is None:
+        return _failure(grounding.INVALID_QUERY, grounding.INVALID_QUERY_MESSAGE)
     return None
 
 

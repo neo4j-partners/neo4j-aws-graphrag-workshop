@@ -270,7 +270,7 @@ def check_neo4j_hero_hotel() -> list[str]:
     driver = GraphDatabase.driver(
         graph_connection.neo4j_uri(),
         auth=graph_connection.neo4j_auth(),
-        notifications_min_severity="OFF",
+        notifications_disabled_classifications=["DEPRECATION"],
     )
     try:
         driver.verify_connectivity()

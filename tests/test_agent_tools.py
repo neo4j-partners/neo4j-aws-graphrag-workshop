@@ -26,8 +26,7 @@ from typing import Any
 import pytest
 from neo4j.exceptions import CypherSyntaxError
 from neo4j_graphrag.exceptions import LLMGenerationError, Text2CypherRetrievalError
-
-from workshop import agent_tools, grounding
+from workshop import agent_tools, grounding, hybrid_retrieval
 from workshop.agent_tools import (
     PASSAGE_TOOL,
     READ_TOOLS,
@@ -113,6 +112,27 @@ def test_a_description_states_that_live_availability_is_unsupported(read_tool) -
 def test_the_row_bound_in_the_description_matches_the_retrieval_bound() -> None:
     """A docstring cannot be an f-string, so the number is checked instead."""
     assert f"{ROW_LIMIT} rows" in query_hotel_records.tool_spec["description"]
+
+
+def test_text2cypher_examples_use_exact_spa_identity_and_model_a_ranked_limit() -> None:
+    examples = hybrid_retrieval.GRAPH_QUERY_EXAMPLES
+    assert len(examples) == 4
+
+    spa_example = next(example for example in examples if "offer a spa" in example)
+    assert "(amenity:Amenity {name: 'Full-Service Spa'})" in spa_example
+    assert "toLower(amenity.name)" not in spa_example
+
+    ranked_example = next(
+        example for example in examples if "highest-rated hotels" in example
+    )
+    assert "hotel.guest_rating IS NOT NULL" in ranked_example
+    assert "ORDER BY guest_rating DESC LIMIT 5" in ranked_example
+
+
+def test_text2cypher_prompt_limits_every_non_aggregate_list_query() -> None:
+    prompt = hybrid_retrieval.GRAPH_QUERY_PROMPT
+    assert "non-aggregate query" in prompt
+    assert f"LIMIT {ROW_LIMIT}" in prompt
 
 
 # --------------------------------------------------------------------------

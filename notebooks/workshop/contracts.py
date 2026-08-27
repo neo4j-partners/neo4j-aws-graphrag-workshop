@@ -8,7 +8,7 @@ Runtime package, and the retrieval Lambda without causing network calls or
 resource changes. `retrieval_contract`, the one thing it imports, is pure
 constants with no imports of its own, so that property survives.
 
-The five embedding and index names are re-exported rather than redefined.
+The embedding and index contract values are re-exported rather than redefined.
 Module 1 writes the embeddings and creates the indexes; Modules 2 and 3 read
 them. A second definition here would let a reader change the index name in one
 file, pass every check in that file's module, and leave the read path pointed
@@ -18,15 +18,18 @@ The database name is not here. `graph_database()` lives in `graph_connection`
 alongside the other environment reads, which keeps this module free of `os`.
 """
 
+from collections.abc import Mapping
 from enum import Enum
-from typing import Final, Literal, TypedDict
+from typing import Any, Final, Literal, TypedDict
 
 from workshop.retrieval_contract import (
     CHUNK_FULLTEXT_INDEX as CHUNK_FULLTEXT_INDEX,
     CHUNK_VECTOR_INDEX as CHUNK_VECTOR_INDEX,
+    DOCUMENT_SOURCE_FILENAME_INDEX as DOCUMENT_SOURCE_FILENAME_INDEX,
     EMBEDDING_DIMENSIONS as EMBEDDING_DIMENSIONS,
     EMBEDDING_MODEL_ID as EMBEDDING_MODEL_ID,
     EMBEDDING_PURPOSE as EMBEDDING_PURPOSE,
+    HOTEL_NAME_INDEX as HOTEL_NAME_INDEX,
 )
 
 HYBRID_RANKER: Final = "NAIVE"
@@ -174,24 +177,51 @@ def reservation_input_schema() -> dict[str, object]:
     }
 
 
-def gateway_reservation_input_schema() -> dict[str, object]:
-    """Project the closed command schema onto AgentCore's accepted subset."""
-    schema = reservation_input_schema()
-    properties = schema["properties"]
-    if not isinstance(properties, dict):
-        raise TypeError("reservation schema properties must be an object")
-    allowed_property_keys = {"type", "description", "items"}
-    gateway_properties = {
-        name: {
-            key: value
-            for key, value in definition.items()
-            if key in allowed_property_keys
-        }
-        for name, definition in properties.items()
-        if isinstance(definition, dict)
-    }
+# --------------------------------------------------------------------------- #
+# The AgentCore projection
+# --------------------------------------------------------------------------- #
+#
+# AgentCore reads a subset of JSON Schema when a Gateway target registers a
+# tool: per property it takes `type`, `description`, and `items`, and it does
+# not take `minLength`, `format`, or `additionalProperties`. The schemas above
+# keep those, because they are the closed contract each handler validates
+# against at its own trust boundary. What the Gateway is handed is the
+# projection below.
+#
+# It lives here rather than beside the Module 4 notebook because Module 5
+# registers the same tools and cannot import a module that sits outside the
+# `workshop` package. One projection, imported by both, is also the only way a
+# key AgentCore later starts accepting gets added in one place.
+GATEWAY_PROPERTY_KEYS: Final = frozenset({"type", "description", "items"})
+
+
+def lambda_function_name(tool_name: str) -> str:
+    """Keep the model-visible tool base name in its fresh Lambda name."""
+    return f"hotel-booking-{tool_name}"
+
+
+def gateway_input_schema(schema: Mapping[str, Any]) -> dict[str, Any]:
+    """Project the complete contract onto AgentCore's supported subset."""
     return {
         "type": schema["type"],
-        "properties": gateway_properties,
+        "properties": {
+            name: {
+                key: value
+                for key, value in definition.items()
+                if key in GATEWAY_PROPERTY_KEYS
+            }
+            for name, definition in schema["properties"].items()
+        },
         "required": schema["required"],
     }
+
+
+def gateway_base_name(full_name: str) -> str:
+    """Remove AgentCore's target prefix from a model-visible tool name."""
+    prefix, separator, base_name = full_name.rpartition("___")
+    return base_name if prefix and separator else full_name
+
+
+def gateway_reservation_input_schema() -> dict[str, Any]:
+    """Project the closed command schema onto AgentCore's accepted subset."""
+    return gateway_input_schema(reservation_input_schema())

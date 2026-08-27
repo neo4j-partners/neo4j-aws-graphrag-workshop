@@ -88,7 +88,7 @@ Cypher. The returned Cypher is visible so the participant can inspect what ran.
 
 ---
 
-## Strands Agents in One Slide
+## Overview of Strands Agents
 
 ```python
 agent = Agent(
@@ -105,7 +105,7 @@ agent = Agent(
 - **The system prompt** states which facts the model may use and when it must abstain
 - **`ToolTraceHook`** records the selected tool and its bounded result
 
-Model-driven, not developer-scripted. You do not write "retrieve, then answer."
+The model selects a tool from the specifications that Strands provides.
 
 <!--
 The notebook prints the final tool specifications before building the agent.
@@ -170,24 +170,24 @@ command is separate because it was never registered as a Module 3 tool.
 
 ---
 
-## Automatic Selection Is Observable
+## Automatic Tool Selection
 
-Module 3 uses a plain `BedrockModel`. Nothing forces a tool call.
+Module 3 uses a plain `BedrockModel`. The model decides whether to call a tool.
 
-- **Hotel facts:** the system prompt directs the model to use tool evidence first
-- **No hotel fact:** greetings and thanks can receive a direct reply
-- **Routing evidence:** the trace names every selected tool and records what came back
-- **Variation:** the routing table reports a warning when the model chooses an unexpected path
+- **Hotel questions:** the system prompt tells the model to use a read tool before answering
+- **Simple messages:** greetings and thanks can receive a direct reply
+- **Trace:** the hook records each selected tool and its result
+- **Lab check:** the notebook reports an unexpected tool choice and checks required evidence
 
-A prompt states policy. The lab checks whether the observed turn followed it.
+The earlier forced-call subclass was removed. The prompt guides the model, and the trace shows what happened.
 
 <!--
-Do not call this enforcement. Automatic tool choice can vary, and the model can
-produce a response without a tool if it does not follow the prompt.
+The current notebook uses a plain BedrockModel. An earlier version used a small
+subclass to force a tool call. That subclass is no longer part of Module 3.
 
-The notebook makes that boundary explicit. Fresh agents isolate routing cases,
-the trace records tool calls, and the availability check fails if no read tool
-returned the expected structured verdict.
+The system prompt guides tool selection. Fresh agents isolate routing cases.
+The trace records each call. The availability check requires a read tool to
+return the expected structured verdict.
 -->
 
 ---
@@ -242,28 +242,29 @@ number the model read out of a sentence.
 
 ## Abstention
 
+Abstention means the agent states that the available data cannot answer the question.
+
 > "Does AnyCompany Cairo Nile View guarantee room availability next weekend?"
 
-Either read path can return real hotel evidence. Neither has live inventory.
+The tools return hotel facts and policies. Live room inventory comes from a separate booking system.
 
-- **The graph holds** descriptive facts and policies, not live room inventory
-- **"Subject to availability"** is a policy sentence, not proof that a room is open
-- **The tool verdict** returns `answerable: false` and `missing_fact: live_room_availability`
-- **The notebook check** verifies that a tool ran and returned that verdict
+- **Known facts:** the graph holds hotel details and reservation policies
+- **Missing fact:** the graph has no live room availability for next weekend
+- **Tool verdict:** `answerable: false` identifies `live_room_availability` as missing
+- **Agent response:** the agent explains that it cannot confirm availability
 
-The check reads structured evidence, not a required phrase in the final answer.
+The notebook checks the structured verdict instead of checking for one exact sentence.
 
 <!--
-This slide tests the observable grounding contract rather than one exact model
-sentence, and it is the one that gets the most comment in the room.
+This slide tests whether the evidence supports the answer. The final wording can
+vary, so the notebook checks the structured verdict.
 
-The subtlety is that the retriever did its job. It found relevant text. The
-failure mode being prevented is the model reading "subject to availability" and
-producing a confident sentence about next weekend, which is exactly the kind of
-plausible answer deck 1 opened with.
+The retriever still succeeds. It finds relevant policy text. That text cannot
+prove that a room is open next weekend. The safe response names the missing
+live inventory fact.
 
-The check detects a bad turn during the lab. It does not prevent every possible
-bad response in a deployed agent. Run this one live if you run anything live.
+The check detects an unsupported answer during the lab. Run this example live
+if you run one example.
 -->
 
 ---

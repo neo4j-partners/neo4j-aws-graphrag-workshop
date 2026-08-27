@@ -4,11 +4,14 @@
 
 from __future__ import annotations
 
+import inspect
 from pathlib import Path
 
 import pytest
 import run_additive_validation
 import run_notebook_smoke
+import validate_graph_amenities
+import validate_prebuilt_candidate
 
 ADDITIVE_WRAPPER = (
     Path(__file__).resolve().parents[1]
@@ -45,6 +48,52 @@ def test_additive_contract_reports_each_mismatch() -> None:
         "after documents: found 299, expected 300",
         "after amenity_assertions: found 1631, expected 1632",
     ]
+
+
+def test_release_amenity_counts_require_hotel_sources() -> None:
+    assert (
+        "MATCH (hotel:Hotel)-[offer:OFFERS_AMENITY]->(amenity:Amenity)"
+        in validate_graph_amenities.OFFER_QUERY
+    )
+    assert run_additive_validation.COUNTS_QUERY.count(
+        "MATCH (:Hotel)-[offer:OFFERS_AMENITY]->(amenity:Amenity)"
+    ) == 2
+    assert (
+        "MATCH (:Hotel)-[offer:OFFERS_AMENITY]->(amenity:Amenity)"
+        in validate_prebuilt_candidate.COUNT_QUERY
+    )
+
+
+def test_release_pool_category_uses_the_shared_exact_identity_parameter() -> None:
+    queries = (
+        run_additive_validation.COUNTS_QUERY,
+        validate_prebuilt_candidate.COUNT_QUERY,
+    )
+
+    assert run_additive_validation.POOL_AMENITY_NAMES == (
+        "Outdoor Swimming Pool",
+    )
+    assert (
+        run_additive_validation.POOL_AMENITY_NAMES
+        is validate_prebuilt_candidate.POOL_AMENITY_NAMES
+    )
+    for query in queries:
+        assert "amenity.name IN $pool_amenity_names" in query
+        assert "toLower(amenity.name) CONTAINS 'pool'" not in query
+    assert "pool_amenity_names=list(POOL_AMENITY_NAMES)" in inspect.getsource(
+        run_additive_validation.graph_counts
+    )
+    assert "pool_amenity_names=list(POOL_AMENITY_NAMES)" in inspect.getsource(
+        validate_prebuilt_candidate.read_candidate_facts
+    )
+
+
+def test_invalid_offer_gate_remains_deliberately_label_free() -> None:
+    query = validate_prebuilt_candidate.INVALID_OFFER_QUERY
+
+    assert "MATCH (source)-[offer:OFFERS_AMENITY]->(target)" in query
+    assert "WHERE NOT (source:Hotel) OR NOT (target:Amenity)" in query
+    assert "MATCH (source:Hotel)-[offer:OFFERS_AMENITY]" not in query
 
 
 def test_notebook_smoke_defaults_to_affected_modules(tmp_path: Path) -> None:

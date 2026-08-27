@@ -6,7 +6,6 @@ import ast
 import json
 from pathlib import Path
 
-
 NOTEBOOK = (
     Path(__file__).resolve().parents[1]
     / "notebooks"
@@ -105,9 +104,22 @@ def test_readiness_runs_before_any_retriever_is_created() -> None:
 def test_result_provenance_is_resolved_per_result_without_a_corpus_map() -> None:
     _, code = notebook_sources()
 
-    assert "def source_for_chunk_text(chunk):" in code
+    assert "def source_for_chunk_id(chunk_id):" in code
     assert "source_by_chunk" not in code
-    assert "MATCH (matched:Chunk {text: $chunk})" in code
+    assert "WHERE elementId(matched) = $chunk_id" in code
+    assert "chunk_id = record.get('elementId')" in code
+    assert "source_for_chunk_id(chunk_id) if chunk_id else ''" in code
+    assert ".single(strict=True)" not in code
+    assert "MATCH (matched:Chunk {text: $chunk})" not in code
+
+
+def test_driver_suppresses_only_deprecation_notifications() -> None:
+    text, code = notebook_sources()
+
+    assert 'notifications_disabled_classifications=["DEPRECATION"]' in code
+    assert "notifications_min_severity" not in code
+    assert "other classifications remain visible" in code
+    assert "suppress" in text.casefold()
 
 
 def test_context_measurement_counts_values_once_without_repr_punctuation() -> None:
@@ -120,7 +132,10 @@ def test_context_measurement_counts_values_once_without_repr_punctuation() -> No
             }:
                 nodes.append(node)
     namespace: dict[str, object] = {}
-    exec(compile(ast.Module(body=nodes, type_ignores=[]), "context", "exec"), namespace)
+    exec(  # noqa: S102 - execute isolated notebook helpers without side effects
+        compile(ast.Module(body=nodes, type_ignores=[]), "context", "exec"),
+        namespace,
+    )
 
     counts = namespace["context_char_counts"](
         {"hotel": "Cairo", "amenities": ["Spa", "Pool"]},
@@ -135,20 +150,22 @@ def test_fixed_chicago_evidence_fields_are_built_behaviorally() -> None:
     nodes: list[ast.stmt] = []
     for source in notebook_code_cells():
         for node in ast.parse(source).body:
-            if isinstance(node, ast.FunctionDef) and node.name in {
+            wanted_function = isinstance(node, ast.FunctionDef) and node.name in {
                 "context_value_chars",
                 "context_char_counts",
                 "fixed_cypher_context",
-            }:
-                nodes.append(node)
-            elif isinstance(node, ast.Assign) and any(
+            }
+            wanted_assignment = isinstance(node, ast.Assign) and any(
                 isinstance(target, ast.Name) and target.id in wanted_assignments
                 for target in node.targets
-            ):
+            )
+            if wanted_function or wanted_assignment:
                 nodes.append(node)
     namespace: dict[str, object] = {}
     module = ast.Module(body=nodes, type_ignores=[])
-    exec(compile(module, "evidence", "exec"), namespace)
+    exec(  # noqa: S102 - execute isolated notebook helpers without side effects
+        compile(module, "evidence", "exec"), namespace
+    )
     record = {
         "hotel_name": "Lakeview Horizon Suites",
         "guest_rating": 4.4,
@@ -183,7 +200,7 @@ def test_cairo_vector_search_precedes_vector_cypher_comparison() -> None:
     assert "source_filename: '(:Chunk)-[:FROM_DOCUMENT]->(:Document)'" in code
 
 
-def test_shared_credentials_and_optional_text2cypher_boundaries_are_visible() -> None:
+def test_shared_credentials_and_text2cypher_boundaries_are_visible() -> None:
     text, code = notebook_sources()
     assert code.count("neo4j_database=DATABASE") >= 3
     assert "default_access_mode=READ_ACCESS" in code
@@ -191,7 +208,7 @@ def test_shared_credentials_and_optional_text2cypher_boundaries_are_visible() ->
     assert "EXPLAIN {cypher}" in code
     assert "TEXT2CYPHER_TIMEOUT_SECONDS = 15" in code
     # Participants configure one Neo4j credential for the whole workshop. The
-    # optional Text2Cypher cell adds an EXPLAIN guard instead of a second login,
+    # Text2Cypher cell adds an EXPLAIN guard instead of a second login,
     # while the prose recommends database-enforced read-only access in production.
     assert "NEO4J_READ_USERNAME" not in code
     assert "NEO4J_READ_PASSWORD" not in code
@@ -202,18 +219,41 @@ def test_shared_credentials_and_optional_text2cypher_boundaries_are_visible() ->
     assert "result_count" in code
     assert "displayed_count" in code
     assert "execution_error" in code
-    assert "Fixed Cypher remains the acceptance path" in code
     assert "same workshop credentials as every other cell" in text
     assert "read-only Neo4j user in production" in text
+    assert "case-insensitive substring match on the free-text address" in text
+    assert "extract a normalized city property and index it" in text
 
 
 def test_module3_handoff_and_prose_style_are_explicit() -> None:
     text, code = notebook_sources()
-    assert "selected_module_3_retriever = search_hotel_knowledge" in code
-    assert "Selected for Module 3" in code
+    assert (
+        "module_3_read_paths = (search_hotel_passages, query_hotel_records)"
+        in code
+    )
+    assert "Module 3 read paths" in code
+    assert "There is no single retriever choice for every question" in text
     assert "Result count:" in code
     assert "Candidate count:" in code
     assert "\u2014" not in text
+
+
+def test_paris_average_compares_bounded_passages_with_text2cypher() -> None:
+    text, code = notebook_sources()
+    question = "What is the average guest rating of hotels in Paris?"
+
+    assert question in text
+    assert f"PARIS_AVERAGE_QUESTION = '{question}'" in code
+    assert "PARIS_PASSAGE_LIMIT = HYBRID_TOP_K" in code
+    assert "at most five passages" in text
+    assert "search_hotel_knowledge(PARIS_AVERAGE_QUESTION)" in code
+    assert "run_optional_text2cypher(PARIS_AVERAGE_QUESTION)" in code
+    assert code.index("search_hotel_knowledge(PARIS_AVERAGE_QUESTION)") < code.index(
+        "run_optional_text2cypher(PARIS_AVERAGE_QUESTION)"
+    )
+    assert "not a full-set average" in code
+    assert "does not establish every matching hotel or the full denominator" in code
+    assert "inspect the generated Cypher" in code
 
 
 def test_the_notebook_carries_no_inline_assertions() -> None:

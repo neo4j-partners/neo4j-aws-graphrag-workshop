@@ -195,6 +195,12 @@ def _index_problems(records: Iterable[Mapping[str, Any]]) -> list[str]:
     expected = {
         contracts.CHUNK_VECTOR_INDEX: ("VECTOR", ["Chunk"], ["embedding"]),
         contracts.CHUNK_FULLTEXT_INDEX: ("FULLTEXT", ["Chunk"], ["text"]),
+        contracts.DOCUMENT_SOURCE_FILENAME_INDEX: (
+            "RANGE",
+            ["Document"],
+            ["source_filename"],
+        ),
+        contracts.HOTEL_NAME_INDEX: ("RANGE", ["Hotel"], ["name"]),
     }
     problems: list[str] = []
     for name, (index_type, labels, properties) in expected.items():
@@ -401,6 +407,8 @@ def readiness_problems(
                 names=[
                     contracts.CHUNK_VECTOR_INDEX,
                     contracts.CHUNK_FULLTEXT_INDEX,
+                    contracts.DOCUMENT_SOURCE_FILENAME_INDEX,
+                    contracts.HOTEL_NAME_INDEX,
                 ],
             )
         )
@@ -479,12 +487,13 @@ def main() -> int:
         return 1
 
     uri, auth, database = _configuration()
-    # notifications_min_severity="OFF" matches the drivers hybrid_retrieval and
-    # reservation_command open. Without it this readiness step prints Neo4j
-    # planner notices the Module 3.1 retrieval and reservation paths both
-    # suppress, so the same query looks different depending on which file
-    # opened the connection.
-    driver = GraphDatabase.driver(uri, auth=auth, notifications_min_severity="OFF")
+    # Keep deprecation noise out of the workshop while retaining every other
+    # server notification that can help a maintainer diagnose the graph.
+    driver = GraphDatabase.driver(
+        uri,
+        auth=auth,
+        notifications_disabled_classifications=["DEPRECATION"],
+    )
     problems: list[str] = []
     try:
         driver.verify_connectivity()

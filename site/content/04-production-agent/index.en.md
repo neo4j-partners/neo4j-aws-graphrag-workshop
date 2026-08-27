@@ -6,7 +6,7 @@ weight: 50
 Module 3 runs the retrieval tools inside the notebook process. Module 4 moves
 them to AWS services.
 
-The retrieval logic stays the same. `search_hotel_knowledge` runs the same
+The retrieval logic stays the same. `search_hotel_passages` runs the same
 `HybridCypherRetriever` from Module 2 and returns the same eight keys. Two
 things change: where the tool runs, and who is allowed to call it.
 
@@ -33,7 +33,7 @@ The diagram follows one request:
 * **The Gateway:** The agent's MCP tool call crosses into AWS and reaches the
   AgentCore Gateway. The Gateway checks the IAM SigV4 signature.
 * **The Lambdas:** The Gateway invokes the Lambda that backs the requested
-  tool, either `search_hotel_knowledge` or `graph_query`.
+  tool, either `search_hotel_passages` or `query_hotel_records`.
 * **The secret:** Each Lambda reads its Neo4j credential from AWS Secrets
   Manager at cold start.
 * **The database:** Each Lambda sends EXPLAIN-checked Cypher to Neo4j Aura.
@@ -70,22 +70,25 @@ the end of this module therefore looks almost identical to Module 3.
 | Who holds the Neo4j credential | The notebook process | The Lambda, from Secrets Manager |
 | Who checks the caller | Nobody, the caller is the process itself | IAM checks the SigV4 signature |
 | How a failure appears | A Python exception | A network error, an IAM denial, or a function error |
-| What the agent passes to Strands | `tools=list(READ_TOOLS)` | `tools=gateway_mcp.list_tools_sync()` |
+| What the agent passes to Strands | `tools=list(READ_TOOLS)` | `tools=agent_mcp.list_tools_sync()` |
 
 ### Transport and Sessions
 
-* **Transport:** MCP messages travel over standard input and output here. The
-  client starts a local process and exchanges messages with it over pipes. That
-  process is `mcp-proxy-for-aws`, covered in section 5.
+* **Transport:** MCP messages travel to the Gateway over streamable HTTP. The
+  client signs every request with SigV4 before it leaves the notebook. That
+  transport comes from `mcp-proxy-for-aws`, covered in section 5.
 * **Session:** Each `with gateway_client() as ...` block opens a session and
   closes it at the end of the block. The notebook opens one session for the
   direct tool checks and another for the agent. Sessions are cheap, so open a
   new one per task.
 
 :::alert{type="info" header="Gateway tool names carry a prefix"}
-The Gateway advertises each tool under a longer name that ends with the
-registered tool name. Match a tool with `name.endswith(tool_name)`. An equality
-check on the bare name finds nothing.
+AgentCore advertises each tool as `${target_name}___${tool_name}`, so an
+equality check on the bare name finds nothing. Strip the prefix with
+`gateway_base_name` from `workshop.contracts`. It splits on the documented
+`___` separator and keeps the part after it. A suffix test such as
+`name.endswith(tool_name)` is the fragile version, because it also matches any
+other tool whose advertised name happens to end with those characters.
 :::
 
 ## 2. AWS Lambda as the Tool Host
@@ -94,20 +97,31 @@ Lambda runs one Python handler per tool. Each handler does three things: read
 the event, call a retrieval function, and return JSON.
 
 :::code{language=python showCopyAction=true}
+from workshop import grounding
 from workshop.hybrid_retrieval import search_hotel_knowledge
 
 
 def handler(event, context):
-    """Return grounded hotel context for the Gateway's ``query`` input."""
+    """Return bounded hotel passages for the Gateway's ``query`` input."""
     del context
-    query = (event or {}).get("query")
-    if not isinstance(query, str) or not query:
-        return {"error": "query must be a non-empty string"}
-    try:
-        return {"context": search_hotel_knowledge(query)}
-    except ValueError as error:
-        return {"error": str(error)}
+    if not isinstance(event, dict) or set(event) != {"query"}:
+        return grounding.error_payload(
+            grounding.INVALID_QUERY,
+            "input must contain only query as a non-empty string",
+        )
+    query = event["query"]
+    if not isinstance(query, str) or not query.strip():
+        return grounding.error_payload(
+            grounding.INVALID_QUERY,
+            "input must contain only query as a non-empty string",
+        )
+    passages = search_hotel_knowledge(query)
+    return grounding.passage_payload(query, passages)
 :::
+
+The retrieval function keeps its Module 2 name, `search_hotel_knowledge`. The
+published tool name is `search_hotel_passages`, and that is the only one the
+model ever sees.
 
 A Lambda function does not speak MCP. An MCP client cannot discover it. Section
 3 closes that gap.
@@ -124,9 +138,9 @@ Two settings in the notebook exist because of cold starts:
 * **`LAMBDA_MEMORY_MB = 1024`:** Lambda gives a function more CPU at higher
   memory settings. The extra CPU shortens the import of the Neo4j driver and
   the retriever library.
-* **`LAMBDA_TIMEOUT_SECONDS = 120`:** A `graph_query` call makes a Bedrock call
-  to generate Cypher, runs `EXPLAIN`, and then runs the query. The default
-  three-second timeout is too short for that.
+* **`LAMBDA_TIMEOUT_SECONDS = 120`:** A `query_hotel_records` call makes a
+  Bedrock call to generate Cypher, runs `EXPLAIN`, and then runs the query. The
+  default three-second timeout is too short for that.
 
 The Neo4j credential is also read at cold start. Section 6 explains that
 choice.
@@ -221,15 +235,15 @@ same contract on every rerun and in every environment.
 
 :::code{language=json}
 {
-  "name": "search_hotel_knowledge",
-  "description": "Search grounded hotel documents and enrich the matching chunks with reviewed Neo4j hotel facts. Use for semantic questions about a hotel's rooms, amenities, policies, and services. Does not provide live inventory or guaranteed availability, and never writes.",
+  "name": "search_hotel_passages",
+  "description": "Find up to five hotel passages and linked facts. Use for amenities, room descriptions, policies, services, and location details about one or a few hotels, or when the answer needs source wording. Send counts, averages, rankings, and filters across many hotels to query_hotel_records. Neither read tool has live room availability.",
   "input_schema": {
     "type": "object",
     "properties": {
       "query": {
         "type": "string",
         "minLength": 1,
-        "description": "Natural-language hotel question."
+        "description": "The guest's natural-language hotel question. Must not be empty."
       }
     },
     "required": ["query"],
@@ -239,40 +253,55 @@ same contract on every rerun and in every environment.
 :::
 
 * **The description is model input:** The model reads it to decide between
-  `search_hotel_knowledge` and `graph_query`. It replaces the docstring that
-  Module 3's `@tool` exposed.
+  `search_hotel_passages` and `query_hotel_records`. It replaces the docstring
+  that Module 3's `@tool` exposed.
 * **What to put in a description:** State what the tool is for, what question
   shape it suits, and what it will not do.
 
-### The Gateway Reads a Subset of JSON Schema
+### The Gateway Accepts a Subset of JSON Schema
 
-* **Keys AgentCore reads:** It reads `type`, `description`, and `items` for
-  each property.
-* **Keys AgentCore ignores:** It ignores `minLength`, `format`, and
-  `additionalProperties`.
+* **Keys AgentCore accepts:** The `SchemaDefinition` shape takes `type`,
+  `description`, `items`, `properties`, and `required`, and nothing else.
+* **Keys AgentCore rejects:** Anything outside that set is an unknown
+  parameter. `minLength`, `format`, and `additionalProperties` all fall
+  outside it.
 
-The notebook projects the committed schema down to the keys the Gateway uses:
+AgentCore does not quietly ignore the extra keys. Sending a schema that still
+carries them fails before the request leaves the machine, because botocore
+validates the call against the shape and raises `ParamValidationError` naming
+the unknown parameter. Projecting the committed schema down to the accepted
+keys is therefore required for `create_gateway_target` to succeed at all.
+
+`workshop.contracts` owns that projection:
 
 :::code{language=python showCopyAction=true}
-GATEWAY_PROPERTY_KEYS = {"type", "description", "items"}
+GATEWAY_PROPERTY_KEYS: Final = frozenset({"type", "description", "items"})
 
 
-def gateway_input_schema(schema: dict) -> dict:
+def gateway_input_schema(schema: Mapping[str, Any]) -> dict[str, Any]:
+    """Project the complete contract onto AgentCore's supported subset."""
     return {
         "type": schema["type"],
         "properties": {
-            name: {k: v for k, v in definition.items() if k in GATEWAY_PROPERTY_KEYS}
+            name: {
+                key: value
+                for key, value in definition.items()
+                if key in GATEWAY_PROPERTY_KEYS
+            }
             for name, definition in schema["properties"].items()
         },
         "required": schema["required"],
     }
 :::
 
+The notebook imports it with
+`from workshop.contracts import gateway_input_schema`.
+
 The committed schema keeps the stricter keys because the local tools validate
 against it. The Gateway receives the projection.
 
-Validate inputs in the handler. The Gateway drops `minLength`, so nothing else
-enforces it. That is why the handler checks that `query` is a non-empty
+Validate inputs in the handler. The projection removes `minLength`, so nothing
+else enforces it. That is why the handler checks that `query` is a non-empty
 string.
 
 A target description is capped at 200 characters. The tool descriptions are
@@ -280,7 +309,7 @@ longer on purpose. The notebook gives the target the opening sentence and gives
 the tool the full text, so the cap trims the operator-facing label instead of
 the text the model reads.
 
-## 5. IAM SigV4 and the MCP Proxy
+## 5. IAM SigV4 and the Signed MCP Transport
 
 Two pieces work together on each tool call:
 
@@ -288,26 +317,34 @@ Two pieces work together on each tool call:
   caller signs each request with its AWS credentials. The Gateway checks that
   signature against IAM to confirm who is calling. No API key exists to
   distribute or rotate.
-* **`mcp-proxy-for-aws`:** MCP's standard input and output transport talks to a
-  local process, and the Gateway is an HTTPS endpoint that expects a signature.
-  The proxy bridges the two. It reads MCP messages on standard input, signs
-  them with SigV4, and forwards them to the Gateway URL.
+* **`mcp-proxy-for-aws`:** The Gateway is an HTTPS endpoint that expects a
+  signature on every request. This package supplies
+  `aws_iam_streamablehttp_client`, an MCP transport that carries MCP messages
+  to the Gateway over streamable HTTP and signs each one with SigV4 on the way
+  out.
 
 :::code{language=python showCopyAction=true}
-gateway_mcp = MCPClient(
-    lambda: stdio_client(StdioServerParameters(
-        command="uvx",
-        args=["mcp-proxy-for-aws@latest", GATEWAY_URL, "--region", "us-east-1"],
-        env=os.environ.copy(),
-    ))
-)
-with gateway_mcp:
-    agent = Agent(tools=gateway_mcp.list_tools_sync(), ...)
+from mcp_proxy_for_aws.client import aws_iam_streamablehttp_client
+from strands.tools.mcp import MCPClient
+
+
+def gateway_client() -> MCPClient:
+    """Create a fresh IAM-authenticated MCP client for the Gateway."""
+    return MCPClient(
+        lambda: aws_iam_streamablehttp_client(
+            endpoint=GATEWAY_URL,
+            aws_region=REGION,
+            aws_service="bedrock-agentcore",
+        )
+    )
+
+
+with gateway_client() as agent_mcp:
+    agent = Agent(tools=agent_mcp.list_tools_sync(), ...)
 :::
 
-The proxy receives a copy of the environment, so it finds the AWS credentials
-the notebook already uses. The Gateway sees that identity, and IAM permissions
-apply to it.
+The transport signs with the AWS credentials the notebook already uses. The
+Gateway sees that identity, and IAM permissions apply to it.
 
 ## 6. Secrets Manager and the Two Execution Roles
 
@@ -345,17 +382,18 @@ failure instead of stopping.
 
 | Gateway tool | How it works | Use it for |
 |---|---|---|
-| `search_hotel_knowledge` | Runs `HybridCypherRetriever` with the fixed `retrieval_query` selected in Module 2 | Rooms, amenities, policies, services, and other semantic questions |
-| `graph_query` | Uses `Text2CypherRetriever` to generate a query, checks it with `EXPLAIN`, and runs it only when Neo4j reports a read-only plan | Counts, averages, filters, and varied graph traversals |
+| `search_hotel_passages` | Runs `HybridCypherRetriever` with the fixed `retrieval_query` selected in Module 2 | Rooms, amenities, policies, services, and other semantic questions |
+| `query_hotel_records` | Uses `Text2CypherRetriever` to generate a query, checks it with `EXPLAIN`, and runs it only when Neo4j reports a read-only plan | Counts, averages, filters, and varied graph traversals |
 
 Both tools import their retrieval functions from
 `notebooks/workshop/hybrid_retrieval.py`. The first Lambda reuses the function
 Module 3 calls. The second turns the Module 2 Text2Cypher pattern into a
 reusable function.
 
-`graph_query` exists because counts and averages need the whole matching set. A
-top-k retriever returns the five best chunks. A question such as "what is the
-average guest rating" needs the database to calculate over every matching row.
+`query_hotel_records` exists because counts and averages need the whole
+matching set. A top-k retriever returns the five best chunks. A question such
+as "what is the average guest rating" needs the database to calculate over
+every matching row.
 
 The reservation command stays outside this Gateway. These two tools only read.
 
@@ -389,8 +427,8 @@ Running the two steps separately shows which layer failed.
 
 ## Guarding Model-Generated Cypher
 
-`graph_query` sends model-generated Cypher to the database. Test the guard
-rather than assume it. `Text2CypherRetriever` plans each statement with
+`query_hotel_records` sends model-generated Cypher to the database. Test the
+guard rather than assume it. `Text2CypherRetriever` plans each statement with
 `EXPLAIN` and runs it only when the planner reports a read-only query.
 
 The configured model follows its prompt and generates read queries, so it
@@ -424,8 +462,9 @@ separate boundary underneath it.
 ## The Strands Agent over Gateway Tools
 
 The notebook passes the listed Gateway tools to a Strands agent. The model
-picks a remote tool, answers from the returned context, and records the
-selected tool in the trace. This is the same model and tool loop as Module 3,
+picks a remote tool, answers from the passages or records it returns, and
+records the selected tool in the trace. This is the same model and tool loop as
+Module 3,
 with Lambda and Gateway replacing local Python calls.
 
 The tool source changes. `tools=agent_mcp.list_tools_sync()` replaces
@@ -453,9 +492,9 @@ the tests over MCP, and then hands the tools to an agent.
 
 :::alert{type="warning" header="These resources stay until you delete them"}
 The notebook creates two Lambda functions:
-`hotel-booking-search-hotel-knowledge` and `hotel-booking-graph-query`. It also
-creates the AgentCore Gateway `hotel-booking-gateway` with one target per tool,
-the Secrets Manager secret `neo4j-ws-retrieval`, and two IAM roles:
+`hotel-booking-search_hotel_passages` and `hotel-booking-query_hotel_records`.
+It also creates the AgentCore Gateway `hotel-booking-gateway` with one target
+per tool, the Secrets Manager secret `neo4j-ws-retrieval`, and two IAM roles:
 `workshop-hotel-lambda-role` and `workshop-hotel-gateway-role`.
 
 The Gateway and secret incur charges while they exist, and the Lambdas incur

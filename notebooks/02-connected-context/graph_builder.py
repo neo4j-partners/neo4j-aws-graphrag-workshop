@@ -63,7 +63,6 @@ from workshop.graph_connection import graph_database, neo4j_auth, neo4j_uri
 from workshop.graph_schema import (
     LLM_EXTRACTION_SCHEMA,
     LLM_SCHEMA_NODE_LABELS,
-    SCHEMA_NODE_LABELS,
 )
 from workshop.retrieval_contract import (
     EMBEDDING_DIMENSIONS,
@@ -759,24 +758,38 @@ def report(driver: Driver) -> None:
     """Print the graph shape plus the three queries the notebook depends on."""
     with session(driver) as neo4j_session:
         print("\nNode labels:")
-        for record in neo4j_session.run(
+        node_counts = neo4j_session.run(
             """
-            MATCH (n)
-            WHERE any(l IN labels(n) WHERE l IN $labels)
-            UNWIND [l IN labels(n) WHERE l IN $labels] AS label
-            RETURN label, count(*) AS count
-            ORDER BY count DESC
-            """,
-            labels=list(SCHEMA_NODE_LABELS),
+            CYPHER 25
+            CALL () { MATCH (hotel:Hotel) RETURN count(hotel) AS hotels }
+            CALL () { MATCH (room:Room) RETURN count(room) AS rooms }
+            CALL () { MATCH (amenity:Amenity) RETURN count(amenity) AS amenities }
+            CALL () { MATCH (policy:Policy) RETURN count(policy) AS policies }
+            CALL () { MATCH (service:Service) RETURN count(service) AS services }
+            RETURN hotels, rooms, amenities, policies, services
+            """
+        ).single()
+        extracted_counts = {
+            label: count
+            for label, count in {
+                "Hotel": node_counts["hotels"],
+                "Room": node_counts["rooms"],
+                "Amenity": node_counts["amenities"],
+                "Policy": node_counts["policies"],
+                "Service": node_counts["services"],
+            }.items()
+            if count
+        }
+        for label, count in sorted(
+            extracted_counts.items(), key=lambda item: item[1], reverse=True
         ):
-            print(f"  :{record['label']}: {record['count']}")
+            print(f"  :{label}: {count}")
 
         print("\nRelationship types:")
         for record in neo4j_session.run(
             """
-            MATCH ()-[r]->()
-            WHERE type(r) IN ['HAS_ROOM', 'OFFERS_AMENITY',
-                              'HAS_POLICY', 'PROVIDES_SERVICE']
+            CYPHER 25
+            MATCH ()-[r:HAS_ROOM|OFFERS_AMENITY|HAS_POLICY|PROVIDES_SERVICE]->()
             RETURN type(r) AS rel, count(*) AS count
             ORDER BY count DESC
             """
@@ -811,7 +824,7 @@ def report(driver: Driver) -> None:
             """
             MATCH (h:Hotel)-[:OFFERS_AMENITY]->(spa:Amenity),
                   (h)-[:OFFERS_AMENITY]->(pool:Amenity)
-            WHERE h.address CONTAINS 'Cairo'
+            WHERE toLower(h.address) CONTAINS 'cairo'
               AND toLower(spa.name) CONTAINS 'spa'
               AND toLower(pool.name) CONTAINS 'pool'
             RETURN DISTINCT h.name AS name, h.guest_rating AS rating
@@ -980,9 +993,9 @@ async def run_build(paths: list[Path], title: str, *, resume: bool = False) -> i
                 print(f"  - {problem}")
             return 1
 
-        print("\nCreating and verifying the retrieval indexes...")
+        print("\nCreating and verifying the workshop indexes...")
         ensure_retrieval_indexes(driver)
-        print("✅ Retrieval indexes are online and match the embedding contract")
+        print("✅ Retrieval and lookup indexes are online and match their contracts")
 
         readiness_problems = report_readiness(driver, expected_documents=expected)
         if readiness_problems:
@@ -1098,13 +1111,13 @@ async def run_additive_build(paths: list[Path], title: str) -> int:
                 print(f"  - {problem}")
             return 1
 
-        # The dump ships without either index, so this is where they first come
-        # online. Idempotent regardless, so a re-run is harmless. Module 1
-        # still runs this so the participant watches the indexes come online
-        # against the vectors their own extraction just wrote.
-        print("Creating and verifying the retrieval indexes...")
+        # The dump ships without the workshop indexes, so this is where they
+        # first come online. Idempotent regardless, so a re-run is harmless.
+        # Module 1 still runs this so the participant watches the indexes come
+        # online against the restored graph and the vectors their extraction wrote.
+        print("Creating and verifying the workshop indexes...")
         ensure_retrieval_indexes(driver)
-        print("✅ Retrieval indexes are online and match the embedding contract")
+        print("✅ Retrieval and lookup indexes are online and match their contracts")
 
         expected = already_loaded + len(paths)
         readiness_problems = report_readiness(driver, expected_documents=expected)

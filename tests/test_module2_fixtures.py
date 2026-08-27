@@ -4,8 +4,10 @@
 
 from __future__ import annotations
 
+import inspect
 import sys
 from pathlib import Path
+from unittest.mock import Mock
 from zipfile import ZipFile
 
 import pytest
@@ -160,6 +162,73 @@ def test_chicago_candidates_are_selected_by_city_not_expected_source_names() -> 
 
     assert "$city" in query
     assert "$source_filenames" not in query
+
+
+def test_shared_readiness_counts_use_explicit_count_store_patterns() -> None:
+    source = inspect.getsource(retrieval_setup.graph_counts)
+
+    for pattern in (
+        "MATCH (hotel:Hotel) RETURN count(hotel) AS hotels",
+        "MATCH (room:Room) RETURN count(room) AS rooms",
+        "MATCH (amenity:Amenity) RETURN count(amenity) AS amenities",
+        "MATCH (policy:Policy) RETURN count(policy) AS policies",
+        "MATCH (service:Service) RETURN count(service) AS services",
+    ):
+        assert f"CALL () {{ {pattern} }}" in source
+    assert "MATCH (n)" not in source
+    assert (
+        "MATCH ()-[r:HAS_ROOM|OFFERS_AMENITY|HAS_POLICY|PROVIDES_SERVICE]->()"
+        in source
+    )
+    assert "WHERE type(r)" not in source
+
+
+def test_shared_readiness_count_return_contract_omits_zero_labels() -> None:
+    def single_result(record: dict[str, object]) -> Mock:
+        result = Mock()
+        result.single.return_value = record
+        return result
+
+    neo4j_session = Mock()
+    neo4j_session.__enter__ = Mock(return_value=neo4j_session)
+    neo4j_session.__exit__ = Mock(return_value=False)
+    neo4j_session.run.side_effect = [
+        single_result({"count": 2}),
+        single_result({"count": 2}),
+        single_result(
+            {
+                "hotels": 2,
+                "rooms": 3,
+                "amenities": 0,
+                "policies": 0,
+                "services": 0,
+            }
+        ),
+        [
+            {"relationship": "HAS_ROOM", "count": 3},
+            {"relationship": "OFFERS_AMENITY", "count": 4},
+        ],
+    ]
+    driver = Mock()
+    driver.session.return_value = neo4j_session
+
+    assert retrieval_setup.graph_counts(driver) == (
+        2,
+        2,
+        {"Hotel": 2, "Room": 3},
+        {"HAS_ROOM": 3, "OFFERS_AMENITY": 4},
+    )
+
+
+def test_shared_cairo_fixture_matches_address_case_insensitively() -> None:
+    fixture = next(
+        fixture
+        for fixture in retrieval_setup.BUILD_HEALTH_FIXTURES
+        if fixture.name == "Cairo spa-and-pool connected traversal result"
+    )
+
+    assert "toLower(h.address) CONTAINS 'cairo'" in fixture.query
+    assert "h.address CONTAINS 'Cairo'" not in fixture.query
 
 
 def test_chicago_filter_accepts_two_candidates_one_qualifier_and_exclusion() -> None:

@@ -185,7 +185,7 @@ def _get_driver(config: Neo4jCommandConfig) -> Driver:
     return GraphDatabase.driver(
         config.uri,
         auth=(config.username, config.password),
-        notifications_min_severity="OFF",
+        notifications_disabled_classifications=["DEPRECATION"],
     )
 
 

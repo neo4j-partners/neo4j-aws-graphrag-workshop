@@ -34,11 +34,13 @@ import os
 import re
 from dataclasses import dataclass, field
 from functools import lru_cache
-from typing import Any, Mapping, Sequence, TypedDict, cast
+from typing import Any, Final, Mapping, Sequence, TypedDict, cast
 
 import boto3
 from neo4j import GraphDatabase
+from neo4j.exceptions import ClientError
 from neo4j_graphrag.embeddings.base import Embedder
+from neo4j_graphrag.exceptions import LLMGenerationError, Text2CypherRetrievalError
 from neo4j_graphrag.llm.base import LLMInterface
 from neo4j_graphrag.retrievers import HybridCypherRetriever, Text2CypherRetriever
 from neo4j_graphrag.types import HybridSearchRanker, RetrieverResultItem
@@ -165,7 +167,7 @@ def _get_driver(config: Neo4jConfig):
     return GraphDatabase.driver(
         config.uri,
         auth=(config.username, config.password),
-        notifications_min_severity="OFF",
+        notifications_disabled_classifications=["DEPRECATION"],
     )
 
 
@@ -334,15 +336,29 @@ def search_hotel_knowledge(query: str) -> list[contracts.HotelContext]:
 MAX_GRAPH_QUERY_RECORDS = 25
 
 GRAPH_QUERY_EXAMPLES = (
-    "USER INPUT: What is the average guest rating of hotels in Paris? "
-    "CYPHER: MATCH (hotel:Hotel) WHERE toLower(hotel.address) CONTAINS 'paris' "
-    "AND hotel.guest_rating IS NOT NULL RETURN avg(hotel.guest_rating) AS average_rating",
-    "USER INPUT: How many hotels offer a spa? "
-    "CYPHER: MATCH (hotel:Hotel)-[:OFFERS_AMENITY]->(amenity:Amenity) "
-    "WHERE toLower(amenity.name) CONTAINS 'spa' RETURN count(DISTINCT hotel) AS hotel_count",
-    "USER INPUT: What is the guest rating of the hotel named Example Hotel? "
-    "CYPHER: MATCH (hotel:Hotel {name: 'Example Hotel'}) "
-    "RETURN hotel.guest_rating AS guest_rating",
+    (
+        "USER INPUT: What is the average guest rating of hotels in Paris? "
+        "CYPHER: MATCH (hotel:Hotel) WHERE toLower(hotel.address) CONTAINS 'paris' "
+        "AND hotel.guest_rating IS NOT NULL "
+        "RETURN avg(hotel.guest_rating) AS average_rating"
+    ),
+    (
+        "USER INPUT: How many hotels offer a spa? "
+        "CYPHER: MATCH (hotel:Hotel)-[:OFFERS_AMENITY]->"
+        "(amenity:Amenity {name: 'Full-Service Spa'}) "
+        "RETURN count(DISTINCT hotel) AS hotel_count"
+    ),
+    (
+        "USER INPUT: What is the guest rating of the hotel named Example Hotel? "
+        "CYPHER: MATCH (hotel:Hotel {name: 'Example Hotel'}) "
+        "RETURN hotel.guest_rating AS guest_rating"
+    ),
+    (
+        "USER INPUT: What are the five highest-rated hotels? "
+        "CYPHER: MATCH (hotel:Hotel) WHERE hotel.guest_rating IS NOT NULL "
+        "RETURN hotel.name AS hotel_name, hotel.guest_rating AS guest_rating "
+        "ORDER BY guest_rating DESC LIMIT 5"
+    ),
 )
 
 GRAPH_QUERY_PROMPT = """
@@ -350,6 +366,7 @@ Generate one read-only Cypher query that answers the user question.
 Use only the labels, properties, and relationships in the supplied schema.
 Never write, merge, or delete data, and never call a procedure.
 Return only the columns the question asks for, and nothing else.
+For every non-aggregate query that can return a list of rows, add LIMIT 25.
 Return only the Cypher query, with no markdown fence and no explanation.
 Schema:
 {schema}
@@ -439,6 +456,28 @@ def _json_safe(value: Any) -> Any:
     if isinstance(value, Mapping):
         return {str(key): _json_safe(item) for key, item in value.items()}
     return str(value)
+
+
+# The failures a structured read is expected to produce, as opposed to an
+# outage. `Text2CypherRetrievalError` is what the read-only `EXPLAIN` guard
+# raises when the generated Cypher would write, and what the retriever raises
+# for Cypher the database reports as a syntax error. `LLMGenerationError` is a
+# failure in the nested model call that writes the Cypher. `ClientError` is
+# what the driver raises for a statement the database rejects for any other
+# reason, such as a property the schema does not have; `CypherSyntaxError` is
+# one of its subclasses. Anything else is left to propagate, because an outage
+# should stay visible as an outage rather than arrive as a tidy error code.
+#
+# This tuple lives beside `graph_query` because it describes `graph_query`'s
+# failure modes, and every caller that turns one of them into a bounded error
+# payload imports it from here. Held separately by the Strands tool and by the
+# Lambda, a fourth expected exception added to one copy becomes an unhandled
+# 500 in the other.
+EXPECTED_QUERY_ERRORS: Final = (
+    Text2CypherRetrievalError,
+    LLMGenerationError,
+    ClientError,
+)
 
 
 def graph_query(query: str) -> GraphQueryResult:

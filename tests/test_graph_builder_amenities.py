@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import asyncio
+import inspect
 import re
 import sys
 from pathlib import Path
@@ -13,7 +14,11 @@ from zipfile import ZipFile
 
 import pytest
 from workshop import retrieval_setup
-from workshop.amenities import ParsedAmenities, parse_amenity_section
+from workshop.amenities import (
+    POOL_AMENITY_NAMES,
+    ParsedAmenities,
+    parse_amenity_section,
+)
 from workshop.graph_schema import GRAPH_SCHEMA, LLM_EXTRACTION_SCHEMA
 
 CONNECTED_CONTEXT = (
@@ -79,6 +84,32 @@ def test_llm_schema_excludes_only_deterministic_amenities() -> None:
     assert ("Hotel", "OFFERS_AMENITY", "Amenity") not in LLM_EXTRACTION_SCHEMA[
         "patterns"
     ]
+
+
+def test_build_report_uses_explicit_count_store_patterns() -> None:
+    source = inspect.getsource(graph_builder.report)
+
+    for pattern in (
+        "MATCH (hotel:Hotel) RETURN count(hotel) AS hotels",
+        "MATCH (room:Room) RETURN count(room) AS rooms",
+        "MATCH (amenity:Amenity) RETURN count(amenity) AS amenities",
+        "MATCH (policy:Policy) RETURN count(policy) AS policies",
+        "MATCH (service:Service) RETURN count(service) AS services",
+    ):
+        assert f"CALL () {{ {pattern} }}" in source
+    assert "MATCH (n)" not in source
+    assert (
+        "MATCH ()-[r:HAS_ROOM|OFFERS_AMENITY|HAS_POLICY|PROVIDES_SERVICE]->()"
+        in source
+    )
+    assert "WHERE type(r)" not in source
+
+
+def test_build_report_cairo_fixture_matches_address_case_insensitively() -> None:
+    source = inspect.getsource(graph_builder.report)
+
+    assert "toLower(h.address) CONTAINS 'cairo'" in source
+    assert "h.address CONTAINS 'Cairo'" not in source
 
 
 def test_pipeline_raises_component_errors_and_disables_entity_resolution(
@@ -587,13 +618,19 @@ def test_prebuilt_selection_omits_only_the_five_live_documents(
     assert {path.name for path in selected}.isdisjoint(prepare_graph.HELD_OUT_DOCUMENTS)
     assert sum(len(parsed.names) for parsed in prebuilt_amenities) == 1_606
     assert len({name for parsed in prebuilt_amenities for name in parsed.names}) == 65
-    assert (
-        sum(
-            any("pool" in name.lower() for name in parsed.names)
-            for parsed in prebuilt_amenities
-        )
-        == 172
+    authored_pool_names = {
+        name
+        for parsed in prebuilt_amenities
+        for name in parsed.names
+        if "pool" in name.casefold()
+    }
+    pool_sources = sum(
+        bool(authored_pool_names.intersection(parsed.names))
+        for parsed in prebuilt_amenities
     )
+
+    assert authored_pool_names == set(POOL_AMENITY_NAMES)
+    assert pool_sources == 172
 
 
 def test_prebuilt_selection_rejects_an_incomplete_source_corpus(

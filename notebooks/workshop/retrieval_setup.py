@@ -11,18 +11,38 @@ from __future__ import annotations
 from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, cast
+from typing import Any
 
 from neo4j import Driver
 from neo4j_graphrag.indexes import create_fulltext_index, create_vector_index
 
 from workshop.fixtures import _index_problems
 from workshop.graph_connection import graph_database
-from workshop.graph_schema import GRAPH_SCHEMA, SCHEMA_NODE_LABELS
 from workshop.retrieval_contract import (
     CHUNK_FULLTEXT_INDEX,
     CHUNK_VECTOR_INDEX,
+    DOCUMENT_SOURCE_FILENAME_INDEX,
     EMBEDDING_DIMENSIONS,
+    HOTEL_NAME_INDEX,
+)
+
+DOCUMENT_SOURCE_FILENAME_INDEX_DDL = f"""
+CYPHER 25
+CREATE RANGE INDEX {DOCUMENT_SOURCE_FILENAME_INDEX} IF NOT EXISTS
+FOR (document:Document) ON (document.source_filename)
+""".strip()
+
+HOTEL_NAME_INDEX_DDL = f"""
+CYPHER 25
+CREATE RANGE INDEX {HOTEL_NAME_INDEX} IF NOT EXISTS
+FOR (hotel:Hotel) ON (hotel.name)
+""".strip()
+
+WORKSHOP_INDEX_NAMES = (
+    CHUNK_VECTOR_INDEX,
+    CHUNK_FULLTEXT_INDEX,
+    DOCUMENT_SOURCE_FILENAME_INDEX,
+    HOTEL_NAME_INDEX,
 )
 
 # The source documents every module after Module 1 asks a question against. A
@@ -170,16 +190,6 @@ SOURCE_FIXTURES = (
         ),
     ),
 )
-
-# Derived from the pinned schema rather than restated. The extraction contract
-# in graph_schema is what the build refuses to write outside of, so counting a
-# relationship type this readiness check names but that schema does not pin
-# would report a number the build can never produce.
-SCHEMA_RELATIONSHIP_TYPES = tuple(
-    entry["label"]
-    for entry in cast(Sequence[Mapping[str, str]], GRAPH_SCHEMA["relationship_types"])
-)
-
 
 class ReadinessError(RuntimeError):
     """Raised when an index exists but does not match the retrieval contract."""
@@ -572,7 +582,12 @@ def _session(driver: Driver):
 
 
 def ensure_retrieval_indexes(driver: Driver) -> None:
-    """Create the two chunk indexes idempotently and verify their contracts."""
+    """Create all workshop indexes idempotently and verify their contracts.
+
+    Both restored artifacts and from-scratch rebuilds enter through this one
+    function, so lookup-index DDL has one owner and never needs to be baked into
+    the published dump.
+    """
     database = graph_database()
     create_vector_index(
         driver=driver,
@@ -593,6 +608,8 @@ def ensure_retrieval_indexes(driver: Driver) -> None:
         neo4j_database=database,
     )
     with _session(driver) as session:
+        session.run(DOCUMENT_SOURCE_FILENAME_INDEX_DDL).consume()
+        session.run(HOTEL_NAME_INDEX_DDL).consume()
         session.run(
             "CALL db.awaitIndexes($timeout_seconds)", timeout_seconds=300
         ).consume()
@@ -600,7 +617,7 @@ def ensure_retrieval_indexes(driver: Driver) -> None:
 
 
 def verify_retrieval_indexes(driver: Driver) -> None:
-    """Raise with a precise message unless both retrieval indexes are ready.
+    """Raise unless the two retrieval and two lookup indexes are ready.
 
     The index-contract check itself lives in `workshop.fixtures._index_problems`
     rather than being reimplemented here, so a future change to the vector or
@@ -616,7 +633,7 @@ def verify_retrieval_indexes(driver: Driver) -> None:
                 WHERE name IN $names
                 RETURN name, type, state, labelsOrTypes, properties, options
                 """,
-                names=[CHUNK_VECTOR_INDEX, CHUNK_FULLTEXT_INDEX],
+                names=list(WORKSHOP_INDEX_NAMES),
             )
         )
     problems = _index_problems(records)
@@ -634,28 +651,37 @@ def graph_counts(driver: Driver) -> tuple[int, int, dict[str, int], dict[str, in
         chunk_count = session.run("MATCH (c:Chunk) RETURN count(c) AS count").single()[
             "count"
         ]
+        node_counts = session.run(
+            """
+            CYPHER 25
+            CALL () { MATCH (hotel:Hotel) RETURN count(hotel) AS hotels }
+            CALL () { MATCH (room:Room) RETURN count(room) AS rooms }
+            CALL () { MATCH (amenity:Amenity) RETURN count(amenity) AS amenities }
+            CALL () { MATCH (policy:Policy) RETURN count(policy) AS policies }
+            CALL () { MATCH (service:Service) RETURN count(service) AS services }
+            RETURN hotels, rooms, amenities, policies, services
+            """
+        ).single()
         label_counts = {
-            record["label"]: record["count"]
-            for record in session.run(
-                """
-                MATCH (n)
-                UNWIND [label IN labels(n) WHERE label IN $labels] AS label
-                RETURN label, count(*) AS count
-                ORDER BY label
-                """,
-                labels=list(SCHEMA_NODE_LABELS),
-            )
+            label: count
+            for label, count in {
+                "Hotel": node_counts["hotels"],
+                "Room": node_counts["rooms"],
+                "Amenity": node_counts["amenities"],
+                "Policy": node_counts["policies"],
+                "Service": node_counts["services"],
+            }.items()
+            if count
         }
         relationship_counts = {
             record["relationship"]: record["count"]
             for record in session.run(
                 """
-                MATCH ()-[r]->()
-                WHERE type(r) IN $types
+                CYPHER 25
+                MATCH ()-[r:HAS_ROOM|OFFERS_AMENITY|HAS_POLICY|PROVIDES_SERVICE]->()
                 RETURN type(r) AS relationship, count(*) AS count
                 ORDER BY relationship
-                """,
-                types=list(SCHEMA_RELATIONSHIP_TYPES),
+                """
             )
         }
     return document_count, chunk_count, label_counts, relationship_counts

@@ -12,6 +12,8 @@ EMBEDDING_PURPOSE = "GENERIC_INDEX"
 EMBEDDING_DIMENSIONS = 1024
 CHUNK_VECTOR_INDEX = "hotel_chunk_embeddings"
 CHUNK_FULLTEXT_INDEX = "hotel_chunk_fulltext"
+DOCUMENT_SOURCE_FILENAME_INDEX = "workshop_document_source_filename"
+HOTEL_NAME_INDEX = "workshop_hotel_name"
 
 # Module 6's memory embeddings are a separate contract from the chunk
 # embeddings above, on a different model, and the two are never mixed. The name

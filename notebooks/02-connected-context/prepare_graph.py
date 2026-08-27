@@ -149,7 +149,7 @@ def seed_booking_agent_fixtures() -> int:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Rebuild and verify the workshop graph and its retrieval indexes."
+        description="Rebuild and verify the workshop graph and its indexes."
     )
     parser.add_argument(
         "--mode",

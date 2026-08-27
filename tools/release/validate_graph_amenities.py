@@ -45,7 +45,7 @@ ORDER BY filename
 
 OFFER_QUERY = """
 CYPHER 25
-MATCH (hotel)-[offer:OFFERS_AMENITY]->(amenity:Amenity)
+MATCH (hotel:Hotel)-[offer:OFFERS_AMENITY]->(amenity:Amenity)
 OPTIONAL MATCH (hotel)-[:FROM_CHUNK]->(:Chunk)-[:FROM_DOCUMENT]->(document:Document)
 RETURN elementId(offer) AS relationship_id,
        offer.source_filename AS relationship_source_filename,

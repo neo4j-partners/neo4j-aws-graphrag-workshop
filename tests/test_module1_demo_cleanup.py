@@ -4,15 +4,15 @@ from __future__ import annotations
 
 import json
 import sys
+from importlib import import_module
 from pathlib import Path
-
 
 CONNECTED_CONTEXT = (
     Path(__file__).resolve().parents[1] / "notebooks" / "02-connected-context"
 )
 sys.path.insert(0, str(CONNECTED_CONTEXT))
 
-import graph_builder  # noqa: E402 - script module path is added above
+graph_builder = import_module("graph_builder")
 
 
 NOTEBOOK = (
@@ -40,6 +40,21 @@ def _demo_cell() -> str:
     )
 
 
+def _extracted_hotels_cell() -> str:
+    cells = json.loads(NOTEBOOK.read_text(encoding="utf-8"))["cells"]
+    return next(
+        "".join(cell["source"])
+        if isinstance(cell["source"], list)
+        else cell["source"]
+        for cell in cells
+        if "The hotels you just extracted" in (
+            "".join(cell["source"])
+            if isinstance(cell["source"], list)
+            else cell["source"]
+        )
+    )
+
+
 def test_demo_uses_reserved_metadata_and_guaranteed_scoped_cleanup() -> None:
     source = _demo_cell()
 
@@ -49,6 +64,18 @@ def test_demo_uses_reserved_metadata_and_guaranteed_scoped_cleanup() -> None:
     assert "finally:" in source
     assert "clear_document(driver, UNPINNED_DEMO_SOURCE_FILENAME)" in source
     assert "clear_document(driver, sample.name)" not in source
+
+
+def test_extracted_hotel_amenities_group_by_node_identity() -> None:
+    source = _extracted_hotels_cell()
+
+    assert "WITH h, count(DISTINCT a) AS amenities" in source
+    assert (
+        "RETURN h.name AS name, h.address AS address,\n"
+        "                   h.guest_rating AS rating, amenities"
+        in source
+    )
+    assert "h.guest_rating AS rating, count(DISTINCT a) AS amenities" not in source
 
 
 def test_scoped_demo_cleanup_preserves_participant_data_after_success_and_failure(

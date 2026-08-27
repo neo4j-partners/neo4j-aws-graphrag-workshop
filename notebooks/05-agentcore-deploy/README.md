@@ -17,9 +17,9 @@ The grounded booking agent from Module 3.1 runs in your JupyterLab notebook kern
 
 | Notebook | What it verifies |
 |---|---|
-| [`5.1_deploy.ipynb`](5.1_deploy.ipynb) | Deploys the agent and runs five smoke tests against the tools' structured results |
+| [`5.1_deploy.ipynb`](5.1_deploy.ipynb) | Deploys the agent and runs six smoke tests against the tools' structured results |
 
-Docker can copy files only from its build context, so the notebook stages the shared `workshop` package and `reservation_command.py` in `runtime_app/` before the build. It then creates the execution role and ECR repository, launches the Runtime with the AgentCore starter toolkit, tags the deployment resources, runs five smoke tests against the live endpoint, and reads recent Runtime logs through boto3.
+Docker can copy files only from its build context, so the notebook stages the shared `workshop` package and `reservation_command.py` in `runtime_app/` before the build. It then creates the execution role and ECR repository, launches the Runtime with the AgentCore starter toolkit, tags the deployment resources, runs six smoke tests against the live endpoint, and reads recent Runtime logs through boto3.
 
 The notebook can be launched from the repository root, `notebooks/`, or this
 module directory. The deployment build context remains this module's

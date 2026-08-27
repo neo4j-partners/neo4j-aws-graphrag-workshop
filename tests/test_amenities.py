@@ -12,6 +12,7 @@ import pytest
 from neo4j.exceptions import Neo4jError
 from workshop.amenities import (
     AMENITY_NAME_CONSTRAINT,
+    POOL_AMENITY_NAMES,
     AmenityMaterializationError,
     AmenitySectionError,
     ParsedAmenities,
@@ -109,12 +110,19 @@ def test_pool_regression_sources_match_the_authoritative_lists() -> None:
         filename: parse_amenity_section(text, filename)
         for filename, text in documents.items()
     }
+    authored_pool_names = {
+        name
+        for amenities in parsed.values()
+        for name in amenities.names
+        if "pool" in name.casefold()
+    }
     pool_sources = {
         filename
         for filename, amenities in parsed.items()
-        if any("pool" in name.lower() for name in amenities.names)
+        if authored_pool_names.intersection(amenities.names)
     }
 
+    assert authored_pool_names == set(POOL_AMENITY_NAMES)
     assert len(pool_sources) == 175
     assert HISTORICAL_MISSING_HOTEL_SOURCES < pool_sources
     assert "hotel-austin-001.txt" not in pool_sources

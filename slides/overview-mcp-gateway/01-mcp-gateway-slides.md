@@ -29,19 +29,21 @@ ol > li {
 
 # MCP and AgentCore Gateway
 
-The tools leave the notebook. The agent stays.
+Module 4 deploys the read tools to AWS Lambda behind AgentCore Gateway.
+
+The Strands agent stays in the notebook. Module 5 separately deploys the agent and its tools to AgentCore Runtime.
 
 <!--
-The hinge is slide 9, testing the guard on model-generated Cypher, because
-deck 5 introduced that guard and this is the first place the workshop proves
-it holds.
+Module 4 moves the two read tools out of the notebook. Each tool runs in a
+Lambda function behind AgentCore Gateway. The local Strands agent discovers
+and calls those tools through MCP.
 
-The framing to hold onto all deck: the retrieval logic does not change. The
-same hybrid_retrieval.py that ran in Module 3 runs inside these Lambdas. What
-changes is where it executes and who is allowed to invoke it.
+Module 5 is a separate deployment pattern. It packages the agent and its tools
+in an AgentCore Runtime container. That agent connects to Neo4j directly. It
+uses its packaged tools instead of the Module 4 Gateway path.
 
-Modules 4 and 5 are two patterns, not two steps. Say that at the start and
-again at the end.
+The retrieval logic stays the same. Its deployment location and IAM boundary
+change.
 -->
 
 ---

@@ -102,23 +102,22 @@ match the pattern in either direction, and Module 2's retrieval queries do.
 
 ## From Graph Database to Knowledge Graph
 
-A graph database gives you the structures. A knowledge graph adds an agreement about what they mean.
+A graph database stores nodes and relationships. A knowledge graph uses a shared schema that defines what they mean.
 
-- **Typed entities:** Five labels carry the whole domain, `Hotel`, `Room`, `Amenity`, `Policy`, and `Service`
-- **Typed relationships:** Each edge is named for what it means, such as `OFFERS_AMENITY`, `HAS_POLICY`, and `FROM_CHUNK`
-- **A schema a domain expert recognizes:** the labels are the business's own words
+- **Node labels:** The schema defines `Hotel`, `Room`, `Amenity`, `Policy`, and `Service`
+- **Relationship types:** The schema defines names such as `OFFERS_AMENITY`, `HAS_POLICY`, and `FROM_CHUNK`
+- **Business meaning:** The labels and relationships use terms that a domain expert understands
 - **Provenance:** every extracted fact keeps a link back to the text it came from
 
-The schema is the contract. Module 1 pins it so extraction cannot invent new labels.
+The schema is the shared model. Module 1 pins it so extraction uses the same labels and relationships every time.
 
 <!--
-Attendees often expect an ontology project here. There is not one. The schema
-in this workshop is a Python dictionary of five node types with their property
-names, and it fits on one screen.
+This workshop uses a schema. The schema is a Python dictionary of five node
+types, their properties, and their relationships. A formal ontology would add
+more semantic rules and inference. This workshop uses a small schema.
 
-The provenance bullet is worth a beat. It is what turns "the model said so"
-into "this document said so, and here it is." Module 3 shows the answer
-carrying its source filename.
+Provenance links each fact to its source text. Module 3 returns the source
+filename with the answer.
 -->
 
 ---

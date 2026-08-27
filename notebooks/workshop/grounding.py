@@ -70,6 +70,14 @@ TOP_RESULT_FIELDS: Final = ("hotel_id", "hotel_name", "address", "guest_rating")
 INVALID_QUERY: Final = "invalid_query"
 QUERY_FAILED: Final = "query_failed"
 
+# One wording for a rejected read input, shared by the Module 3 Strands tools
+# and by both Module 4 Lambdas. Every read path advertises exactly one input
+# field named `query`, so one sentence describes the rule on all of them, and a
+# check that reads a rejection back does not have to know which path produced
+# it. Three copies of this sentence drifted into two different messages once
+# already.
+INVALID_QUERY_MESSAGE: Final = "input must contain only query as a non-empty string"
+
 
 class Verdict(TypedDict):
     """Whether the returned evidence can support the question, and what is missing."""
@@ -104,6 +112,23 @@ class ErrorPayload(TypedDict):
     ok: Literal[False]
     error_code: str
     error_message: str
+
+
+def validated_query(value: object) -> str | None:
+    """Return `value` when it is a usable query string, otherwise None.
+
+    A generated tool schema can say that `query` is a required string. It
+    cannot say the string has to hold something, so an empty or whitespace-only
+    query reaches the tool body and is rejected here.
+
+    This is only the nonblank-string half of the rule, because that half is the
+    part every caller shares. Each boundary adds what it alone requires: a
+    Lambda first checks that the event carries `query` and nothing else, and a
+    Strands tool passes its bare argument straight in.
+    """
+    if not isinstance(value, str) or not value.strip():
+        return None
+    return value
 
 
 def asks_for_live_availability(query: str) -> bool:

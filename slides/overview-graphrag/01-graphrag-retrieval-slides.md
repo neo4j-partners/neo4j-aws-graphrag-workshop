@@ -446,7 +446,9 @@ Text2Cypher, and the closing slide explains why Module 3 exposes both.
 
 ## 7. Cypher Templates
 
-Reviewed, parameterized Cypher against the domain graph. No similarity search at all.
+Cypher Templates run a reviewed query for a known question shape.
+
+They read the graph directly. They use exact conditions instead of ranking similar text.
 
 ```cypher
 WITH *, any(name IN amenities WHERE toLower(name) CONTAINS 'spa') AS has_spa,
@@ -458,16 +460,15 @@ RETURN hotel_name, source_filename, amenities, has_spa AND has_pool AS qualifies
 - **Qualifiers:** Lakeview Horizon Suites, which has both
 - **Exclusions:** Windward Mile Tower, with the missing amenities named
 
-The only pattern that guarantees the AND.
+The query guarantees that both amenities belong to the same hotel.
 
 <!--
-The hero question's first clause is answered here and nowhere else in the deck.
-Similarity ranks. This tests.
+Similarity search ranks text by meaning. It does not prove that two conditions
+are true for the same hotel. This template checks both conditions directly in
+the graph.
 
-The three result groups are the part worth stealing. A retriever that returns
-only the qualifiers cannot tell you whether it considered the hotel you were
-expecting. Returning candidates and exclusions with reasons turns "no results"
-into a debuggable answer, and it is what lets a reviewer trust the output.
+The query returns candidates, qualifiers, and exclusions. These groups show
+which hotels were checked and why each hotel passed or failed.
 -->
 
 ---
@@ -499,23 +500,22 @@ flag the forward pointer.
 
 ---
 
-## The Retriever Is an Argument
+## One Search Interface, Different Retrievers
 
-Every index-backed retriever exposes the same `search()` method and returns the same `RetrieverResultItem`.
+Each index-backed retriever uses the same `search()` call. Each call returns items in the same format.
 
-- **`content`:** This holds the chunk text the model reads as context
-- **`metadata`:** This holds hotel properties for application checks, such as `metadata['hotel_id']`
-- **`result_formatter`:** This maps each database record into those two fields
+- **`content`:** the text sent to the model as context
+- **`metadata`:** structured hotel fields. The application reads a hotel ID as `metadata['hotel_id']`
+- **`result_formatter`:** the code that converts a Neo4j record into `content` and `metadata`
 
-Swapping retrievers is a one-line change. That is what makes the comparison in this module honest.
+Only the retriever setup changes. The question and result handling stay the same.
 
 <!--
-This uniformity is why Module 2 can run eight patterns against one graph and
-compare the results directly. Nothing else in the stack changes.
+Module 2 sends the same questions to several retrievers. The shared input and
+output format makes the results easy to compare.
 
-It is also what makes the choice on the next slides a real decision rather than
-an architectural commitment. If HybridCypherRetriever turns out to be wrong for
-a question shape, the fix is one constructor.
+The application can change the retriever constructor while keeping the model,
+question, and result-processing code unchanged.
 -->
 
 ---

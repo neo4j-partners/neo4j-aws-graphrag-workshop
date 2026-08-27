@@ -9,7 +9,17 @@ that calls `build_lambda_zips` does not need to show:
 2. **Shared-package source.** The `workshop` package is a local source
    tree in this repository rather than a distribution on an index, so
    the zip cannot simply pip-install it by name. Its pure-Python source
-   and JSON fixtures are copied in directly instead.
+   and JSON fixtures are copied in directly instead, and only those:
+   `copy_shared_package` names what it wants rather than naming what to
+   skip. `notebooks/workshop/` is also a working directory. A local
+   `uv sync` leaves a 356 MB `.venv/` there, an editable install leaves
+   `build/` and `workshop.egg-info/`, and a denylist has to be extended
+   for each one before the next tool invents a directory that silently
+   blows past Lambda's 50 MB zipped and 250 MB unzipped limits. An
+   allowlist fails the other way: a new module the Lambda genuinely
+   needs has to match `*.py` or be added to `SHARED_DATA_DIRS`, and that
+   failure is a missing import at build time rather than a rejected
+   upload after a long install.
 3. **Excluded transitive weight.** `neo4j-graphrag` pulls in `numpy` and
    `scipy` for an experimental extraction pipeline and a sentence
    embedder that this retrieval path never imports. Leaving them out
@@ -31,13 +41,31 @@ import zipfile
 from pathlib import Path
 
 
+# The only subdirectory of `notebooks/workshop/` that ships. It holds the JSON
+# fixtures the retrieval path reads, so leaving it out breaks the Lambda rather
+# than shrinking it.
+SHARED_DATA_DIRS: tuple[str, ...] = ("fixtures",)
+
+
 def copy_shared_package(shared_package: Path, package_dir: Path) -> None:
-    """Copy the pure-Python shared package into the Lambda bundle."""
-    shutil.copytree(
-        shared_package,
-        package_dir / "workshop",
-        ignore=shutil.ignore_patterns("__pycache__", "*.pyc", "pyproject.toml"),
-    )
+    """Copy the shared package's Python modules and JSON fixtures into the bundle.
+
+    An allowlist, for the reason given in the module docstring: the source
+    directory doubles as a local working directory, and anything it grows that
+    is not a top-level module or a named data directory stays out of the zip.
+    """
+    target = package_dir / "workshop"
+    target.mkdir(parents=True)
+    for module in sorted(shared_package.glob("*.py")):
+        shutil.copy2(module, target / module.name)
+    for name in SHARED_DATA_DIRS:
+        source = shared_package / name
+        if source.is_dir():
+            shutil.copytree(
+                source,
+                target / name,
+                ignore=shutil.ignore_patterns("__pycache__", "*.pyc"),
+            )
 
 
 def install_dependencies(

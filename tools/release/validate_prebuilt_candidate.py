@@ -18,6 +18,7 @@ NOTEBOOKS_DIR = REPO_ROOT / "notebooks"
 if str(NOTEBOOKS_DIR) not in sys.path:
     sys.path.insert(0, str(NOTEBOOKS_DIR))
 
+from workshop.amenities import POOL_AMENITY_NAMES
 from workshop.graph_connection import (
     graph_database,
     neo4j_auth,
@@ -74,7 +75,7 @@ CALL () { MATCH (chunk:Chunk) RETURN count(chunk) AS chunks }
 CALL () { MATCH (hotel:Hotel) RETURN count(hotel) AS hotels }
 CALL () { MATCH (amenity:Amenity) RETURN count(amenity) AS amenities }
 CALL () {
-  MATCH ()-[offer:OFFERS_AMENITY]->(amenity:Amenity)
+  MATCH (:Hotel)-[offer:OFFERS_AMENITY]->(amenity:Amenity)
   RETURN count(offer) AS offer_relationships,
          count(DISTINCT [offer.source_filename, amenity.name])
            AS amenity_assertions
@@ -82,7 +83,7 @@ CALL () {
 CALL () {
   MATCH (document:Document)<-[:FROM_DOCUMENT]-(:Chunk)<-[:FROM_CHUNK]-
         (:Hotel)-[:OFFERS_AMENITY]->(amenity:Amenity)
-  WHERE toLower(amenity.name) CONTAINS 'pool'
+  WHERE amenity.name IN $pool_amenity_names
   RETURN count(DISTINCT document) AS pool_sources
 }
 RETURN documents, chunks, hotels, amenities, offer_relationships,
@@ -178,7 +179,10 @@ def read_candidate_facts(driver: Driver, database: str) -> dict[str, Any]:
         for name, filenames in CROSS_CITY_DUPLICATE_HOTEL_NAMES.items()
     ]
     with driver.session(database=database) as session:
-        count_record = session.run(COUNT_QUERY).single()
+        count_record = session.run(
+            COUNT_QUERY,
+            pool_amenity_names=list(POOL_AMENITY_NAMES),
+        ).single()
         if count_record is None:
             raise RuntimeError("candidate count query returned no record")
         return {

@@ -264,18 +264,48 @@ shows up in the next module as an empty result, which is the point.
 
 ## Neo4j and AWS
 
-- **Joint focus:** both companies are working to ground enterprise AI agents in verified data and reduce hallucinations
-- **Neo4j Aura** runs as a managed service on AWS. Aura Marketplace billing goes through your AWS account
-- **AgentCore** gives the agent a managed home for its tools and its runtime
+- **Neo4j Aura:** stores connected enterprise facts and returns graph context with provenance
+- **Amazon Bedrock:** provides models for extraction, embeddings, and agent reasoning
+- **Amazon Bedrock AgentCore:** publishes remote tools through Gateway and runs deployed agents through Runtime
+- **Together:** Neo4j supplies verified context. AWS runs the models, tools, and agent services
+- **AWS Marketplace:** lets customers buy Neo4j Aura through their AWS account
 
 <!--
-Instructor: replace these lines with the current, approved Neo4j and AWS
-partnership talking points for your event. Keep forward-looking product claims
-to what has been publicly announced.
+Keep the roles clear. Neo4j stores the connected facts and returns focused
+context. Amazon Bedrock provides the models. AgentCore provides managed tool
+and agent deployment.
 
 A joint-customer proof table belongs here. It is left out rather than filled
 with unapproved logos. Add one for your event if you have cleared the names
 and the numbers.
+-->
+
+---
+
+<style scoped>
+/* Five connection patterns plus a short source line. */
+section { font-size: 24px; }
+</style>
+
+## Five Ways AWS Connects to Neo4j
+
+Choose the pattern that matches how the data moves and who needs it.
+
+- **Spark Connector on Amazon EMR:** moves large Spark DataFrames into Neo4j and reads graph data back into Spark
+- **AWS Glue Connector:** builds managed ETL jobs from S3, RDS, Redshift, DynamoDB, and other Glue sources
+- **Kafka Connector on Amazon MSK:** streams events into Neo4j and publishes Neo4j changes to Kafka topics
+- **Neo4j drivers in AWS applications:** let Lambda, ECS, EKS, and EC2 services run Cypher directly
+- **MCP for AWS agents:** lets Bedrock and AgentCore agents call graph tools through a standard interface
+
+<small>Sources: [AWS Glue and data connectors](https://neo4j.com/docs/connectors/), [Spark Connector](https://neo4j.com/docs/spark/current/), [Kafka Connector](https://neo4j.com/docs/kafka/current/), and [Neo4j MCP](https://neo4j.com/developer/genai-ecosystem/model-context-protocol-mcp/)</small>
+
+<!--
+These are separate connection patterns, not one required stack. Choose EMR for
+large Spark workloads, Glue for managed ETL, MSK for event streams, a driver
+for application requests, and MCP when an agent needs graph tools.
+
+Keep this at overview level. Later decks show the bounded MCP tools used in
+this workshop and the AgentCore Gateway path that publishes them.
 -->
 
 ---
