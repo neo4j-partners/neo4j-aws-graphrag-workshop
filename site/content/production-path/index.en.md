@@ -14,21 +14,6 @@ stronger security, testing, monitoring, and data management.
 
 ---
 
-## AWS Connection Patterns for Neo4j
-
-Choose the connection pattern that matches how your data moves and who needs
-to use the graph.
-
-- **Spark Connector on Amazon EMR:** Move large Spark DataFrames into Neo4j and read graph data back into Spark.
-- **AWS Glue Connector:** Build managed ETL jobs from S3, RDS, Redshift, DynamoDB, and other Glue sources.
-- **Kafka Connector on Amazon MSK:** Stream events into Neo4j and publish Neo4j changes to Kafka topics.
-- **Neo4j drivers in AWS applications:** Let Lambda, ECS, EKS, and EC2 services run Cypher directly.
-- **MCP for AWS agents:** Let Bedrock and AgentCore agents call graph tools through a standard interface.
-
-Read the Neo4j documentation for :link[data connectors]{href="https://neo4j.com/docs/connectors/" external=true}, the :link[Spark Connector]{href="https://neo4j.com/docs/spark/current/" external=true}, the :link[Kafka Connector]{href="https://neo4j.com/docs/kafka/current/" external=true}, and :link[MCP]{href="https://neo4j.com/developer/genai-ecosystem/model-context-protocol-mcp/" external=true}.
-
----
-
 ## Graph Hardening
 
 - **Capacity:** Choose an Aura tier that fits the graph, indexes, and query load.

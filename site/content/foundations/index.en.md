@@ -1,17 +1,15 @@
 ---
-title: "Foundations: Neo4j, AWS, and AgentCore"
+title: "Foundations: Property Graphs and GraphRAG"
 weight: 5
 ---
 
-This workshop combines Neo4j, Amazon Bedrock, Strands, and Amazon Bedrock
-AgentCore. Each component has one main role:
+The platform overview assigned clear roles to AWS and Neo4j. This page explains
+the technical ideas that connect them: property graphs, GraphRAG retrieval,
+grounded agent requests, and control ownership.
 
-- **Neo4j:** Stores connected hotel facts, source text, rules, and memory.
-- **Amazon Bedrock:** Provides models for reasoning and embeddings.
-- **Strands:** Gives the model a set of tools it can call.
-- **AgentCore:** Exposes remote tools and runs deployed agents.
-
-These roles and terms appear in every module.
+Use [AWS GenAI Services](../aws-services/) and the
+[Neo4j Graph Intelligence Platform](../neo4j-platform/) as references for the
+individual services and capabilities.
 
 ---
 
@@ -102,35 +100,6 @@ Module 3 turns two retrieval patterns into model-selectable read tools:
   or state what is missing.
 - **Reservation command:** A separate command validates the request and writes it.
 - **Rule enforcement:** Neo4j checks the guest limit in the write transaction.
-
----
-
-## Service Roles
-
-- **:link[Neo4j AuraDB]{href="https://neo4j.com/product/auradb/" external=true}:** Stores hotel facts, source text, indexes, rules, reservation requests, and graph memory.
-- **:link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true}:** Provides Claude for extraction and reasoning, Amazon Nova for retrieval embeddings, and Titan Text Embeddings V2 for memory.
-- **:link[Strands Agents]{href="https://strandsagents.com/" external=true}:** Gives the model local or remote tools and runs the agent loop.
-- **:link[AgentCore Gateway]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}:** Exposes the Module 4 Lambda functions through MCP.
-- **:link[AgentCore Runtime]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}:** Runs the packaged Module 5 agent.
-- **AgentCore Memory:** Provides the managed memory option discussed in Module 6.
-- **:link[AWS Lambda]{href="https://aws.amazon.com/lambda/" external=true}:** Runs the Module 4 retrieval tools.
-- **:link[AWS Secrets Manager]{href="https://aws.amazon.com/secrets-manager/" external=true}:** Stores the Neo4j settings used by the Lambda functions.
-- **AWS IAM and SigV4:** Control access to AWS models, secrets, tools, and runtimes.
-
----
-
-## AgentCore Capabilities
-
-AgentCore includes several capabilities. This workshop uses or discusses three:
-
-- **Gateway:** Gives agents access to remote tools. Module 4 exposes Lambda functions through IAM-authenticated MCP.
-- **Runtime:** Runs a complete agent as a service. Module 5 invokes the agent with `InvokeAgentRuntime`.
-- **Memory:** Stores and recalls information across sessions. Module 6 compares this managed option with Neo4j graph memory.
-- **MCP:** Defines how an agent discovers and calls tools.
-- **IAM SigV4:** Confirms that the caller can use the Gateway.
-
-Module 4 and Module 5 show separate patterns. Module 4 routes remote tools
-through Gateway. The Module 5 Runtime uses Neo4j as its data service.
 
 ---
 

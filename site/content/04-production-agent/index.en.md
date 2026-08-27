@@ -430,18 +430,39 @@ The notebook runs checks at two layers:
 
 Running the two steps separately shows which layer failed.
 
-## Guarding Model-Generated Cypher
+## Blocking Write Queries
 
-`query_hotel_records` sends model-generated Cypher to the database. Test the
-guard rather than assume it. `Text2CypherRetriever` plans each statement with
-`EXPLAIN` and runs it only when the planner reports a read-only query.
+**Brief overview:** `query_hotel_records` lets a model create a Cypher query.
+The query must only read data. Before the query runs, `Text2CypherRetriever`
+asks Neo4j to inspect it. The retriever stops the query if Neo4j says it can
+change data.
 
-The configured model follows its prompt and generates read queries, so it
-never triggers the guard. The notebook substitutes a stub model that always
-returns a write:
+The safety steps are:
+
+* **Read-only prompt:** Instructions that tell the model to create a query that
+  only reads data. This reduces mistakes, but it does not enforce the rule.
+* **`EXPLAIN`:** A Neo4j command that plans a query without running it.
+* **Read-only guard:** A check built into `Text2CypherRetriever` in the pinned
+  `neo4j-graphrag` library. It runs the real query only when the `EXPLAIN`
+  result says the query is read-only.
+* **Stub model:** A small fake model used only in the test. It always returns a
+  write query so the notebook can check that the guard rejects it.
+* **Read-only Neo4j user:** A production database account that has permission
+  to read data but cannot change it.
+
+### Why the Test Uses a Stub Model
+
+A normal model call will usually follow the prompt and return a read query.
+That checks the allowed path. It does not check whether the guard blocks a
+write.
+
+The notebook needs one known write query to test the blocked path. A real
+model may respond differently on each run, so the test temporarily supplies a
+stub model. The stub changes only how the test query is generated. The test
+still uses the real `Text2CypherRetriever` and the real Neo4j query planner.
 
 :::code{language=python showCopyAction=true}
-# A label no build ever creates, so this statement is a no-op even if it runs.
+# This label does not exist, so the query changes no data even if the guard fails.
 WRITE_CYPHER = "MATCH (n:__WorkshopGuardProbe) SET n.tampered = true RETURN count(n) AS n"
 
 
@@ -452,16 +473,17 @@ class WriteAttemptLLM(LLMInterface):
         return LLMResponse(content=WRITE_CYPHER)
 :::
 
-The statement targets a label that no build creates, so the data stays safe
-even if the guard fails. The test then asserts that the call raises before
-execution.
+The test passes this write query through the retriever. It succeeds only when
+the retriever rejects the write before running it. The query matches a label
+that does not exist, so it cannot change workshop data even if the guard has a
+bug.
 
 :::alert{type="info" header="Add production security controls"}
 These Lambdas connect with ordinary workshop credentials. In production,
 connect with a **read-only Neo4j user** so the database rejects every write.
 Restrict the Lambda IAM role to the required secret and Bedrock models. The
-`EXPLAIN` check is an application control. A read-only database user is a
-separate boundary underneath it.
+prompt and `EXPLAIN` guard run in the application. The read-only user adds a
+separate database rule if the application has a bug.
 :::
 
 ## The Strands Agent over Gateway Tools

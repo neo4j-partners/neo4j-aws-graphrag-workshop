@@ -16,8 +16,10 @@ This workshop uses a hotel booking scenario. You will:
 - **Deploy tools and the agent:** Use :link[Amazon Bedrock AgentCore]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}.
 - **Add memory:** Store agent memory as a graph in :link[Neo4j]{href="https://neo4j.com/" external=true}.
 
-Read [Foundations](./foundations/) first if property graphs, GraphRAG, or
-AgentCore are new to you.
+Start with [How Neo4j + AWS Work Together](./platform/). It leads through short
+guides to [AWS GenAI Services](./aws-services/) and the
+[Graph Intelligence Platform](./neo4j-platform/), then into the GraphRAG
+concepts in [Foundations](./foundations/).
 
 **Source code:** :link[Open the workshop repository on GitHub]{href="https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop" external=true}.
 
@@ -44,6 +46,7 @@ arrives pre-configured. Setup guides you through creating a free Neo4j database.
 
 | Module | What You Will Build |
 |--------|---------------------|
+| **Platform overview** | See how AWS and Neo4j work together, then learn the capabilities each platform contributes |
 | **Foundations** | Learn the property graph, the GraphRAG retrieval flow, service responsibilities, and AgentCore capabilities |
 | **Setup** | Create a Neo4j AuraDB Free database, restore the workshop graph, verify Neo4j and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} access |
 | **Module 1: Build the Graph** | Extract five held-out hotel documents into the graph, define the extraction schema, create both retrieval indexes |

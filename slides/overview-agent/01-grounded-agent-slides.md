@@ -121,6 +121,35 @@ from counts, averages, rankings, filters, and relationship questions.
 
 ---
 
+## Strands Is Model-Driven by Default
+
+| Flow-first agent design | Strands agent loop |
+|---|---|
+| The developer defines the execution path | The developer defines the goal, model, and tools |
+| Application code decides which step runs next | The model selects a tool, inspects the result, and decides whether to continue or respond |
+| A new case often needs another branch | The loop can adapt within the prompt and tool boundaries |
+
+**More control is optional:** a Strands Graph defines nodes and allowed transitions; a Workflow defines fixed task dependencies.
+
+<!--
+This is the central Strands design choice. The application supplies context and
+capabilities. The model drives the loop by deciding which tool to call, how the
+result changes its reasoning, and whether another call is needed.
+
+Model-driven does not mean uncontrolled. Tool specifications bound the actions,
+the system prompt states the policy, and code still enforces hard constraints.
+
+Strands also supports developer-defined orchestration. A Graph defines nodes
+and edges while allowing controlled routing among them. A Workflow defines a
+task dependency graph for a repeatable process. Individual Agent nodes still
+use their own model-driven loops.
+
+Sources: https://strandsagents.com/blog/strands-agents-model-driven-approach/
+and https://strandsagents.com/docs/user-guide/concepts/multi-agent/multi-agent-patterns/
+-->
+
+---
+
 ![bg contain](../images/strands-agents-graphrag-principles.svg)
 
 <!--
@@ -307,9 +336,9 @@ Neo4j stores a maximum-guests rule. A 15-guest request comes back:
 }
 ```
 
-- **One transaction** checks for an existing `request_id`, reads the enabled rule, verifies the hotel, and creates the node
-- **The rejection returns before the create query runs.** No `ReservationRequest` node exists
-- **No interleaving.** No other request can change the rule between the check and the write
+- **One transaction** checks `request_id`, reads the rule, verifies the hotel, and creates the node
+- **Rejected requests return before the create.** No `ReservationRequest` node exists
+- **No interleaving.** The rule check and write share one transaction
 
 <!--
 Two things make this different from validating in Python.

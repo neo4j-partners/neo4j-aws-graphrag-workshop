@@ -1,4 +1,7 @@
 * xref:index.adoc[Home]
+* xref:platform/index.adoc[How Neo4j + AWS Work Together]
+* xref:aws-services/index.adoc[AWS GenAI Services]
+* xref:neo4j-platform/index.adoc[Graph Intelligence Platform]
 * xref:foundations/index.adoc[Foundations]
 * xref:setup/index.adoc[Setup]
 ** xref:setup/aura-free-setup/index.adoc[Neo4j AuraDB Free Setup]
