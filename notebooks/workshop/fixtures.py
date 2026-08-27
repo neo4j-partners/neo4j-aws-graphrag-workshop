@@ -3,9 +3,16 @@
 """Idempotent Neo4j preparation and readiness checks for reservation fixtures.
 
 A fixture is a small, deterministic set of data and expected facts that makes
-an example repeatable. Here, the fixture manifest maps two known source files
-to stable hotel IDs. Setup applies those IDs and the maximum-guests rule, then
-readiness checks compare the live graph with the same fixture definition.
+an example repeatable. Think of a fixture as the ingredients prepared before a
+cooking class. Every participant starts with the same known ingredients, so a
+missing ingredient is reported as a setup problem instead of looking like a
+problem with the recipe.
+
+For example, this fixture says ``hotel-cairo-001.txt`` must resolve to
+``AnyCompany Cairo Nile View`` with a 4.5 rating and expected amenity terms such
+as pool and spa. The fixture manifest also gives that Hotel a stable ID. Setup
+applies the IDs and maximum-guests rule, then readiness checks compare the live
+graph with the same fixture definition.
 
 This module verifies the indexes Module 1 owns. It only writes the two fixture
 hotel IDs, ordinary uniqueness constraints, and the maximum-guests rule.
@@ -58,6 +65,9 @@ RESERVATION_REQUEST_PROPERTIES = (
     "workshop_owner",
     "created_at",
 )
+# This Cypher pattern documents the required edge from every reservation
+# request to the Hotel it targets. It is a shared contract value, not a query
+# executed by this module.
 FOR_HOTEL_PATTERN = "(:ReservationRequest)-[:FOR_HOTEL]->(:Hotel)"
 
 HOTEL_ID_CONSTRAINT = """

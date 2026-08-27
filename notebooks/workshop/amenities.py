@@ -28,12 +28,15 @@ _BULLET = re.compile(r"^-[ \t]+(.*?)\s*$")
 
 AMENITY_NAME_CONSTRAINT = """
 CYPHER 25
+// Keep each authored amenity label mapped to one canonical Amenity node.
 CREATE CONSTRAINT workshop_amenity_name IF NOT EXISTS
 FOR (amenity:Amenity) REQUIRE amenity.name IS UNIQUE
 """.strip()
 
 _SOURCE_HOTEL_QUERY = """
 CYPHER 25
+// Resolve one source Document through its Chunk to exactly one Hotel, then
+// return counts and the Hotel element ID for validation before writing.
 MATCH (document:Document {source_filename: $source_filename})
 OPTIONAL MATCH (chunk:Chunk)-[:FROM_DOCUMENT]->(document)
 OPTIONAL MATCH (hotel:Hotel)-[:FROM_CHUNK]->(chunk)
@@ -44,6 +47,8 @@ RETURN count(DISTINCT document) AS document_count,
 
 _MATERIALIZE_QUERY = """
 CYPHER 25
+// Attach the source's authored amenity names to its verified Hotel and Chunk.
+// MERGE makes repeated materialization idempotent.
 MATCH (document:Document {source_filename: $source_filename})
 MATCH (chunk:Chunk)-[:FROM_DOCUMENT]->(document)
 MATCH (hotel:Hotel)-[:FROM_CHUNK]->(chunk)

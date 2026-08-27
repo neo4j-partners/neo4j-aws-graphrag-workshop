@@ -6,9 +6,14 @@ The notebook only retrieves. Graph preparation owns index creation and checks
 the deterministic fixtures every Module 1 build path needs.
 
 A fixture is a fixed input plus the graph facts expected from that input. The
-source fixtures below describe known workshop documents, hotels, and amenities.
-Readiness queries load the actual graph data, and validation functions compare
-it with those fixtures so later notebook examples start from repeatable facts.
+source fixtures below are like prepared ingredients for a cooking class. They
+give every participant the same known starting point before an example runs.
+
+For example, the Cairo fixture expects ``hotel-cairo-001.txt`` to produce
+``AnyCompany Cairo Nile View`` with a 4.5 rating, a pool, and a spa. Readiness
+queries load the actual graph data, and validation functions compare it with
+that fixture. A missing spa is reported as a setup problem before it can look
+like a retrieval or AI problem in a later notebook.
 """
 
 from __future__ import annotations
@@ -161,6 +166,8 @@ class SourceFixture:
         return {"source_filename": self.source_filename}
 
 
+# This first fixture is the concrete Cairo example described above. Its values
+# are reused by setup checks, text retrieval checks, and graph-context checks.
 SOURCE_FIXTURES = (
     SourceFixture(
         source_filename="hotel-cairo-001.txt",
@@ -634,6 +641,7 @@ def ensure_retrieval_indexes(driver: Driver) -> None:
     with _session(driver) as session:
         session.run(DOCUMENT_SOURCE_FILENAME_INDEX_DDL).consume()
         session.run(HOTEL_NAME_INDEX_DDL).consume()
+        # Block until Neo4j reports every index online before validation starts.
         session.run(
             "CALL db.awaitIndexes($timeout_seconds)", timeout_seconds=300
         ).consume()

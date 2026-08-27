@@ -9,6 +9,8 @@ no error, so each one is defined here and nowhere else.
 The readiness fixtures in ``retrieval_setup.py`` use this contract to describe
 the expected embedding width and index names. The setup queries compare those
 expectations with the live graph before a learner runs retrieval examples.
+For the Cairo fixture, that means checking its Chunk has a 1,024-value vector
+and that retrieval will use the same named indexes that setup created.
 """
 
 # The chunk embedding settings form one contract. Graph construction uses them

@@ -84,14 +84,17 @@ available hotel knowledge.
 # caller input. The doubled braces are the f-string escape for the Cypher
 # subquery block.
 RETRIEVAL_QUERY = f"""
+// Enrich each Chunk returned by hybrid search with its source Hotel.
 OPTIONAL MATCH (node:Chunk)<-[:FROM_CHUNK]-(candidate:Hotel)
 WITH node, score, candidate
 WHERE score IS NOT NULL
+// Select one Hotel deterministically if malformed data supplies candidates.
 ORDER BY score DESC,
          coalesce(candidate.hotel_id, '\uffff'),
          coalesce(candidate.name, '\uffff')
 WITH node, score, head(collect(candidate)) AS hotel
 CALL (hotel) {{
+    // Collect a stable, bounded list of the Hotel's named amenities.
     MATCH (hotel)-[:OFFERS_AMENITY]->(amenity:Amenity)
     WHERE amenity.name IS NOT NULL
     WITH DISTINCT amenity.name AS amenity_name
@@ -99,6 +102,7 @@ CALL (hotel) {{
     LIMIT {contracts.MAX_AMENITIES}
     RETURN collect(amenity_name) AS amenities
 }}
+// Return bounded source text, the hybrid score, and graph-enriched Hotel data.
 RETURN left(coalesce(node.text, ''), {MAX_CONTEXT_CHARS}) AS chunk_text,
        score AS combined_score,
        hotel.hotel_id AS hotel_id,
@@ -357,24 +361,30 @@ MAX_GRAPH_QUERY_RECORDS = 25
 # documented is the number that now ships.
 GRAPH_QUERY_TIMEOUT_SECONDS: Final = 15.0
 
+# These comments describe the teaching purpose of each few-shot query. They
+# stay outside the example strings so the model learns to return only Cypher.
 GRAPH_QUERY_EXAMPLES = (
+    # Model an aggregate over non-null ratings selected by address text.
     (
         "USER INPUT: What is the average guest rating of hotels in Paris? "
         "CYPHER: MATCH (hotel:Hotel) WHERE toLower(hotel.address) CONTAINS 'paris' "
         "AND hotel.guest_rating IS NOT NULL "
         "RETURN avg(hotel.guest_rating) AS average_rating"
     ),
+    # Model an exact Amenity identity and count distinct connected Hotels.
     (
         "USER INPUT: How many hotels offer a spa? "
         "CYPHER: MATCH (hotel:Hotel)-[:OFFERS_AMENITY]->"
         "(amenity:Amenity {name: 'Full-Service Spa'}) "
         "RETURN count(DISTINCT hotel) AS hotel_count"
     ),
+    # Model an exact Hotel property lookup that returns one requested field.
     (
         "USER INPUT: What is the guest rating of the hotel named Example Hotel? "
         "CYPHER: MATCH (hotel:Hotel {name: 'Example Hotel'}) "
         "RETURN hotel.guest_rating AS guest_rating"
     ),
+    # Model a ranked list with null filtering and an explicit result limit.
     (
         "USER INPUT: What are the five highest-rated hotels? "
         "CYPHER: MATCH (hotel:Hotel) WHERE hotel.guest_rating IS NOT NULL "
