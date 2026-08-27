@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" role="img" aria-labelledby="title description" font-family="Arial, Helvetica, sans-serif">
+  <title id="title">Anatomy of a Property Graph</title>
+  <desc id="description">A hotel property graph showing nodes, named relationships, and properties stored with connected facts.</desc>
+
+  <defs>
+    <filter id="soft-shadow" x="-20%" y="-20%" width="140%" height="150%">
+      <feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#183142" flood-opacity="0.14"/>
+    </filter>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L12,6 L0,12 Z" fill="#586570"/>
+    </marker>
+    <style>
+      .heading { fill: #17212B; font-size: 62px; font-weight: 700; }
+      .subtitle { fill: #53616D; font-size: 25px; }
+      .legend-title { fill: #0B668E; font-size: 34px; font-weight: 700; }
+      .legend-copy { fill: #53616D; font-size: 21px; }
+      .relationship { fill: none; stroke: #586570; stroke-width: 8; marker-end: url(#arrow); }
+      .relationship-label { fill: #394651; font-size: 22px; font-weight: 700; text-anchor: middle; }
+      .node-label { fill: #FFFFFF; font-size: 23px; font-weight: 700; text-anchor: middle; letter-spacing: 1px; }
+      .property-label { fill: #0B668E; font-size: 19px; font-weight: 700; }
+      .property-copy { fill: #53616D; font-size: 19px; }
+      .leader { fill: none; stroke: #8A98A4; stroke-width: 2.5; stroke-dasharray: 5 6; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#FFFFFF"/>
+  <path d="M1230 0 H1600 V235 C1510 205 1455 140 1395 82 C1340 30 1280 20 1230 0 Z" fill="#0B668E"/>
+  <path d="M0 900 V820 C115 790 205 800 298 850 C333 869 369 885 410 900 Z" fill="#0B668E"/>
+  <path d="M1410 0 H1600 V94 C1536 62 1474 34 1410 0 Z" fill="#57A7B2" opacity="0.75"/>
+
+  <text class="heading" x="66" y="82">Anatomy of a Property Graph</text>
+  <text class="subtitle" x="70" y="127">A graph database stores things, their connections, and the facts that describe them.</text>
+
+  <g aria-label="Legend">
+    <circle cx="88" cy="245" r="13" fill="#0B668E"/>
+    <text class="legend-title" x="130" y="255">Nodes</text>
+    <text class="legend-copy" x="130" y="289">Nodes represent things.</text>
+
+    <circle cx="88" cy="385" r="13" fill="#0B668E"/>
+    <text class="legend-title" x="130" y="395">Relationships</text>
+    <text class="legend-copy" x="130" y="429">Relationships connect nodes.</text>
+
+    <circle cx="88" cy="525" r="13" fill="#0B668E"/>
+    <text class="legend-title" x="130" y="535">Properties</text>
+    <text class="legend-copy" x="130" y="569">Properties describe nodes</text>
+    <text class="legend-copy" x="130" y="596">and relationships.</text>
+  </g>
+
+  <!-- Relationships are drawn first so they stay behind the nodes. -->
+  <path class="relationship" d="M1018 398 C1100 340 1166 300 1247 286"/>
+  <path class="relationship" d="M1031 525 C1120 570 1173 615 1244 648"/>
+  <path class="relationship" d="M873 563 C844 616 817 653 779 690"/>
+
+  <g filter="url(#soft-shadow)">
+    <rect x="1030" y="250" width="220" height="50" rx="14" fill="#FFFFFF" stroke="#586570" stroke-width="3"/>
+    <text class="relationship-label" x="1140" y="283">OFFERS_AMENITY</text>
+
+    <rect x="1088" y="564" width="168" height="50" rx="14" fill="#FFFFFF" stroke="#586570" stroke-width="3"/>
+    <text class="relationship-label" x="1172" y="597">HAS_POLICY</text>
+
+    <rect x="742" y="604" width="178" height="50" rx="14" fill="#FFFFFF" stroke="#586570" stroke-width="3"/>
+    <text class="relationship-label" x="831" y="637">FROM_CHUNK</text>
+  </g>
+
+  <!-- Hotel node -->
+  <g aria-label="Hotel node" filter="url(#soft-shadow)">
+    <circle cx="910" cy="470" r="148" fill="#168AAD"/>
+    <path d="M847 438 H973 V538 H847 Z M865 403 H955 V438 H865 Z M881 375 H939 V403 H881 Z" fill="#EAFBFD"/>
+    <g fill="#168AAD">
+      <rect x="868" y="458" width="18" height="22" rx="2"/>
+      <rect x="900" y="458" width="18" height="22" rx="2"/>
+      <rect x="932" y="458" width="18" height="22" rx="2"/>
+      <rect x="868" y="496" width="18" height="22" rx="2"/>
+      <rect x="932" y="496" width="18" height="22" rx="2"/>
+      <rect x="900" y="492" width="18" height="46" rx="2"/>
+    </g>
+    <rect x="833" y="548" width="154" height="42" rx="21" fill="#0B668E"/>
+    <text class="node-label" x="910" y="576">HOTEL</text>
+  </g>
+
+  <!-- Amenity node -->
+  <g aria-label="Amenity node" filter="url(#soft-shadow)">
+    <circle cx="1360" cy="270" r="105" fill="#57A7B2"/>
+    <path d="M1322 270 C1341 246 1379 246 1398 270 C1380 293 1340 293 1322 270 Z" fill="#EAFBFD"/>
+    <path d="M1360 224 V247 M1360 293 V316 M1314 270 H1337 M1383 270 H1406" stroke="#EAFBFD" stroke-width="10" stroke-linecap="round"/>
+    <rect x="1289" y="328" width="142" height="38" rx="19" fill="#0B668E"/>
+    <text class="node-label" x="1360" y="354">AMENITY</text>
+  </g>
+
+  <!-- Policy node -->
+  <g aria-label="Policy node" filter="url(#soft-shadow)">
+    <circle cx="1360" cy="675" r="105" fill="#2D6A8A"/>
+    <path d="M1360 618 L1411 637 V674 C1411 711 1388 738 1360 753 C1332 738 1309 711 1309 674 V637 Z" fill="#EAFBFD"/>
+    <path d="M1338 678 L1354 694 L1385 657" fill="none" stroke="#2D6A8A" stroke-width="11" stroke-linecap="round" stroke-linejoin="round"/>
+    <rect x="1299" y="733" width="122" height="38" rx="19" fill="#0B668E"/>
+    <text class="node-label" x="1360" y="759">POLICY</text>
+  </g>
+
+  <!-- Chunk node -->
+  <g aria-label="Text chunk node" filter="url(#soft-shadow)">
+    <circle cx="710" cy="735" r="97" fill="#77C8D0"/>
+    <path d="M672 678 H730 L750 698 V780 H672 Z" fill="#FFFFFF"/>
+    <path d="M730 678 V699 H750" fill="none" stroke="#77C8D0" stroke-width="7" stroke-linejoin="round"/>
+    <path d="M690 720 H731 M690 741 H731 M690 762 H721" stroke="#168AAD" stroke-width="7" stroke-linecap="round"/>
+    <rect x="642" y="789" width="136" height="38" rx="19" fill="#0B668E"/>
+    <text class="node-label" x="710" y="815">CHUNK</text>
+  </g>
+
+  <!-- Node properties -->
+  <g aria-label="Hotel properties">
+    <path class="leader" d="M780 354 C735 310 692 283 648 265"/>
+    <rect x="520" y="176" width="320" height="126" rx="16" fill="#F4FAFB" stroke="#B9DCE1" stroke-width="2"/>
+    <text class="property-label" x="545" y="211">Hotel properties</text>
+    <text class="property-copy" x="545" y="241">name: "Chicago Lakefront"</text>
+    <text class="property-copy" x="545" y="268">guest_rating: 4.7</text>
+    <text class="property-copy" x="545" y="295">total_rooms: 240</text>
+  </g>
+
+  <g aria-label="Amenity properties">
+    <path class="leader" d="M1344 168 L1327 132"/>
+    <rect x="1130" y="118" width="270" height="72" rx="16" fill="#F4FAFB" stroke="#B9DCE1" stroke-width="2"/>
+    <text class="property-label" x="1154" y="148">Amenity property</text>
+    <text class="property-copy" x="1154" y="176">name: "Full-Service Spa"</text>
+  </g>
+
+  <g aria-label="Policy properties">
+    <path class="leader" d="M1452 715 C1493 731 1515 755 1529 786"/>
+    <rect x="1100" y="796" width="420" height="72" rx="16" fill="#F4FAFB" stroke="#B9DCE1" stroke-width="2"/>
+    <text class="property-label" x="1125" y="826">Policy properties</text>
+    <text class="property-copy" x="1125" y="854">name: "24-hour cancellation"</text>
+  </g>
+
+  <g aria-label="Chunk properties">
+    <path class="leader" d="M613 728 C568 711 535 686 510 657"/>
+    <rect x="420" y="598" width="280" height="92" rx="16" fill="#F4FAFB" stroke="#B9DCE1" stroke-width="2"/>
+    <text class="property-label" x="444" y="629">Chunk properties</text>
+    <text class="property-copy" x="444" y="658">text: source passage</text>
+    <text class="property-copy" x="444" y="683">embedding: vector</text>
+  </g>
+
+</svg>

@@ -295,7 +295,7 @@ def test_an_empty_query_is_rejected_before_any_retrieval(read_tool, query: str) 
     assert payload(result) == {
         "ok": False,
         "error_code": grounding.INVALID_QUERY,
-        "error_message": "query must be a non-empty string",
+        "error_message": grounding.INVALID_QUERY_MESSAGE,
     }
 
 

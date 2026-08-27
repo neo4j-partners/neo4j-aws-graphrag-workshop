@@ -166,49 +166,35 @@ that way.
 ---
 
 <style scoped>
-/* Two code blocks and a closing comparison. */
-section { font-size: 24px; }
+/* One graph pattern plus four modeling points. */
+section { font-size: 25px; }
 </style>
 
-## Amenity Is a Node, Not a Column
+## Shared Amenity Nodes Connect Hotels
 
-`Full-Service Spa` exists once. Every hotel that offers it points at that one node.
-
-```cypher
-MATCH (:Amenity {name: "Full-Service Spa"})<-[:OFFERS_AMENITY]-(h:Hotel)
-RETURN h.name
-```
-
-Store the same fact as a list on each hotel and the question changes shape.
+`Full-Service Spa` is one shared `Amenity` node. Every hotel that offers it connects through `OFFERS_AMENITY`.
 
 ```cypher
-MATCH (h:Hotel)
-WHERE "Full-Service Spa" IN h.amenities
-RETURN h.name
+MATCH (a:Amenity {name: "Full-Service Spa"})
+      <-[:OFFERS_AMENITY]-(h:Hotel)
+RETURN a.name, collect(h.name) AS hotels
 ```
 
-The second query can only ever answer "which hotels have this." The first can be walked in either direction: from a hotel to what it offers, or from an amenity to who offers it, and onward to whatever those hotels are connected to. Module 2's retrieval query depends on walking outward from whatever the search matched. That path does not exist in the second model.
+- **One shared entity:** `MERGE` creates one node for the normalized amenity name
+- **Two-way traversal:** start at a hotel to list amenities, or start at an amenity to find hotels
+- **Connected context:** continue from each hotel to rooms, policies, services, chunks, and documents
+- **Composable paths:** Module 2 starts from a search match and walks outward through these relationships
+
+The graph stores the amenity once and makes every connected path available for traversal.
 
 <!--
-Do not run these. They are on the screen to be read side by side.
-
-The second query is the instinct most of the room brings in, because it is what
-a column or a JSON array gets you, and it is not wrong. Do not argue it on
-speed. At eight hotels, or at nine thousand, an index makes that scan fast
-enough and someone in the room knows it. The argument is direction. A string in
-a list is not addressable. Nothing attaches to it and nothing traverses out of
-it, so the only question it can answer is the one it was written for.
-
-Uniqueness is created at write time, not query time. Module 1's amenity parser
-does MERGE on the name, which is the line of code that produces this shape. It
-is also what collapses "Full-Service Spa," "Full Service Spa," and "Spa
-(Full-Service)" into one node. Extraction produces all three spellings, and a
-list column keeps all three, so every later query silently misses two of them.
-
-This is also why the traversal in Module 2 stays short. A retrieval query that
-lands anywhere near a hotel reaches everything a guest might ask about in one
-hop. The hero question stacks four constraints, and here each one is another
-hop that composes with the last.
+- Read the pattern from right to left. Each Hotel points to the same Amenity.
+- Module 1 normalizes amenity names before writing them.
+- MERGE uses the normalized name to create one shared node.
+- A traversal can start at the Hotel or the Amenity.
+- From the matched Hotel, the query can continue to policies, rooms, services,
+  chunks, and source documents.
+- Module 2 uses this outward traversal to assemble connected context.
 -->
 
 ---

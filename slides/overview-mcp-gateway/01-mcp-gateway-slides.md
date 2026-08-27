@@ -164,10 +164,10 @@ the bare name finds nothing.
 
 | Tool | How it works | For |
 |---|---|---|
-| `search_hotel_knowledge` | The fixed `HybridCypherRetriever` from Module 2 | Rooms, amenities, policies, services |
-| `graph_query` | `Text2CypherRetriever`, `EXPLAIN`-checked, read plans only | Counts, averages, filters, varied traversals |
+| `search_hotel_passages` | The fixed `HybridCypherRetriever` from Module 2 | Rooms, amenities, policies, services |
+| `query_hotel_records` | `Text2CypherRetriever`, `EXPLAIN`-checked, read plans only | Counts, averages, filters, varied traversals |
 
-A top-k retriever returns the five best chunks. "What is the average guest rating" needs every matching row, so `graph_query` exists.
+A top-k retriever returns the five best chunks. "What is the average guest rating" needs every matching row, so `query_hotel_records` exists.
 
 Each tool is one Lambda function and one Gateway target.
 
@@ -177,9 +177,9 @@ The reservation command stays outside this Gateway. Both tools only read.
 These are the same two retrieval capabilities Module 3 taught, exposed here
 under Gateway base names. Slide 9 is the Text2Cypher guard.
 
-Both tools import from the same hybrid_retrieval.py. Module 3 wraps those
-implementations as `search_hotel_passages` and `query_hotel_records`; this
-module exposes `search_hotel_knowledge` and `graph_query` through Gateway.
+Both tools reuse the same implementations in hybrid_retrieval.py. Module 3
+exposes them as `search_hotel_passages` and `query_hotel_records`; Module 4
+keeps those same model-visible base names through Gateway.
 
 The last line is deliberate and worth saying out loud. Nothing about moving
 tools to a Gateway changed the rule that the model does not write.

@@ -73,6 +73,20 @@ here and expensive in SQL.
 
 ---
 
+![bg contain](../images/property-graph-anatomy.svg)
+
+<!--
+Use the diagram as a visual pause after the definition. Start with the four
+circles. Each circle is a node that represents one thing. Then follow the
+named arrows from the Hotel node. Those stored relationships make the graph
+read like the business domain.
+
+Finish with the property callouts. The values stay with the nodes they
+describe, while FROM_CHUNK keeps the Hotel connected to its source text.
+-->
+
+---
+
 ## Graph Notation
 
 Cypher is Neo4j's query language. A pattern is written the way it is drawn:
@@ -118,6 +132,38 @@ more semantic rules and inference. This workshop uses a small schema.
 
 Provenance links each fact to its source text. Module 3 returns the source
 filename with the answer.
+-->
+
+---
+
+<style scoped>
+/* Six comparison rows plus one takeaway. */
+section { font-size: 22px; }
+table { font-size: 18px; width: 100%; }
+th, td { padding: 9px 12px; }
+</style>
+
+## Same Hotel Business, Two Question Shapes
+
+| Question | Best fit | Why |
+|---|---|---|
+| What is the average nightly rate next month? | Relational database, SQL aggregation | Group and average many rate rows |
+| Which rooms are available for four guests tonight? | Relational database, SQL filter | Check dates, inventory, and room capacity |
+| How many reservation requests were accepted this week? | Relational database, SQL aggregation | Count time-stamped transaction rows |
+| Which Chicago hotel has both a spa and a pool? | Neo4j, Cypher pattern | Both amenities must connect to the same hotel |
+| What cancellation policy applies to that hotel? | Neo4j, Cypher traversal | Follow the hotel to its policy |
+| Which source document supports the answer? | Neo4j, GraphRAG | Follow the hotel to its chunk and document |
+
+**Together:** SQL answers availability and transaction questions. Neo4j answers how hotel facts connect and where they came from.
+
+<!--
+The split follows the shape of the question. SQL works well when the answer
+comes from filtering or aggregating rows. Neo4j works well when the answer
+depends on a connected pattern, a path, or provenance.
+
+The availability row is deliberate. This workshop's graph does not store room
+inventory. The correct system for that question is the reservation system
+that owns the current inventory rows.
 -->
 
 ---

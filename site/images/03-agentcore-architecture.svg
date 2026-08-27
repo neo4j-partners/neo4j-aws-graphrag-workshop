@@ -79,9 +79,9 @@
   <use href="#icon-lambda" x="804" y="246" width="40" height="40"/>
   <text x="852" y="270" fill="#B55200" font-size="13.5" font-weight="700">AWS Lambda</text>
   <rect x="804" y="300" width="220" height="34" rx="8" fill="#E6F6F4"/>
-  <text x="914" y="321" fill="#0D5C54" font-size="10.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">search_hotel_knowledge</text>
+  <text x="914" y="321" fill="#0D5C54" font-size="10.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">search_hotel_passages</text>
   <rect x="804" y="342" width="220" height="34" rx="8" fill="#E6F6F4"/>
-  <text x="914" y="363" fill="#0D5C54" font-size="10.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">graph_query</text>
+  <text x="914" y="363" fill="#0D5C54" font-size="10.5" text-anchor="middle" font-family="'SF Mono',Menlo,monospace">query_hotel_records</text>
 
   <!-- AWS Secrets Manager -->
   <rect x="790" y="475" width="250" height="90" rx="14" fill="#FFFFFF" stroke="#DD344C" stroke-width="2" filter="url(#sh4)"/>

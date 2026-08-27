@@ -569,7 +569,7 @@ Module 2 lets you call each pattern directly. Module 3 lets the model choose by 
 This is the handoff to Module 3. The application fixes the implementation and
 input contract of each path; the model chooses between those paths.
 
-search_hotel_knowledge accepts query text and nothing else. Not an index name,
+search_hotel_passages accepts query text and nothing else. Not an index name,
 not a top_k, not a ranker. The model cannot widen its own search, and that is a
 deliberate constraint rather than a missing feature.
 

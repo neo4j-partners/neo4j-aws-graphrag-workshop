@@ -2,74 +2,8 @@
 
 # Module 4: Production Agent with AgentCore
 
-The Module 3 booking agent calls Python tools in the same notebook kernel. This
-module deploys the retrieval tools behind a managed MCP endpoint. A compact
-Strands example then passes the resolved MCP tools to an agent through the same
-`tools` interface used for local functions.
+Deploy the two read tools to AWS Lambda behind an IAM-authenticated AgentCore Gateway, then call them through MCP.
 
-**At a Glance**
+Run [`4.1_agentcore_gateway.ipynb`](4.1_agentcore_gateway.ipynb).
 
-- **Problems addressed:** remote access to retrieval tools and IAM authentication.
-- **Neo4j:** The Lambda tools are intended for retrieval. The fixed search uses reviewed Cypher, while the Text2Cypher tool uses a planning guard to reject writes.
-- **AWS:** AgentCore Gateway, AWS Lambda, IAM SigV4, and Secrets Manager for the Neo4j credential.
-- **You'll build:** Lambda functions named after the two read tools under the `hotel-booking-*` prefix, one Gateway, and IAM roles under `workshop-*`.
-
----
-
-## The Notebook
-
-| Notebook | What it demonstrates |
-|---|---|
-| [`4.1_agentcore_gateway.ipynb`](4.1_agentcore_gateway.ipynb) | Deploy the shared search function and a reusable Text2Cypher function, call both over IAM-authenticated MCP, and give the tools to a Strands agent |
-
-The notebook can be launched from the repository root, `notebooks/`, or this
-module directory. It always packages the `lambda_tools/` tree from this
-folder.
-
-## Deploy Retrieval Tools
-
-The Lambda functions expose the same read interfaces as Module 3.
-`search_hotel_passages` uses reviewed static Cypher and returns bounded results
-under `passages`. `query_hotel_records` relies on the Text2Cypher planning guard
-to reject writes and returns generated Cypher plus at most 25 rows. Both return
-the shared `ok` and `grounding_result` fields. The reservation command from
-Module 3 remains outside the Gateway. The workshop reuses the same Neo4j
-credential here to keep setup simple. In production, connect both functions
-with a read-only Neo4j user for a database-enforced boundary.
-
-Expected query-generation and query-execution failures become bounded
-`ok: false` application payloads. Unexpected infrastructure failures still
-raise, so an outage cannot look like an unsupported hotel fact.
-
-`mcp-proxy-for-aws` authenticates with IAM SigV4 and signs each request with the
-caller's AWS credentials. This connection does not require an API key.
-
-:warning: The participant IAM policy grants access by ARN prefix. Name Lambda
-functions `hotel-booking-*`, IAM roles `workshop-*` or
-`AmazonBedrockAgentCoreSDK*`, and secrets `workshop-*`, `neo4j-ws-*`, or
-`bedrock-agentcore-*`. Resources outside these prefixes return `AccessDenied`
-for participants whose permissions use the workshop policy.
-
-After verifying both tools directly over MCP, the notebook gives the resolved
-Gateway tools to a Strands agent. A trace shows the agent selecting a remote
-tool and using its evidence in the answer. AgentCore prefixes each model-visible
-base name with the target name, so the notebook normalizes that prefix before
-comparing the Gateway tools with the local names. The final examples include a
-passage question and a Paris average-rating question. Module 6 later provides
-the workshop's hands-on cross-session memory lab.
-
-When a participant reruns target creation, AgentCore raises
-`ConflictException`. The notebook deliberately skips the existing target rather
-than updating it. This is appropriate for the workshop's fresh-deploy flow. If
-a schema or description changed, delete the stale target before rerunning.
-
-## Files in This Folder
-
-| File | Purpose |
-|---|---|
-| `4.1_agentcore_gateway.ipynb` | Gateway, Lambda tools, IAM-authenticated MCP, and a Gateway-backed Strands agent |
-| `lambda_tools/` | One directory per Lambda handler, plus the shared requirements |
-
-## The workshop page
-
-`site/content/04-production-agent/index.en.md`
+See the [Module 4 workshop page](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/04-production-agent/) for instructions and background.

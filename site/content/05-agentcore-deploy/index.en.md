@@ -28,14 +28,16 @@ The deployment changes where the agent runs and where its credentials live:
 | Reachable only from Jupyter | Invoked through `InvokeAgentRuntime` by authorized AWS clients |
 | Session is your kernel's memory | Each invocation uses a caller-provided session ID |
 
-The deployed variant keeps Module 3's hybrid passage search and reservation
+The deployed variant keeps Module 3's two read tools and reservation
 transaction. Runtime request handling changes how a caller sends a request and
-receives a result, and the packaged agent uses a different tool set.
+receives a result, but the model still chooses between passage and structured
+reads from the same tool specifications.
 
 Module 3.1 gives the agent two read tools and calls the reservation command as a
-local Python operation in the write examples. Module 5 packages one passage
-read tool and exposes the reservation command as a second tool. Its system
-prompt directs the model to state when Neo4j lacks the required context.
+local Python operation in the write examples. Module 5 packages both read tools
+and exposes the reservation command as a third tool. Its system prompt directs
+the model to state when Neo4j lacks the required context and requires a stable
+hotel ID from passage search before a reservation write.
 
 ## What AgentCore Runtime Provides
 
@@ -100,7 +102,7 @@ def invoke(payload, context=None):
         "response": str(result),
         "request_id": request_id,
         "tools_used": tools_used,
-        "grounding_result": grounding_recorder.last_result,
+        "grounding_results": grounding_recorder.results,
         "command_result": command_result,
     }
 
@@ -183,15 +185,14 @@ finish.
 
 The diagram traces one invocation through the container. An authorized AWS
 client calls `InvokeAgentRuntime`, reaching the AgentCore Runtime box that runs
-as `GraphRagBookingAgent`. Inside, `booking_agent.py` holds three parts: the
-`search_hotel_knowledge` tool, the `create_reservation` tool, and the
-`BedrockModel` connection. Both tools call Neo4j directly from inside the
-container: `search_hotel_knowledge` reaches the hybrid retriever, and
-`create_reservation` reaches the write that enforces the guest-limit rule
-inside its own transaction. The `BedrockModel` connection calls Claude on
-Amazon Bedrock, which reasons over the context the tools returned. No
-component here calls out to a Gateway or an MCP server; both tools reach
-Neo4j from the same process that received the request.
+as `GraphRagBookingAgent`. Inside, `booking_agent.py` holds
+`search_hotel_passages`, `query_hotel_records`, `create_reservation`, and the
+`BedrockModel` connection. The passage tool reaches the hybrid retriever, the
+structured tool reaches guarded Text2Cypher, and the command reaches the write
+that enforces the guest-limit rule inside its own transaction. The
+`BedrockModel` connection calls Claude on Amazon Bedrock, which reasons over
+the evidence the tools returned. No component here calls out to a Gateway or
+an MCP server; all three tools reach Neo4j from the Runtime process.
 
 ## How Runtime Requests Work
 
@@ -241,9 +242,9 @@ The AgentCore toolkit builds a `linux/arm64` image in CodeBuild. Building for
 the Runtime target ensures that native Python packages match the container's
 processor architecture.
 
-## The Five Smoke Tests
+## The Six Smoke Tests
 
-The notebook runs five smoke tests against the deployed Runtime. Each test
+The notebook runs six smoke tests against the deployed Runtime. Each test
 checks structured tool results so a failure points to the retrieval or Neo4j
 decision that caused it. Selected response checks also confirm that the model
 used the context returned by Neo4j.
@@ -251,6 +252,7 @@ used the context returned by Neo4j.
 | Test | What it verifies |
 |---|---|
 | Hotel details | Retrieval returns the recorded address, `789 Corniche el-Nil, Cairo 11519, Egypt` |
+| Paris average | The agent selects `query_hotel_records` and returns generated Cypher plus an aggregate row |
 | Unknown hotel | The request is rejected, and Neo4j records no request |
 | Availability question | The tool returns `answerable: false` and `missing_fact: live_room_availability` |
 | 15-guest request | Neo4j returns `status: rejected` and writes no node |

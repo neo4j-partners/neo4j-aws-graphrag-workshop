@@ -11,15 +11,17 @@ that calls `build_lambda_zips` does not need to show:
    the zip cannot simply pip-install it by name. Its pure-Python source
    and JSON fixtures are copied in directly instead, and only those:
    `copy_shared_package` names what it wants rather than naming what to
-   skip. `notebooks/workshop/` is also a working directory. A local
-   `uv sync` leaves a 356 MB `.venv/` there, an editable install leaves
-   `build/` and `workshop.egg-info/`, and a denylist has to be extended
-   for each one before the next tool invents a directory that silently
-   blows past Lambda's 50 MB zipped and 250 MB unzipped limits. An
-   allowlist fails the other way: a new module the Lambda genuinely
-   needs has to match `*.py` or be added to `SHARED_DATA_DIRS`, and that
-   failure is a missing import at build time rather than a rejected
-   upload after a long install.
+   skip. `notebooks/workshop/` doubles as a local working directory: a
+   `uv sync` there leaves a 356 MB virtual environment behind, and an
+   editable install leaves a build tree and an egg-info directory beside
+   the modules. A denylist has to grow an entry for each of those, and
+   the one it is missing puts hundreds of megabytes into a package
+   Lambda caps at 50 MB zipped and 250 MB unzipped. An allowlist fails
+   the other way. A new module the Lambda genuinely needs is a Python
+   file next to the others and is picked up already; a new data
+   directory has to be added to `SHARED_DATA_DIRS`, and forgetting that
+   surfaces as a missing file the first time the handler runs rather
+   than as a rejected upload after a long install.
 3. **Excluded transitive weight.** `neo4j-graphrag` pulls in `numpy` and
    `scipy` for an experimental extraction pipeline and a sentence
    embedder that this retrieval path never imports. Leaving them out

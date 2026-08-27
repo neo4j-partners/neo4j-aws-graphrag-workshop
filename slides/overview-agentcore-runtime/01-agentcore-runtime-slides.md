@@ -57,7 +57,7 @@ section { font-size: 25px; }
 | Reachable only from Jupyter | Invoked through `InvokeAgentRuntime` by authorized AWS clients |
 | The session is your kernel's memory | Each invocation carries a caller-provided session ID |
 
-The hybrid passage search and reservation rule carry forward. The packaged tool set is different.
+Both read paths and the reservation rule carry forward. The packaged agent adds the reservation command as a third tool.
 
 <!--
 The hero question, which Chicago hotel has both a spa and a swimming pool,
@@ -73,9 +73,9 @@ service has many, and it needs to be told which conversation a request belongs
 to.
 
 Module 3 registered two read tools and called the reservation command directly.
-This deployment-oriented variant registers one passage-search tool and the
-reservation command as agent tools. The guest-limit rule is still enforced by
-Neo4j inside the write transaction.
+This deployment-oriented variant registers both read tools and the reservation
+command. The guest-limit rule is still enforced by Neo4j inside the write
+transaction.
 -->
 
 ---
@@ -107,14 +107,15 @@ the smoke tests simple.
 
 <!--
 Trace one invocation. An authorized AWS client calls InvokeAgentRuntime. The
-Runtime box runs GraphRagBookingAgent. Inside, booking_agent.py holds three
-parts: the search_hotel_knowledge tool, the create_reservation tool, and the
-BedrockModel connection.
+Runtime box runs GraphRagBookingAgent. Inside, booking_agent.py holds the
+search_hotel_passages, query_hotel_records, and create_reservation tools plus
+the BedrockModel connection.
 
-Both tools reach Neo4j directly from inside the container. The retrieval tool
-runs the hybrid retriever. The reservation tool runs the write that enforces
-the guest limit inside its own transaction. BedrockModel calls Claude, which
-reasons over what the tools returned.
+All three tools reach Neo4j directly from inside the container. Passage search
+runs the hybrid retriever. Structured search runs guarded Text2Cypher. The
+reservation tool runs the write that enforces the guest limit inside its own
+transaction. BedrockModel calls Claude, which reasons over what the tools
+returned.
 
 Point at what is absent: there is no Gateway and no MCP server anywhere in this
 picture. "Direct to Neo4j, No Gateway" explains why.
@@ -138,7 +139,7 @@ app = BedrockAgentCoreApp()
 def invoke(payload, context=None):
     ...
     return {"response": ..., "request_id": ..., "tools_used": ...,
-            "grounding_result": ..., "command_result": ...}
+            "grounding_results": ..., "command_result": ...}
 
 if __name__ == "__main__":
     app.run()
@@ -274,11 +275,12 @@ is the idempotency key.
 section { font-size: 24px; }
 </style>
 
-## The Five Smoke Tests
+## The Six Smoke Tests
 
 | Test | What it proves |
 |---|---|
 | Hotel details | Retrieval returns the recorded address, `789 Corniche el-Nil, Cairo 11519, Egypt` |
+| Paris average | `query_hotel_records` returns generated Cypher and an aggregate row |
 | Unknown hotel | Nothing is accepted, and Neo4j records no request |
 | Availability question | `answerable: false`, `missing_fact: live_room_availability` |
 | 15-guest request | `status: rejected`, and no node is written |
@@ -333,10 +335,9 @@ Three architectures, one graph underneath. This is synthesis, not restatement,
 so do not walk the modules again.
 
 The left two panels are two deployment patterns over the same graph. Module 4
-moves read tools out and keeps its agent local. Module 5 packages a
-deployment-oriented agent with one passage read tool and the reservation tool
-in-process. They share retrieval and command code, but not an identical tool
-set.
+moves the two read tools out and keeps its agent local. Module 5 packages both
+read tools and the reservation tool in-process. They share the same retrieval
+code and read-tool contracts.
 
 Ask the room which of those two they would ship. There is no right answer, and
 the discussion surfaces what they actually care about: reuse, blast radius,

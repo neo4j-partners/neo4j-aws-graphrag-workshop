@@ -59,35 +59,44 @@
   <rect x="130" y="265" width="440" height="255" rx="10" fill="#FFFFFF" stroke="#D6D6D6" stroke-width="1.5"/>
   <text x="150" y="288" font-size="12" font-weight="700" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">booking_agent.py</text>
 
-  <rect x="150" y="305" width="260" height="40" rx="6" fill="#F6FDFC" stroke="#01A88D"/>
-  <text x="164" y="329" font-size="11.5" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">search_hotel_knowledge</text>
+  <rect x="150" y="300" width="260" height="34" rx="6" fill="#F6FDFC" stroke="#01A88D"/>
+  <text x="164" y="321" font-size="11" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">search_hotel_passages</text>
 
-  <rect x="150" y="375" width="260" height="40" rx="6" fill="#F6FDFC" stroke="#01A88D"/>
-  <text x="164" y="399" font-size="11.5" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">create_reservation</text>
+  <rect x="150" y="350" width="260" height="34" rx="6" fill="#F6FDFC" stroke="#01A88D"/>
+  <text x="164" y="371" font-size="11" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">query_hotel_records</text>
 
-  <rect x="150" y="445" width="260" height="40" rx="6" fill="#F6FDFC" stroke="#01A88D"/>
-  <text x="164" y="469" font-size="11.5" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">BedrockModel</text>
+  <rect x="150" y="400" width="260" height="34" rx="6" fill="#F6FDFC" stroke="#01A88D"/>
+  <text x="164" y="421" font-size="11" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">create_reservation</text>
+
+  <rect x="150" y="450" width="260" height="34" rx="6" fill="#F6FDFC" stroke="#01A88D"/>
+  <text x="164" y="471" font-size="11" fill="#1A1A1A" font-family="'SFMono-Regular', Consolas, monospace">BedrockModel</text>
 
   <!-- Destination cards -->
-  <rect x="790" y="290" width="420" height="70" rx="8" fill="#FFFFFF" stroke="#4581C3" stroke-width="1.5" filter="url(#sh5)"/>
-  <use href="#icon-neo4j5" x="806" y="311" width="28" height="28" fill="#4581C3"/>
-  <text x="846" y="322" font-size="13" font-weight="700" fill="#1A1A1A">Neo4j hybrid retrieval</text>
-  <text x="846" y="340" font-size="11" fill="#555555">Vector + full-text search, expanded with Cypher</text>
+  <rect x="790" y="260" width="420" height="58" rx="8" fill="#FFFFFF" stroke="#4581C3" stroke-width="1.5" filter="url(#sh5)"/>
+  <use href="#icon-neo4j5" x="806" y="275" width="28" height="28" fill="#4581C3"/>
+  <text x="846" y="284" font-size="13" font-weight="700" fill="#1A1A1A">Neo4j hybrid retrieval</text>
+  <text x="846" y="302" font-size="11" fill="#555555">Source passages plus linked hotel facts</text>
 
-  <rect x="790" y="360" width="420" height="70" rx="8" fill="#FFFFFF" stroke="#4581C3" stroke-width="1.5" filter="url(#sh5)"/>
-  <use href="#icon-neo4j5" x="806" y="381" width="28" height="28" fill="#4581C3"/>
-  <text x="846" y="392" font-size="13" font-weight="700" fill="#1A1A1A">Neo4j write</text>
-  <text x="846" y="410" font-size="11" fill="#555555">Guest-limit rule enforced in the same transaction</text>
+  <rect x="790" y="325" width="420" height="58" rx="8" fill="#FFFFFF" stroke="#4581C3" stroke-width="1.5" filter="url(#sh5)"/>
+  <use href="#icon-neo4j5" x="806" y="340" width="28" height="28" fill="#4581C3"/>
+  <text x="846" y="349" font-size="13" font-weight="700" fill="#1A1A1A">Guarded Text2Cypher</text>
+  <text x="846" y="367" font-size="11" fill="#555555">Generated query planned with EXPLAIN</text>
 
-  <rect x="790" y="430" width="420" height="70" rx="8" fill="#FFFFFF" stroke="#01A88D" stroke-width="1.5" filter="url(#sh5)"/>
-  <use href="#icon-bedrock5" x="806" y="451" width="28" height="28"/>
-  <text x="846" y="462" font-size="13" font-weight="700" fill="#1A1A1A">Claude on Amazon Bedrock</text>
-  <text x="846" y="480" font-size="11" fill="#555555">Reasons over the returned evidence</text>
+  <rect x="790" y="390" width="420" height="58" rx="8" fill="#FFFFFF" stroke="#4581C3" stroke-width="1.5" filter="url(#sh5)"/>
+  <use href="#icon-neo4j5" x="806" y="405" width="28" height="28" fill="#4581C3"/>
+  <text x="846" y="414" font-size="13" font-weight="700" fill="#1A1A1A">Neo4j write</text>
+  <text x="846" y="432" font-size="11" fill="#555555">Guest-limit rule enforced in the same transaction</text>
+
+  <rect x="790" y="455" width="420" height="58" rx="8" fill="#FFFFFF" stroke="#01A88D" stroke-width="1.5" filter="url(#sh5)"/>
+  <use href="#icon-bedrock5" x="806" y="470" width="28" height="28"/>
+  <text x="846" y="479" font-size="13" font-weight="700" fill="#1A1A1A">Claude on Amazon Bedrock</text>
+  <text x="846" y="497" font-size="11" fill="#555555">Selects tools and generates structured Cypher</text>
 
   <!-- Arrows: chips -> destinations -->
-  <line x1="410" y1="325" x2="788" y2="325" stroke="#4581C3" stroke-width="2" marker-end="url(#arrowSteel5)"/>
-  <line x1="410" y1="395" x2="788" y2="395" stroke="#4581C3" stroke-width="2" marker-end="url(#arrowSteel5)"/>
-  <line x1="410" y1="465" x2="788" y2="465" stroke="#01A88D" stroke-width="2" marker-end="url(#arrowTeal5)"/>
+  <line x1="410" y1="317" x2="788" y2="289" stroke="#4581C3" stroke-width="2" marker-end="url(#arrowSteel5)"/>
+  <line x1="410" y1="367" x2="788" y2="354" stroke="#4581C3" stroke-width="2" marker-end="url(#arrowSteel5)"/>
+  <line x1="410" y1="417" x2="788" y2="419" stroke="#4581C3" stroke-width="2" marker-end="url(#arrowSteel5)"/>
+  <line x1="410" y1="467" x2="788" y2="484" stroke="#01A88D" stroke-width="2" marker-end="url(#arrowTeal5)"/>
 
   <!-- Legend -->
   <text x="46" y="566" font-size="11.5" font-weight="700" fill="#555555">LINE COLORS</text>

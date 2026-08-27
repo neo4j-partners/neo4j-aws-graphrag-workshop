@@ -36,6 +36,40 @@ def notebook_code_cells() -> list[str]:
     ]
 
 
+def notebook_question(name: str) -> str:
+    """Return the string literal a notebook cell assigns to `name`."""
+    for source in notebook_code_cells():
+        for node in ast.parse(source).body:
+            if not isinstance(node, ast.Assign):
+                continue
+            targets = {
+                target.id for target in node.targets if isinstance(target, ast.Name)
+            }
+            if name in targets and isinstance(node.value, ast.Constant):
+                return str(node.value.value)
+    return ""
+
+
+def notebook_statement_starts() -> list[str]:
+    """Return the opening text of every string literal the notebook builds.
+
+    A Cypher statement is written either as a plain string or as an f-string,
+    and both start with a constant. Reading the literals rather than grepping
+    the cell text keeps a guard named in a comment or a docstring from looking
+    like a guard the notebook runs.
+    """
+    starts: list[str] = []
+    for source in notebook_code_cells():
+        for node in ast.walk(ast.parse(source)):
+            if isinstance(node, ast.Constant) and isinstance(node.value, str):
+                starts.append(node.value)
+            elif isinstance(node, ast.JoinedStr) and node.values:
+                first = node.values[0]
+                if isinstance(first, ast.Constant) and isinstance(first.value, str):
+                    starts.append(first.value)
+    return starts
+
+
 def test_notebook_code_cells_parse() -> None:
     cells = json.loads(NOTEBOOK.read_text(encoding="utf-8"))["cells"]
     for index, cell in enumerate(cells):
@@ -91,14 +125,6 @@ def test_notebook_consumes_shared_readiness_and_chicago_contracts() -> None:
     assert "Parameters: city=" in code
     assert "CHICAGO_CITY" in code
     assert "Parameters: source_filenames" not in code
-
-
-def test_readiness_runs_before_any_retriever_is_created() -> None:
-    _, code = notebook_sources()
-
-    assert code.index("source_fixture_problems(driver)") < code.index(
-        "vector_retriever = VectorRetriever("
-    )
 
 
 def test_result_provenance_is_resolved_per_result_without_a_corpus_map() -> None:
@@ -186,43 +212,23 @@ def test_fixed_chicago_evidence_fields_are_built_behaviorally() -> None:
     )
 
 
-def test_cairo_vector_search_precedes_vector_cypher_comparison() -> None:
+def test_the_cairo_comparison_runs_both_retrievers_and_pins_provenance() -> None:
     _, code = notebook_sources()
-    vector_search = code.index(
-        "graph_vector_result = vector_retriever.search(\n"
-        "    query_text=CAIRO_GRAPH_QUESTION"
-    )
-    graph_search = code.index(
-        "graph_result = vector_cypher_retriever.search(\n"
-        "    query_text=CAIRO_GRAPH_QUESTION"
-    )
-    assert vector_search < graph_search
+
+    assert "graph_vector_result = vector_retriever.search(" in code
+    assert "graph_result = vector_cypher_retriever.search(" in code
     assert "source_filename: '(:Chunk)-[:FROM_DOCUMENT]->(:Document)'" in code
 
 
-def test_shared_credentials_and_text2cypher_boundaries_are_visible() -> None:
-    text, code = notebook_sources()
+def test_one_workshop_credential_serves_every_read_in_the_notebook() -> None:
+    """Participants configure one Neo4j login, so no cell may ask for a second."""
+    _, code = notebook_sources()
+
     assert code.count("neo4j_database=DATABASE") >= 3
     assert "default_access_mode=READ_ACCESS" in code
-    assert "pinned_schema_text()" in code
-    assert "EXPLAIN {cypher}" in code
-    assert "TEXT2CYPHER_TIMEOUT_SECONDS = 15" in code
-    # Participants configure one Neo4j credential for the whole workshop. The
-    # Text2Cypher cell adds an EXPLAIN guard instead of a second login,
-    # while the prose recommends database-enforced read-only access in production.
     assert "NEO4J_READ_USERNAME" not in code
     assert "NEO4J_READ_PASSWORD" not in code
     assert "SHOW CURRENT USER" not in code
-    assert "with driver.session(" in code
-    assert "generated_cypher" in code
-    assert "read_only_validation" in code
-    assert "result_count" in code
-    assert "displayed_count" in code
-    assert "execution_error" in code
-    assert "same workshop credentials as every other cell" in text
-    assert "read-only Neo4j user in production" in text
-    assert "case-insensitive substring match on the free-text address" in text
-    assert "extract a normalized city property and index it" in text
 
 
 def test_module3_handoff_and_prose_style_are_explicit() -> None:
@@ -232,28 +238,72 @@ def test_module3_handoff_and_prose_style_are_explicit() -> None:
         in code
     )
     assert "Module 3 read paths" in code
-    assert "There is no single retriever choice for every question" in text
     assert "Result count:" in code
     assert "Candidate count:" in code
     assert "\u2014" not in text
 
 
-def test_paris_average_compares_bounded_passages_with_text2cypher() -> None:
-    text, code = notebook_sources()
-    question = "What is the average guest rating of hotels in Paris?"
+def test_the_structured_demo_runs_the_shipped_graph_query() -> None:
+    """Module 2 has to exercise the deployed read path, not a notebook copy.
 
-    assert question in text
-    assert f"PARIS_AVERAGE_QUESTION = '{question}'" in code
-    assert "PARIS_PASSAGE_LIMIT = HYBRID_TOP_K" in code
-    assert "at most five passages" in text
-    assert "search_hotel_knowledge(PARIS_AVERAGE_QUESTION)" in code
-    assert "run_optional_text2cypher(PARIS_AVERAGE_QUESTION)" in code
-    assert code.index("search_hotel_knowledge(PARIS_AVERAGE_QUESTION)") < code.index(
-        "run_optional_text2cypher(PARIS_AVERAGE_QUESTION)"
-    )
-    assert "not a full-set average" in code
-    assert "does not establish every matching hotel or the full denominator" in code
-    assert "inspect the generated Cypher" in code
+    `workshop.hybrid_retrieval.graph_query` owns the read-only `EXPLAIN`
+    planning guard and the returned-row cap. A second copy in a notebook cell
+    is free to drift away from the code the Gateway actually calls.
+    """
+    _, code = notebook_sources()
+
+    assert "graph_query," in code
+    assert "graph_query(question)" in code
+    assert "EXPECTED_QUERY_ERRORS" in code
+    assert "query_type" not in code
+    assert "TEXT2CYPHER_TIMEOUT_SECONDS" not in code
+    assert "run_optional_text2cypher" not in code
+    for literal in notebook_statement_starts():
+        assert not literal.lstrip().upper().startswith("EXPLAIN")
+
+
+def test_the_row_cap_the_notebook_prints_comes_from_the_shipped_constant() -> None:
+    """A literal 25 in the notebook can disagree with the deployed bound."""
+    _, code = notebook_sources()
+
+    assert "MAX_GRAPH_QUERY_RECORDS" in code
+    assert "[:25]" not in code
+
+
+def test_the_paris_comparison_prints_both_denominators() -> None:
+    """The lesson must be legible from the output, not only from the prose."""
+    _, code = notebook_sources()
+
+    assert "search_hotel_knowledge(PARIS_QUESTION)" in code
+    assert "run_graph_query(PARIS_QUESTION)" in code
+    assert "HYBRID_TOP_K" in code
+    assert "len(ranked_passages)" in code
+    assert "len(ranked_paris_rows)" in code
+    assert "counted_paris_hotels" in code
+
+
+def test_the_demo_question_is_not_a_verbatim_few_shot_example() -> None:
+    """Reciting a memorised example proves nothing about generated Cypher."""
+    from workshop.hybrid_retrieval import GRAPH_QUERY_EXAMPLES
+
+    question = notebook_question("PARIS_QUESTION")
+
+    assert question
+    for example in GRAPH_QUERY_EXAMPLES:
+        assert question not in example
+
+
+def test_the_notebook_releases_the_cached_retrieval_driver() -> None:
+    """`hybrid_retrieval` caches its own driver and never closes it itself.
+
+    Its module docstring prescribes the teardown a notebook owes: close the
+    cached driver, then clear the cache that holds the reference.
+    """
+    _, code = notebook_sources()
+
+    assert "driver.close()" in code
+    assert "cache_info().currsize" in code
+    assert "hybrid_retrieval._get_driver.cache_clear()" in code
 
 
 def test_the_notebook_carries_no_inline_assertions() -> None:

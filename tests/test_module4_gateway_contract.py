@@ -9,18 +9,16 @@ from types import ModuleType
 
 import pytest
 from neo4j_graphrag.exceptions import Text2CypherRetrievalError
-from workshop import grounding
+from workshop import contracts, grounding
+from workshop.agent_tools import PASSAGE_TOOL, RECORD_TOOL
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 MODULE_DIR = REPO_ROOT / "notebooks" / "04-production-agent"
+NOTEBOOK = MODULE_DIR / "4.1_agentcore_gateway.ipynb"
 SCHEMAS = MODULE_DIR / "tool_schemas" / "tools.json"
-GATEWAY_CONTRACT = MODULE_DIR / "gateway_contract.py"
-PASSAGE_HANDLER = (
-    MODULE_DIR / "lambda_tools" / "search_hotel_passages" / "lambda_function.py"
-)
-RECORD_HANDLER = (
-    MODULE_DIR / "lambda_tools" / "query_hotel_records" / "lambda_function.py"
-)
+LAMBDA_SRC = MODULE_DIR / "lambda_tools"
+PASSAGE_HANDLER = LAMBDA_SRC / PASSAGE_TOOL / "lambda_function.py"
+RECORD_HANDLER = LAMBDA_SRC / RECORD_TOOL / "lambda_function.py"
 
 PASSAGES = [
     {
@@ -42,9 +40,17 @@ def load_module(name: str, path: Path) -> ModuleType:
     return module
 
 
-@pytest.fixture(scope="module")
-def gateway_contract() -> ModuleType:
-    return load_module("module4_gateway_contract", GATEWAY_CONTRACT)
+def tool_schemas() -> list[dict]:
+    """Return the committed Gateway tool schemas."""
+    return json.loads(SCHEMAS.read_text())
+
+
+def notebook_code() -> str:
+    """Return every code cell of the Module 4 notebook as one string."""
+    cells = json.loads(NOTEBOOK.read_text())["cells"]
+    return "\n".join(
+        "".join(cell["source"]) for cell in cells if cell["cell_type"] == "code"
+    )
 
 
 @pytest.fixture
@@ -58,17 +64,8 @@ def record_handler() -> ModuleType:
 
 
 def test_gateway_schema_advertises_the_two_shared_read_tools() -> None:
-    schemas = json.loads(SCHEMAS.read_text())
-    assert [entry["name"] for entry in schemas] == [
-        "search_hotel_passages",
-        "query_hotel_records",
-    ]
-
-    passage, records = schemas
-    assert "query_hotel_records" in passage["description"]
-    assert "source wording" in passage["description"]
-    assert "search_hotel_passages" in records["description"]
-    assert "at most 25 rows" in records["description"]
+    schemas = tool_schemas()
+    assert [entry["name"] for entry in schemas] == [PASSAGE_TOOL, RECORD_TOOL]
 
     for entry in schemas:
         input_schema = entry["input_schema"]
@@ -89,12 +86,62 @@ def test_gateway_schema_advertises_the_two_shared_read_tools() -> None:
         }
 
 
-def test_registered_gateway_schema_uses_only_supported_fields(
-    gateway_contract: ModuleType,
+@pytest.mark.parametrize(
+    ("tool_name", "sibling"),
+    [(PASSAGE_TOOL, RECORD_TOOL), (RECORD_TOOL, PASSAGE_TOOL)],
+    ids=[PASSAGE_TOOL, RECORD_TOOL],
+)
+def test_each_description_routes_away_to_its_sibling_tool(
+    tool_name: str, sibling: str
 ) -> None:
-    source = json.loads(SCHEMAS.read_text())[0]["input_schema"]
+    """The description is the whole routing rule, so check what it has to carry.
 
-    assert gateway_contract.gateway_input_schema(source) == {
+    Not the exact prose. A description is edited for a model, and pinning it
+    byte for byte turns every wording improvement into a failing test that
+    teaches nothing. What has to hold is that a description exists, that it
+    says something, and that it names the other tool so a misrouted question
+    has somewhere to go.
+    """
+    entry = next(item for item in tool_schemas() if item["name"] == tool_name)
+    description = entry["description"]
+
+    assert isinstance(description, str)
+    assert description.strip()
+    assert sibling in description
+    assert "live room availability" in description
+
+
+def test_the_notebook_packages_exactly_the_tools_the_gateway_registers() -> None:
+    """One rename must not leave a Gateway target pointed at a missing Lambda.
+
+    The packaging cell derives its function list from `tools.json` rather than
+    restating the names, and this is the offline check that it still does.
+    """
+    code = notebook_code()
+    assert 'json.loads((MODULE_DIR / "tool_schemas" / "tools.json").read_text())' in code
+    assert 'LAMBDA_SRC / entry["name"]' in code
+    assert "assert TOOL_NAMES == [PASSAGE_TOOL, RECORD_TOOL]" in code
+
+    for entry in tool_schemas():
+        handler = LAMBDA_SRC / entry["name"] / "lambda_function.py"
+        assert handler.is_file(), handler
+
+    built = sorted(path.name for path in LAMBDA_SRC.iterdir() if path.is_dir())
+    assert built == sorted(entry["name"] for entry in tool_schemas())
+
+
+def test_the_notebook_forwards_the_configured_model_to_the_lambdas() -> None:
+    """The role grants one model; the function has to be told to use that one."""
+    code = notebook_code()
+    assert '"MODEL_ID": CONFIGURED_MODEL_ID' in code
+    assert "get_function_configuration" in code
+
+
+@pytest.mark.parametrize("index", [0, 1], ids=[PASSAGE_TOOL, RECORD_TOOL])
+def test_registered_gateway_schema_uses_only_supported_fields(index: int) -> None:
+    source = tool_schemas()[index]["input_schema"]
+
+    assert contracts.gateway_input_schema(source) == {
         "type": "object",
         "properties": {
             "query": {
@@ -106,6 +153,15 @@ def test_registered_gateway_schema_uses_only_supported_fields(
         },
         "required": ["query"],
     }
+
+
+def test_the_gateway_projection_drops_every_unsupported_property_key() -> None:
+    """`minLength`, `format`, and `additionalProperties` are not registrable."""
+    projected = contracts.gateway_reservation_input_schema()
+
+    assert "additionalProperties" not in projected
+    for definition in projected["properties"].values():
+        assert set(definition) <= contracts.GATEWAY_PROPERTY_KEYS
 
 
 @pytest.mark.parametrize(
@@ -128,7 +184,7 @@ def test_both_handlers_reject_invalid_or_extra_input(
     expected = {
         "ok": False,
         "error_code": grounding.INVALID_QUERY,
-        "error_message": "input must contain only query as a non-empty string",
+        "error_message": grounding.INVALID_QUERY_MESSAGE,
     }
     assert passage_handler.handler(event, None) == expected
     assert record_handler.handler(event, None) == expected
@@ -217,6 +273,18 @@ def test_record_handler_bounds_expected_text2cypher_failures(
     assert result["error_message"].startswith("Text2CypherRetrievalError:")
 
 
+def test_the_record_lambda_shares_the_one_expected_error_tuple(
+    record_handler: ModuleType,
+) -> None:
+    """A fourth expected exception has to reach both callers, not one of them."""
+    from workshop import agent_tools, hybrid_retrieval
+
+    assert record_handler.EXPECTED_QUERY_ERRORS is (
+        hybrid_retrieval.EXPECTED_QUERY_ERRORS
+    )
+    assert agent_tools.EXPECTED_QUERY_ERRORS is hybrid_retrieval.EXPECTED_QUERY_ERRORS
+
+
 def test_record_handler_leaves_unexpected_infrastructure_failure_visible(
     record_handler: ModuleType,
     monkeypatch: pytest.MonkeyPatch,
@@ -229,21 +297,14 @@ def test_record_handler_leaves_unexpected_infrastructure_failure_visible(
         record_handler.handler({"query": "Try a generated query"}, None)
 
 
-def test_gateway_names_map_directly_to_lambdas_and_normalize_prefixes(
-    gateway_contract: ModuleType,
-) -> None:
-    assert gateway_contract.lambda_function_name("search_hotel_passages") == (
-        "hotel-booking-search_hotel_passages"
+def test_gateway_names_map_directly_to_lambdas_and_normalize_prefixes() -> None:
+    assert contracts.lambda_function_name(PASSAGE_TOOL) == (
+        f"hotel-booking-{PASSAGE_TOOL}"
     )
-    assert gateway_contract.lambda_function_name("query_hotel_records") == (
-        "hotel-booking-query_hotel_records"
+    assert contracts.lambda_function_name(RECORD_TOOL) == f"hotel-booking-{RECORD_TOOL}"
+    assert contracts.gateway_base_name(f"passage-target___{PASSAGE_TOOL}") == (
+        PASSAGE_TOOL
     )
-    assert gateway_contract.gateway_base_name(
-        "passage-target___search_hotel_passages"
-    ) == ("search_hotel_passages")
-    assert (
-        gateway_contract.gateway_base_name("query_hotel_records")
-        == "query_hotel_records"
-    )
+    assert contracts.gateway_base_name(RECORD_TOOL) == RECORD_TOOL
     assert PASSAGE_HANDLER.is_file()
     assert RECORD_HANDLER.is_file()

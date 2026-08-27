@@ -27,7 +27,7 @@ A hands-on workshop in six modules. You build a hotel knowledge graph, compare s
 | [05: Deploy to AgentCore Runtime](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/site/content/05-agentcore-deploy) | `5.1_deploy.ipynb` | Containerized agent on AgentCore Runtime, one request correlated end to end |
 | [06: Inspectable Neo4j Memory](https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/tree/main/site/content/06-neo4j-memory) | `6.1_neo4j_memory.ipynb` | Cross-session graph memory with actor-scoped recall and full provenance tracing |
 
-Each module folder under `notebooks/` carries its own `README.md`: an At a Glance summary, what the module proves, and what every file in the folder is for.
+Each module folder under `notebooks/` has a short `README.md` that says what the module is, which notebook or notebooks to run, and where to find the full lesson on the workshop site.
 
 Notebook path setup supports three launch locations: the repository root,
 `notebooks/`, and the notebook's own module directory. All three resolve the

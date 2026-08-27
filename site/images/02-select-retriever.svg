@@ -89,7 +89,7 @@
     <text x="658" y="361" fill="#3C4450" font-size="10.5">Reviewed Cypher adds related graph facts.</text>
     <text x="658" y="383" fill="#6B7280" font-size="8" font-weight="700" letter-spacing="0.6">WORKSHOP CHOICE</text>
     <text x="658" y="399" fill="#3C4450" font-size="10">Exact names, meaning, and connected fields</text>
-    <text x="658" y="416" fill="#3C4450" font-size="9.5">Used by search_hotel_knowledge</text>
+    <text x="658" y="416" fill="#3C4450" font-size="9.5">Used by search_hotel_passages</text>
   </g>
 
   <line x1="480" y1="426" x2="480" y2="465" stroke="#667085" stroke-width="1.6" marker-end="url(#arrow)"/>
