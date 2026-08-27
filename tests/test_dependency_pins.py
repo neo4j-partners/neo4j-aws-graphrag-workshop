@@ -1,6 +1,6 @@
 # Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
 # SPDX-License-Identifier: MIT-0
-"""Guard the three pinned dependencies against drifting apart across the repo.
+"""Guard the pinned dependencies against drifting apart across the repo.
 
 Four files declare what the workshop installs, and a participant can run code
 against all four in one sitting:
@@ -18,6 +18,12 @@ supplies the Text2Cypher path that refuses a plan the database does not report
 as read-only. If those versions differ between the notebook and the deployment,
 the agent a participant built stops being the agent that got deployed, and
 nothing in the notebook output says so.
+
+bedrock-agentcore is the same story from the other end. The kernel builds the
+Module 5 payload against it and the Runtime image serves invocations with it,
+so the two have to agree. Its starter toolkit is declared in one file only,
+where the pin buys something different: the toolkit writes the Dockerfile and
+drives the CodeBuild job, so a float changes how the image is built.
 
 These tests assert consistency rather than literals. They do not know that the
 agreed version is 1.53.0 or 1.19.0, so a deliberate upgrade that touches every
@@ -65,19 +71,39 @@ DECLARATION_FILES = (
     RUNTIME_REQUIREMENTS,
 )
 
-PINNED_PACKAGES = ("strands-agents", "neo4j", "neo4j-graphrag")
+PINNED_PACKAGES = (
+    "strands-agents",
+    "neo4j",
+    "neo4j-graphrag",
+    "bedrock-agentcore",
+    "bedrock-agentcore-starter-toolkit",
+)
 
 # Which file is expected to declare which package, written from what the files
 # hold today. Consistency alone passes vacuously when a file drops a pin
 # outright, because whatever is left still agrees with itself. This map is what
 # catches a deletion. It carries no version numbers, so an upgrade never has to
 # touch it. The retrieval Lambdas call Neo4j directly and never build an agent,
-# which is why strands-agents is absent there rather than missing.
+# which is why strands-agents is absent there rather than missing. The two
+# bedrock-agentcore packages are narrower still: the runtime library belongs in
+# the kernel and the image, and the starter toolkit only in the kernel, because
+# nothing inside the container ever configures a Runtime.
 EXPECTED_DECLARATIONS = {
-    REQUIREMENTS: {"strands-agents", "neo4j", "neo4j-graphrag"},
+    REQUIREMENTS: {
+        "strands-agents",
+        "neo4j",
+        "neo4j-graphrag",
+        "bedrock-agentcore",
+        "bedrock-agentcore-starter-toolkit",
+    },
     PYPROJECT: {"strands-agents", "neo4j", "neo4j-graphrag"},
     LAMBDA_REQUIREMENTS: {"neo4j", "neo4j-graphrag"},
-    RUNTIME_REQUIREMENTS: {"strands-agents", "neo4j", "neo4j-graphrag"},
+    RUNTIME_REQUIREMENTS: {
+        "strands-agents",
+        "neo4j",
+        "neo4j-graphrag",
+        "bedrock-agentcore",
+    },
 }
 
 # The Python floor the hosted lab image ships. A package that asks for more than

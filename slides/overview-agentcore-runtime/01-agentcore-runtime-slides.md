@@ -166,7 +166,7 @@ smoke tests assert on those structured fields rather than on prose.
 
 Docker copies only from its build context, and the agent depends on two things outside it.
 
-- **`notebooks/workshop/`** is the shared retrieval package, and `uv build --wheel` writes it into the build context
+- **`notebooks/workshop/`** is the shared retrieval package, and `pip wheel --no-deps` writes it into the build context
 - **`reservation_command.py`** comes from Module 3, and the notebook copies it in beside the wheel
 - **`BUILD_INFO.txt`** records the git commit and working-tree status inside the image
 - **CodeBuild** produces the `linux/arm64` image and pushes it to ECR

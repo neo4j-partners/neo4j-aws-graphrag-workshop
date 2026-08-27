@@ -231,9 +231,11 @@ build. Git ignores the staged copies, and each notebook run replaces them. The
 original files remain the source of truth, including
 `notebooks/03-grounded-booking-agent/reservation_command.py`.
 
-The staging step packages `workshop/` as a wheel with `uv build --wheel`. It
-also writes the current git commit and working tree status to `BUILD_INFO.txt`.
-The container retains this file as a record of the source used for the build.
+The staging step packages `workshop/` as a wheel with `pip wheel --no-deps`,
+using the notebook's own interpreter so the wheel matches the environment that
+built it. It also writes the current git commit and working tree status to
+`BUILD_INFO.txt`, which is generated on every run rather than kept in git. The
+container retains that file as a record of the source used for the build.
 
 The AgentCore toolkit builds a `linux/arm64` image in CodeBuild. Building for
 the Runtime target ensures that native Python packages match the container's

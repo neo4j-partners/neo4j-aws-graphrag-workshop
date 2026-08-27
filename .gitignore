@@ -59,8 +59,9 @@ notebooks/05-agentcore-deploy/runtime_app/BUILD_INFO.txt
 notebooks/05-agentcore-deploy/runtime_app/.bedrock_agentcore.yaml
 notebooks/05-agentcore-deploy/runtime_app/Dockerfile.bak
 
-# Build artifacts from `uv build --wheel` on notebooks/workshop/pyproject.toml
-# (also produced by the Module 4.1 Lambda build, in a temp directory instead).
+# Setuptools leaves these in the source tree when 5.1_deploy.ipynb runs
+# `pip wheel --no-deps` on notebooks/workshop/pyproject.toml. The Module 4.1
+# Lambda build does not produce them: it copies the package tree instead.
 notebooks/workshop/build/
 notebooks/workshop/workshop.egg-info/
 

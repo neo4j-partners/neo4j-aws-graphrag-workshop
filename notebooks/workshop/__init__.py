@@ -29,3 +29,9 @@ No module in this package raises at import. `graph_connection` used to, when
 `NEO4J_PASSWORD` was unset; that check now lives in `require_neo4j_env()`, which
 a caller invokes when it cannot proceed without a database.
 """
+
+# Bumped on any change that reaches a running lab: notebook content, this
+# package's modules, or the deploy/runtime image. `1.0_verify_environment.ipynb`
+# prints this line first, so a support request carries which revision of the
+# workshop the participant is actually running.
+__version__ = "0.1.0"

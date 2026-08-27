@@ -27,8 +27,16 @@ pyarrow>=16.1.0
 # on a lab account with no sign that the key was dropped.
 boto3>=1.39.0
 botocore>=1.39.0
-bedrock-agentcore>=0.1.0
-bedrock-agentcore-starter-toolkit>=0.1.0
+# bedrock-agentcore is what the deployed image imports to serve invocations,
+# and `runtime_app/agent_requirements.txt` pins it to this same version, so the
+# kernel a participant builds the payload in runs what the container runs. The
+# starter toolkit is the other half of Module 5: it writes the Dockerfile,
+# uploads the build context and drives the CodeBuild job, so a range that
+# resolves differently next Tuesday changes how the image is built with nothing
+# in this repository changing. Both declare `requires-python = ">=3.10"`, which
+# the hosted lab image satisfies.
+bedrock-agentcore==1.22.0
+bedrock-agentcore-starter-toolkit==0.3.12
 mcp>=1.0.0
 mcp-proxy-for-aws==1.6.4
 python-dotenv>=1.0.0
