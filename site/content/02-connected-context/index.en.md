@@ -1,13 +1,24 @@
 ---
-title: "Module 2: From Vector Search to Graph-Enriched Retrieval"
+title: "Module 2: Compare GraphRAG Retrieval Paths"
 weight: 30
 ---
 
-This module introduces retrieval in the order that each new pattern builds on the previous one. It starts with vector search, adds a reviewed graph traversal, introduces full-text search and its graph-enriched form, combines vector and full-text signals with hybrid retrieval, and finishes with two structured-query patterns.
+**Purpose:** Turn the graph from Module 1 into tested read paths for a grounded
+agent.
+
+This module compares GraphRAG retrieval paths for different question types.
+
+* **Passage search:** Find relevant hotel text, then add linked hotel facts.
+* **Structured search:** Query hotel records directly for counts, filters, and
+  relationships.
+* **Module 3 handoff:** Give both tested paths to one agent and let it choose.
+
+The exercises start with vector search. They then add graph traversal,
+full-text search, hybrid search, and structured queries.
 
 Take the question "Which Chicago hotels offer both a spa and a swimming pool?" A similarity search ranks passages by how closely they match the question's meaning. It cannot guarantee that two amenity conditions apply to the same `Hotel` node. A Cypher query can test both relationships as exact conditions.
 
-**Retrieval order in this module**
+**Pattern reference**
 
 | Order | Name | Type | Best for |
 |-------|------|------|----------|
@@ -162,7 +173,8 @@ RETURN node.text AS source_chunk, score AS fulltext_score
 ORDER BY fulltext_score DESC
 :::
 
-This is a direct Neo4j search method. It is not a class named `FulltextRetriever` in the workshop's `neo4j-graphrag` Python version.
+This workshop version uses Neo4j full-text search directly. Its graph-enriched
+form adds a reviewed Cypher traversal to the index result.
 
 ## 4. Full-Text Search with Cypher Traversal
 

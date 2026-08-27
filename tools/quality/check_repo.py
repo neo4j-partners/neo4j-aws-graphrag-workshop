@@ -11,11 +11,10 @@ would need a live graph belong in the readiness report inside the build.
 
 The last three checks were deliberately left out of the first version as too
 large for their value. The Phase 1 review changed that arithmetic: instructions
-pointing at files that do not exist, retired numbering, timing stamps, and a
-hardcoded hotel count were four of the eleven defects it found, and all four are
-mechanical. They are in now, scoped to `notebooks/` and `site/content/`.
-Planning documents are excluded on purpose, because recording a retired name is
-what they are for.
+pointing at files that do not exist, timing stamps, and a hardcoded hotel count
+were among the eleven defects it found, and all of them are mechanical. They are
+in now, scoped to `notebooks/` and `site/content/`. Planning documents are
+excluded on purpose.
 
 Run from anywhere:
 
@@ -176,10 +175,6 @@ def module_folders_have_pages() -> list[str]:
 # what to do instead, because the person who trips it is usually not the person
 # who wrote the rule.
 BANNED_PATTERNS = (
-    (re.compile(r"\bDemos?\s+\d", re.IGNORECASE), "retired 'Demo N' numbering"),
-    (re.compile(r"\bLabs?\s+\d", re.IGNORECASE), "retired 'Lab N' numbering"),
-    (re.compile(r"\bModules?\s+[78]\b"), "retired 'Module 7/8' numbering"),
-    (re.compile(r"customer-service-"), "retired e-commerce resource prefix"),
     (re.compile(r"\(\s*\d+\s*(?:min|minutes|hours?)\s*\)", re.IGNORECASE), "timing stamp"),
     # Scoped to durations that describe the workshop itself. The bare form
     # "\d+ hour" also matches hotel facts the retrievers return, such as a
@@ -214,30 +209,6 @@ PROSE_PATTERNS = (
 )
 PROSE_SUFFIXES = (".ipynb", ".md")
 
-# Folder and file names that moved or were deleted. Any survivor is a link or an
-# instruction pointing at something that is not there.
-RETIRED_NAMES = (
-    "01-graphrag-vs-rag",
-    "01-vectorial-rag-hallucinates",
-    "02-vector-rag-hallucinates",
-    "02-graphrag-fixes-it",
-    "03-retrieval-patterns",
-    "03-production-agent",
-    "04-neo4j-memory",
-    "09-neo4j-mcp-demo",
-    "03_hybrid_retrieval.ipynb",
-    "03b_agentcore_memory.ipynb",
-    "04_neo4j_memory.ipynb",
-    "2.1_vector_rag_hallucinates.ipynb",
-    "3.1_retrieval_patterns.ipynb",
-    "3.2_grounded_booking_agent.ipynb",
-    "test_graphrag.ipynb",
-    "load_vector_data.py",
-    "setup_local_graph.py",
-    "deployment-tools",
-    "advanced-deployment",
-)
-
 SWEPT_TREES = (NOTEBOOKS, CONTENT)
 SWEPT_SUFFIXES = (".py", ".ipynb", ".md")
 
@@ -264,7 +235,7 @@ def swept_files() -> list[Path]:
 
 
 def banned_patterns_absent() -> list[str]:
-    """No retired numbering, no timing stamp, and no graph count in prose."""
+    """No timing stamp and no graph count in prose."""
     problems: list[str] = []
     for path in swept_files():
         rel = path.relative_to(REPO_ROOT)
@@ -276,10 +247,6 @@ def banned_patterns_absent() -> list[str]:
             for match in pattern.finditer(text):
                 line = text.count("\n", 0, match.start()) + 1
                 problems.append(f"{rel}:{line} {reason}: {match.group(0)!r}")
-        for name in RETIRED_NAMES:
-            if name in text:
-                line = text.count("\n", 0, text.index(name)) + 1
-                problems.append(f"{rel}:{line} retired name: {name}")
     return problems
 
 

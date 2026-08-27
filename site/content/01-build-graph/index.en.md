@@ -121,7 +121,7 @@ MATCH (a:Amenity {name: "Full-Service Spa"})
 RETURN a.name, collect(h.name) AS hotels
 :::
 
-* **One shared entity:** `MERGE` creates one node for the normalized amenity name.
+* **One shared entity:** `MERGE` creates one node for the exact authored amenity name.
 * **Two-way traversal:** Start at a hotel to list amenities, or start at an amenity to find hotels.
 * **Connected context:** Continue from each hotel to rooms, policies, services, chunks, and documents.
 * **Composable paths:** Module 2 starts from a matching chunk and walks through these relationships to assemble connected context.
@@ -144,6 +144,8 @@ The graph dump contains the extracted data. This module adds vector and full-tex
 | `hotel_chunk_fulltext` | `Chunk.text`, full-text | Exact strings that embeddings blur together, such as a postal code or a hotel name |
 
 Each index serves a different query type. Vector search matches meaning, but an embedding of `60611` resembles other five-digit numbers and can rank the correct chunk too low. Full-text search matches the literal value. Module 2 owns the retrieval comparison: it combines both results with hybrid search and then adds hotel properties through a graph traversal.
+
+Module 2 uses these indexes and graph links to compare GraphRAG read paths.
 
 Matching the document and query embedding settings makes their vectors comparable. A different model, dimension count, or purpose can return incorrect rows while reporting success. The workshop embedder prevents this mismatch with fixed settings.
 

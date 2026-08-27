@@ -3,8 +3,12 @@ title: "Module 4: Production Agent with AgentCore"
 weight: 50
 ---
 
-Module 3 runs the retrieval tools inside the notebook process. Module 4 moves
-them to AWS services.
+**Purpose:** Move Module 3's two GraphRAG read tools to managed AWS services.
+
+Module 2 built the read paths. Module 3 gave both paths to one agent. Module 4
+moves those same read-only tools to AWS Lambda and exposes them through
+AgentCore Gateway. The agent stays in the notebook. This module does not add
+booking writes.
 
 The retrieval logic stays the same. `search_hotel_passages` runs the same
 `HybridCypherRetriever` from Module 2 and returns the same eight keys. Two
@@ -45,8 +49,9 @@ The diagram follows one request:
 
 ## 1. Model Context Protocol
 
-MCP is a standard way for an agent to use tools that were built separately
-from it. The client asks a server which tools exist, then asks it to run one.
+**MCP:** A standard that lets an agent discover a tool's name, inputs, and
+result format at runtime. The client asks a server which tools exist, then asks
+it to run one.
 
 [MCP](https://modelcontextprotocol.io/) defines two operations:
 
@@ -416,12 +421,12 @@ populated database. Both import their expected values from
 `workshop.fixtures`, so the tests and the readiness check compare against the
 same hotel.
 
-The notebook runs this pair twice:
+The notebook runs checks at two layers:
 
-* **Step 5, direct invocation:** These calls prove each Lambda reaches the
-  graph.
-* **Step 7, through the Gateway:** These calls prove the Gateway invokes the
-  Lambda and returns the same values.
+* **Step 5, direct invocation:** Runs the negative and positive controls. These
+  calls prove each Lambda reaches the graph.
+* **Step 7, through the Gateway:** Runs the positive controls. These calls
+  prove the Gateway invokes the Lambda and returns the expected values.
 
 Running the two steps separately shows which layer failed.
 
@@ -493,14 +498,24 @@ the tests over MCP, and then hands the tools to an agent.
 :::alert{type="warning" header="These resources stay until you delete them"}
 The notebook creates two Lambda functions:
 `hotel-booking-search_hotel_passages` and `hotel-booking-query_hotel_records`.
-It also creates the AgentCore Gateway `hotel-booking-gateway` with one target
-per tool, the Secrets Manager secret `neo4j-ws-retrieval`, and two IAM roles:
-`workshop-hotel-lambda-role` and `workshop-hotel-gateway-role`.
+It also creates the AgentCore Gateway `hotel-booking-gateway` with the targets
+`search-hotel-passages` and `query-hotel-records`, one Secrets Manager secret
+whose name starts with `neo4j-ws-retrieval`, and two IAM roles:
+`workshop-hotel-lambda-role` and `workshop-hotel-gateway-role`. Invoking the
+functions also creates one CloudWatch log group per Lambda. The notebook tags
+the Gateway, Lambda functions, secret, and IAM roles with
+`WorkshopResource=graphrag-with-neo4j`. Gateway targets and generated
+CloudWatch log groups do not carry an independent workshop tag.
 
-The Gateway and secret incur charges while they exist, and the Lambdas incur
-charges per invocation. The notebook leaves these resources in place. Workshop
-Studio removes them when the event ends. In your own account, delete them from
-the console or CLI when you finish.
+Secrets Manager charges for each secret while it remains stored and for API
+calls. Lambda charges for requests and execution duration. AgentCore Gateway
+charges are usage based. This workshop uses no Gateway search index, and there
+is no flat charge solely because this Gateway exists. IAM has no additional
+charge. Stored CloudWatch logs can continue to incur storage charges.
+
+The notebook leaves these resources in place. Workshop Studio removes them
+when the event ends. In your own account, follow the
+[cleanup inventory](../setup/own-account-setup/#cleanup) when you finish.
 :::
 
 Module 5 packages a separate version of the agent for AgentCore Runtime. Module

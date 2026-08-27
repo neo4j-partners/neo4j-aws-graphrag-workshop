@@ -8,7 +8,6 @@ from pathlib import Path
 
 from botocore.exceptions import ClientError
 
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 NOTEBOOK = (
     REPO_ROOT
@@ -72,6 +71,9 @@ def test_scheduled_secret_uses_deterministic_replacement_without_restore() -> No
     namespace = {
         "ClientError": ClientError,
         "PREFERRED_SECRET_NAME": "neo4j-ws-retrieval",
+        "WORKSHOP_TAGS_KV": [
+            {"Key": "WorkshopResource", "Value": "graphrag-with-neo4j"}
+        ],
         "secret_value": "{}",
         "secrets": ScheduledSecretClient(),
     }

@@ -32,6 +32,8 @@ from __future__ import annotations
 import json
 import os
 import re
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FutureTimeoutError
 from dataclasses import dataclass, field
 from functools import lru_cache
 from typing import Any, Final, Mapping, Sequence, TypedDict, cast
@@ -335,6 +337,20 @@ def search_hotel_knowledge(query: str) -> list[contracts.HotelContext]:
 # the build never wrote and an empty result with no error.
 MAX_GRAPH_QUERY_RECORDS = 25
 
+# The wall-clock bound on one `graph_query` call. It covers the whole call the
+# retriever makes: the nested model call that writes the Cypher and the
+# database read that runs it, because `Text2CypherRetriever.search` does both.
+#
+# 15 seconds is far above any healthy call and low enough to fail while a
+# participant is still watching. A legitimate aggregate over the workshop's
+# roughly 300 hotels is a single label scan the database answers in
+# milliseconds, and the Bedrock call that writes the Cypher takes a few
+# seconds at worst, so nothing that works today comes near this. It is also
+# the bound the Module 2 notebook applied to its own local copy of this path
+# before that copy was deleted, so the number a participant already saw
+# documented is the number that now ships.
+GRAPH_QUERY_TIMEOUT_SECONDS: Final = 15.0
+
 GRAPH_QUERY_EXAMPLES = (
     (
         "USER INPUT: What is the average guest rating of hotels in Paris? "
@@ -460,13 +476,16 @@ def _json_safe(value: Any) -> Any:
 
 # The failures a structured read is expected to produce, as opposed to an
 # outage. `Text2CypherRetrievalError` is what the read-only `EXPLAIN` guard
-# raises when the generated Cypher would write, and what the retriever raises
-# for Cypher the database reports as a syntax error. `LLMGenerationError` is a
-# failure in the nested model call that writes the Cypher. `ClientError` is
-# what the driver raises for a statement the database rejects for any other
-# reason, such as a property the schema does not have; `CypherSyntaxError` is
-# one of its subclasses. Anything else is left to propagate, because an outage
-# should stay visible as an outage rather than arrive as a tidy error code.
+# raises when the generated Cypher would write, what the retriever raises for
+# Cypher the database reports as a syntax error, and what `graph_query` raises
+# itself when a call runs past `GRAPH_QUERY_TIMEOUT_SECONDS`, so the timeout
+# reaches a caller as an expected failure rather than an unhandled one.
+# `LLMGenerationError` is a failure in the nested model call that writes the
+# Cypher. `ClientError` is what the driver raises for a statement the database
+# rejects for any other reason, such as a property the schema does not have;
+# `CypherSyntaxError` is one of its subclasses. Anything else is left to
+# propagate, because an outage should stay visible as an outage rather than
+# arrive as a tidy error code.
 #
 # This tuple lives beside `graph_query` because it describes `graph_query`'s
 # failure modes, and every caller that turns one of them into a bounded error
@@ -490,7 +509,35 @@ def graph_query(query: str) -> GraphQueryResult:
     if not isinstance(query, str) or not query.strip():
         raise ValueError("query must be a non-empty string")
 
-    result = _get_graph_query_retriever().search(query_text=query)
+    retriever = _get_graph_query_retriever()
+
+    # The bound is wall clock and sits on this side of the call, because there
+    # is no way to hand the retriever a server-side one:
+    # `Text2CypherRetriever.get_search_results` passes the generated Cypher to
+    # `driver.execute_query` as a plain string, and only a `neo4j.Query` object
+    # carries a transaction timeout. So a query that trips this bound keeps
+    # running on the server until it finishes on its own. What the bound buys
+    # is a caller that always comes back: the agent, the Lambda, and the
+    # participant watching a cell stop waiting. It does not spare the database
+    # the work, and a reader who assumes the query was cancelled is wrong.
+    #
+    # The executor is deliberately not used as a context manager. Leaving a
+    # `with` block calls shutdown(wait=True), which would block on the very
+    # call this bound exists to escape and undo the timeout entirely.
+    pool = ThreadPoolExecutor(max_workers=1, thread_name_prefix="graph_query")
+    try:
+        result = pool.submit(retriever.search, query_text=query).result(
+            timeout=GRAPH_QUERY_TIMEOUT_SECONDS
+        )
+    except FutureTimeoutError as error:
+        raise Text2CypherRetrievalError(
+            f"Structured read exceeded its {GRAPH_QUERY_TIMEOUT_SECONDS} second "
+            "bound and stopped waiting. The generated Cypher may still be "
+            "running on the server."
+        ) from error
+    finally:
+        pool.shutdown(wait=False)
+
     records = [
         cast(dict[str, Any], item.content)
         for item in result.items[:MAX_GRAPH_QUERY_RECORDS]

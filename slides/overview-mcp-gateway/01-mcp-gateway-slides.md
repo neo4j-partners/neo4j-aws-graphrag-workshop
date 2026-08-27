@@ -29,9 +29,12 @@ ol > li {
 
 # MCP and AgentCore Gateway
 
-Module 4 deploys the read tools to AWS Lambda behind AgentCore Gateway.
+Module 2 built two GraphRAG read paths. Module 3 gave both paths to one agent.
+Module 4 moves those same read-only tools to AWS Lambda behind AgentCore
+Gateway.
 
-The Strands agent stays in the notebook. Module 5 separately deploys the agent and its tools to AgentCore Runtime.
+The Strands agent stays in the notebook. Module 5 separately deploys the agent
+and its tools to AgentCore Runtime.
 
 <!--
 Module 4 moves the two read tools out of the notebook. Each tool runs in a
@@ -50,10 +53,11 @@ change.
 
 ## Model Context Protocol
 
-The retriever, the driver, and the tool all live inside your notebook process.
-That works on a laptop and nowhere else.
+The retriever, driver, and tool all run in one notebook process. Gateway gives
+approved clients a shared, managed endpoint.
 
-MCP is one standard, so an agent can use tools it was never built against.
+**MCP:** A standard that lets an agent discover a tool's name, inputs, and
+result format at runtime.
 
 - **`tools/list`:** the client asks what exists. Each tool comes back as a name, a description, and a JSON Schema for its input
 - **`tools/call`:** the client sends a tool name and arguments. The server runs it and returns the result
@@ -153,9 +157,9 @@ be added once the Gateway leaves CREATING, and a session opened before every
 target reports READY lists an incomplete tool set rather than failing. The
 notebook polls for both.
 
-Also flag the name prefix. The Gateway advertises each tool under a longer name
-that ends with the registered one, so match with endswith. An equality check on
-the bare name finds nothing.
+Also flag the name prefix. The Gateway advertises each tool under a longer
+name. Use `gateway_base_name` to split the Gateway name and compare the base
+name. Do not use a suffix match because it can select the wrong tool.
 -->
 
 ---
@@ -258,12 +262,14 @@ gateway_mcp = MCPClient(lambda: stdio_client(StdioServerParameters(
 )))
 ```
 
-- **`mcp-proxy-for-aws`** bridges MCP's standard input and output transport to a signed HTTPS request
+- **`mcp-proxy-for-aws`** sends an MCP request as a signed HTTPS request
 - **The caller** proves its identity to the Gateway with SigV4
 - **`workshop-hotel-gateway-role`** lets the Gateway invoke functions named `hotel-booking-*`
 - **`workshop-hotel-lambda-role`** lets the Lambda read one secret and invoke the embedding model and the chat model
 
-The credential reaches only the Lambda. No policy in the chain grants a write.
+AWS IAM controls access to Gateway, Lambda, and Secrets Manager. The Neo4j
+credential controls database access. Use a read-only Neo4j user for read tools
+in production.
 
 <!--
 Walk the chain as three hops with three different identities. The caller never
@@ -338,7 +344,7 @@ agent = Agent(tools=gateway_mcp.list_tools_sync(), ...)
 
 Strands receives local tool specifications in Module 3 and MCP tool specifications here.
 
-> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
+> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I submit a booking request for four guests?
 
 Same question and model-driven routing. The selected tools now run in Lambda.
 

@@ -195,9 +195,9 @@ does the same thing to the hotel documents with a pinned schema.
 Retrieval decides what the model sees. Grounding decides what it is allowed to do with it.
 
 - **Two bounded read tools:** the model routes by tool name, description, and input schema
-- **Answer from tool evidence:** the prompt directs the model not to fill a gap from training data
+- **Answer from tool evidence:** the prompt limits hotel answers to facts returned by a read tool
 - **Expose missing facts:** both read tools return the same structured answerability verdict
-- **Never write:** the model only proposes an action. Application code validates it, and the database enforces the rule inside the write transaction
+- **Application-owned writes:** the model proposes an action. Application code validates it, and the database enforces the rule inside the write transaction
 
 <!--
 This slide has no equivalent in most GraphRAG decks, and it is the one that
@@ -210,14 +210,15 @@ and the reservation transaction are enforced in code or the database.
 
 Module 3 demonstrates all four in one notebook: automatic tool selection with a
 trace, structured evidence and verdicts, an unsupported availability case, and
-a rejected fifteen-guest reservation. No model subclass forces retrieval.
+a rejected fifteen-guest reservation. A plain BedrockModel chooses from the
+registered tool specifications.
 -->
 
 ---
 
 ## The Hero Question
 
-> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
+> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I submit a booking request for four guests?
 
 One sentence, three different mechanisms:
 
@@ -323,7 +324,7 @@ Run the hero question against the pre-deployed Module 5 AgentCore Runtime
 agent, deployed before the event against the instructor's own Aura instance:
 
 "Which Chicago hotel has both a spa and a swimming pool, what is its
-cancellation policy, and can I hold it for four guests?"
+cancellation policy, and can I submit a booking request for four guests?"
 
 Show the tool calls, not just the answer, so the room sees the retrieval
 happen. Then ask the availability question and let it refuse. The refusal

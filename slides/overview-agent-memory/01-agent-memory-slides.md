@@ -43,18 +43,14 @@ node.
 
 ---
 
-## The Agent You Built Forgets Everything
+## Why Module 6 Adds Memory
 
-The agent is deployed and callable over an API. It still meets every caller as a stranger.
+Earlier modules retrieve hotel data and submit booking requests. They do not
+store a guest preference across sessions.
 
-Ask about the Cairo hotel. Then say "book that one."
-
-- **Between turns in the notebook**, one long-lived agent object holds the conversation and can resolve "that one"
-- **In the deployed container**, even that is gone. Each invocation builds a new agent
-- **Between sessions**, nothing survives. Every conversation starts from zero
-- **Across callers**, there is no notion of who is asking
-
-The graph knows about hotels. It knows nothing about guests.
+- **Missing data:** The earlier modules do not store a guest preference across sessions.
+- **This module:** It stores and reads one actor-scoped preference with provenance.
+- **Actor scope:** A query starts at one actor's `User` node.
 
 <!--
 Recall plus motivation. The agent from Modules 3 through 5 is stateless by
@@ -71,7 +67,7 @@ to be able to say why it thinks that.
 
 The `neo4j-agent-memory` library splits memory into three namespaces:
 
-- **Short-term, `memory.short_term`:** This layer holds the current conversation. It writes `Conversation` and `Message` nodes, and it is what resolves "that hotel"
+- **Short-term, `memory.short_term`:** This layer holds the current conversation. It writes `Conversation` and `Message` nodes. An agent can use this history to interpret "that hotel"
 - **Long-term, `memory.long_term`:** This layer holds facts and preferences that outlive a session. It writes `Preference` nodes
 - **Reasoning, `memory.reasoning`:** This layer holds decisions, tool calls, and outcomes. It writes `ReasoningTrace` and `ReasoningStep` nodes
 
@@ -96,7 +92,7 @@ Long-term preference memory, and only that.
 - **Writes short-term messages**, because a preference needs a source to point at
 - **Writes no reasoning traces**
 
-The test: store a preference in one session, recall it in a new session, and confirm that a different actor sees nothing.
+The test: store a preference in one session, then read it for the same actor in a new session. Confirm that a different actor sees nothing.
 
 <!--
 Scope this tightly so the room does not expect a full memory system.
@@ -155,7 +151,8 @@ relationship without touching the node.
 
 The library can send a transcript to a model and extract entities. This module turns that off.
 
-- **The client sets `ExtractorType.NONE`.** Every message write also passes `extraction_mode="skip"`, so no model runs on the write path
+- **Extraction:** The client sets `ExtractorType.NONE`. Every message write also passes `extraction_mode="skip"`, so no model identifies preferences from message text
+- **Embedding:** Titan Text Embeddings V2 still creates a vector when the notebook saves a preference
 - **The application already knows the facts.** It just handled a request naming a specific hotel
 - **The stored text is exact.** The value in the graph is the value in the code
 
@@ -263,14 +260,16 @@ section { font-size: 23px; }
 
 | | AgentCore Memory | Neo4j graph memory |
 |---|---|---|
-| **Write timing** | Recall starts after asynchronous extraction finishes | Recall starts when the transaction commits |
+| **Long-term availability** | Extracted memories become available after background processing | Explicit preferences become available when the transaction commits |
 | **Extraction** | A model extracts memory from the transcript | The application writes the exact value |
 | **Auditability** | Read memory through the API, logs through CloudWatch | A Cypher query returns the memory and its source message |
 | **Correction** | The Memory service API | `SET` on one property |
 | **Domain link** | The application resolves it separately | `ABOUT_HOTEL` points at the existing `Hotel` node |
 | **Operations** | AWS manages it | You own it |
 
-Managed extraction is the row that decides it the other way. If nobody has parsed the input, the service does work you would otherwise write.
+**Choose AgentCore Memory:** Use it when you need managed extraction and managed operations.
+
+**Choose Neo4j graph memory:** Use it when the application already knows the value and needs immediate, traceable writes.
 
 <!--
 Give AgentCore Memory a fair hearing. Managed extraction and managed operations

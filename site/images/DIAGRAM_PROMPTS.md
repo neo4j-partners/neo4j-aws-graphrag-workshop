@@ -76,7 +76,7 @@ the prompt policy and the trace boundary: answer from evidence or state what is
 missing; inspect the trace to see whether a tool call and verdict happened.
 
 BOTTOM LANE, "WRITE PATH: RECORD A RESERVATION REQUEST", left to right:
-Reservation command (application code, not an agent tool) -> Rule check in Neo4j
+Reservation command (application-owned and outside the agent tools) -> Rule check in Neo4j
 (at most 10 guests) -> Write in one transaction (one request_id, one saved
 request).
 

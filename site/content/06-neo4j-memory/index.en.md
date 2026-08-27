@@ -3,10 +3,14 @@ title: "Module 6: Neo4j Graph Memory"
 weight: 70
 ---
 
-Module 6 gives the hotel agent a memory. It stores one guest preference in
-Neo4j, recalls that preference in a later session, and returns nothing when a
-different guest asks the same question. Each stored preference points back to
-the message it came from and to the hotel it describes.
+**Purpose:** Add durable preference memory to the hotel graph. Earlier modules
+retrieve hotel facts and record booking requests. This module stores one guest
+preference, reads it in a new session, and proves that another guest cannot
+read it.
+
+This notebook tests the storage and access rules behind agent memory. It does
+not add memory retrieval to the booking agent. Each stored preference points
+back to its source message and the hotel it describes.
 
 This page uses **actor** for the person a memory belongs to. The graph holds
 each actor as a `User` node, and every memory write names one.
@@ -16,7 +20,7 @@ each actor as a `User` node, and every memory write names one.
 * **Preference:** The graph stores one statement about what an actor wants.
 * **Application-controlled write:** The application writes the exact preference
   text, so the value is readable as soon as the transaction commits.
-* **Actor-scoped recall:** A Cypher query starts at one `User` node and follows
+* **Actor-scoped read:** A Cypher query starts at one `User` node and follows
   only that actor's relationships.
 * **Provenance:** Relationships connect each preference to its source message,
   its session, and a `Hotel` node.
@@ -29,8 +33,8 @@ The `neo4j-agent-memory` library splits memory into three namespaces. The
 notebook calls these names directly.
 
 * **Short-term memory:** `memory.short_term` holds the current conversation.
-  The agent reads it to work out that "that hotel" means the one from two turns
-  ago. It writes `Conversation` and `Message` nodes.
+  An agent can use this history to interpret "that hotel." It writes
+  `Conversation` and `Message` nodes.
 * **Long-term memory:** `memory.long_term` holds facts and preferences that
   outlive a session. The agent reads it to remember that an actor wants a high
   floor. It writes `Preference` nodes.
@@ -112,7 +116,10 @@ The library can send a transcript to a model and extract entities from it. This
 module turns that off and writes every value directly.
 
 * **Extraction is off:** The client sets `ExtractorType.NONE`, and each message
-  write passes `extraction_mode="skip"`. No model runs on the write path.
+  write passes `extraction_mode="skip"`. No model identifies preferences from
+  the message text.
+* **Embedding:** Titan Text Embeddings V2 still creates a vector when the
+  notebook saves a preference.
 * **The application already knows the facts:** It just handled a request naming
   a specific hotel. Paying a model to rediscover that name costs time and can
   return the wrong hotel.
@@ -173,13 +180,13 @@ widths, so Setup and Module 6 cannot drift apart.
 ## Run the Notebook
 
 Open `notebooks/06-neo4j-memory/6.1_neo4j_memory.ipynb` and run it from top to
-bottom. It stores the preference, recalls it in a new session, and confirms
-that a second actor sees nothing.
+bottom. It stores the preference, reads it for the same actor in a new session,
+and confirms that a second actor sees nothing.
 
 Two checks confirm the scope holds:
 
-* **Same actor, new session:** Actor A opens `SESSION_A2` and recalls the
-  preference stored during the earlier session.
+* **Same actor, new session:** Actor A opens `SESSION_A2`. The application then
+  reads Actor A's stored preference for the named hotel.
 * **Different actor, same question:** Actor B asks the same question and
   receives no preference.
 
@@ -256,7 +263,7 @@ directly, which keeps every write visible while you learn the pattern.
 
 | | AgentCore Memory | :link[Neo4j graph memory]{href="https://neo4j.com/" external=true} |
 |---|---|---|
-| Write timing | Recall starts after asynchronous extraction finishes | Recall starts when the application transaction commits |
+| Long-term availability | Extracted memories become available after background processing | Explicit preferences become available when the transaction commits |
 | Extraction | A model extracts memory from the transcript | The application writes the exact memory value |
 | Auditability | The application reads memory through the API and operational logs through :link[Amazon CloudWatch]{href="https://aws.amazon.com/cloudwatch/" external=true} | A Cypher query returns the memory and its source message |
 | Correction path | The application uses the Memory service API | The application uses `SET` on one property |

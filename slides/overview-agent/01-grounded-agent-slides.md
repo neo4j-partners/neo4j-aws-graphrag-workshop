@@ -29,12 +29,15 @@ ol > li {
 
 # The Grounded Booking Agent
 
-Two read paths it can choose, and one write path it cannot reach
+Module 2's GraphRAG read paths become two tools the agent can choose. The write path stays separate.
 
 <!--
-This deck has two hinges. "Two Read Tools, One Boundary" shows a normal Strands
-agent routing by tool specification. "Writes Do Not Go Through the Model"
-keeps the notebook's reservation command outside that agent.
+Module 2 compares GraphRAG retrieval patterns. Module 3 turns the hybrid
+passage read and guarded record query into tools for one Strands agent.
+
+This deck has two hinges. "Two Read Tools, One Boundary" shows the agent
+routing between those tools by specification. "Writes Do Not Go Through the
+Model" keeps the notebook's reservation command outside that agent.
 
 Most agent talks cover the first half of this deck and stop. The reservation
 half is where the workshop says something the room has probably not heard, so
@@ -68,7 +71,7 @@ write function is a system where a wrong token becomes a row in a database.
 
 ## The ReAct Loop
 
-> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
+> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I submit a booking request for four guests?
 
 1. **Reason:** the filter needs records; the policy needs source wording
 2. **Act:** call `query_hotel_records`, then `search_hotel_passages`
@@ -179,15 +182,13 @@ Module 3 uses a plain `BedrockModel`. The model decides whether to call a tool.
 - **Trace:** the hook records each selected tool and its result
 - **Lab check:** the notebook reports an unexpected tool choice and checks required evidence
 
-The earlier forced-call subclass was removed. The prompt guides the model, and the trace shows what happened.
+The prompt guides tool use. The trace shows the model's choice and returned evidence.
 
 <!--
-The current notebook uses a plain BedrockModel. An earlier version used a small
-subclass to force a tool call. That subclass is no longer part of Module 3.
-
-The system prompt guides tool selection. Fresh agents isolate routing cases.
-The trace records each call. The availability check requires a read tool to
-return the expected structured verdict.
+Module 3 uses a plain BedrockModel. The system prompt guides tool selection.
+Fresh agents isolate routing cases. The trace records each call and result.
+The availability check requires a read tool to return the expected structured
+verdict.
 -->
 
 ---

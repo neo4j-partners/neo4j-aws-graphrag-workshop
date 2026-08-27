@@ -94,12 +94,50 @@ With every line reporting `ok`, proceed to [Module 1](../../01-build-graph/). Th
 
 ## Cleanup
 
-Module 5 leaves running AWS resources behind, and this workshop does not delete them for you. The Module 5 notebook tags each one with `WorkshopResource`, so you can find them by that tag. When you finish, remove\:
+Modules 4 and 5 leave AWS resources in your account. The workshop does not
+delete them for you. Clean up both resource sets when you finish.
 
-- The AgentCore Runtime named `GraphRagBookingAgent`
-- The ECR repository holding its container image
-- The CodeBuild project that built the image
-- The IAM execution role the Runtime uses
-- The Secrets Manager secret and Lambda function Module 4 created
+### Module 4 resources
+
+The Module 4 notebook applies the tag
+`WorkshopResource=graphrag-with-neo4j` to the Gateway, Lambda functions,
+secret, and IAM roles. Gateway targets and generated CloudWatch log groups do
+not carry an independent workshop tag. Use the tag and names to confirm
+ownership, then remove\:
+
+- The `search-hotel-passages` and `query-hotel-records` targets, followed by
+  the AgentCore Gateway `hotel-booking-gateway`
+- The Lambda functions `hotel-booking-search_hotel_passages` and
+  `hotel-booking-query_hotel_records`
+- Every Secrets Manager secret whose name starts with
+  `neo4j-ws-retrieval`. A retry can create a name with a numeric suffix.
+- The IAM roles `workshop-hotel-lambda-role` and
+  `workshop-hotel-gateway-role`
+- The CloudWatch log groups
+  `/aws/lambda/hotel-booking-search_hotel_passages` and
+  `/aws/lambda/hotel-booking-query_hotel_records`
+
+Secrets Manager charges for each secret while it remains stored and for API
+calls. Lambda charges for requests and execution duration. AgentCore Gateway
+charges are usage based for API invocations, search, and tool indexing. There
+is no flat charge solely because this Gateway exists. IAM has no additional
+charge. Stored CloudWatch logs can continue to incur storage charges.
+
+### Module 5 resources
+
+The Module 5 notebook applies the tag
+`WorkshopResource=graphrag-with-neo4j` to these four resources\:
+
+- The AgentCore Runtime `GraphRagBookingAgent`
+- The ECR repository `workshop-graphrag-booking-agent`
+- The CodeBuild project `bedrock-agentcore-graphragbookingagent-builder`
+- The IAM execution role `workshop-graphrag-runtime-role`
+
+Use the tag to confirm ownership before deletion. Also remove the generated
+CloudWatch log groups, including
+`/aws/bedrock-agentcore/runtimes/{runtime-id}-DEFAULT` and
+`/aws/codebuild/bedrock-agentcore-graphragbookingagent-builder` if they exist.
+Runtime use, ECR image storage, CodeBuild builds, and stored CloudWatch logs
+can incur charges. IAM has no additional charge.
 
 Then delete the AuraDB Free instance from :link[the Aura console]{href="https://console.neo4j.io/" external=true} if you no longer need the graph. A free instance costs nothing, so you can also leave it and let it pause on its own.

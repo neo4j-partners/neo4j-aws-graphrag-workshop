@@ -6,4 +6,4 @@ Deploy the two read tools to AWS Lambda behind an IAM-authenticated AgentCore Ga
 
 Run [`4.1_agentcore_gateway.ipynb`](4.1_agentcore_gateway.ipynb).
 
-See the [Module 4 workshop page](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/04-production-agent/) for instructions and background.
+See the [Module 4 workshop page](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/neo4j-aws-graphrag-workshop/1.0/04-production-agent/) for instructions and background.

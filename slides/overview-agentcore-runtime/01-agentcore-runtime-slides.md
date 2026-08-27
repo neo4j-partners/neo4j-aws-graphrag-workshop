@@ -55,22 +55,20 @@ section { font-size: 25px; }
 | Runs in your kernel | Runs in a container AgentCore starts |
 | The notebook environment holds the Neo4j password | The Runtime holds it, injected at launch |
 | Reachable only from Jupyter | Invoked through `InvokeAgentRuntime` by authorized AWS clients |
-| The session is your kernel's memory | Each invocation carries a caller-provided session ID |
+| Runs in one local notebook process | Each invocation carries a caller-provided session ID |
 
 Both read paths and the reservation rule carry forward. The packaged agent adds the reservation command as a third tool.
 
 <!--
 The hero question, which Chicago hotel has both a spa and a swimming pool,
-what is its cancellation policy, and can I hold it for four guests, has now
+what is its cancellation policy, and can I submit a booking request for four guests, has now
 crossed three boundaries: a notebook process, a Gateway and a Lambda, and a
 container invoked over an API. The answer has not changed once, and that is
 the claim this module has to earn.
 
-Row four is the interesting one and it comes back on "Sessions and Request
-IDs." In a notebook the conversation lives in your kernel because there is
-exactly one caller. A
-service has many, and it needs to be told which conversation a request belongs
-to.
+The caller supplies the session ID. It selects an isolated Runtime environment.
+This workshop still creates a new agent for every request, so it does not save
+conversation history.
 
 Module 3 registered two read tools and called the reservation command directly.
 This deployment-oriented variant registers both read tools and the reservation
@@ -83,7 +81,8 @@ transaction.
 ## What Runtime Provides
 
 - **Session isolation:** each session gets its own microVM, with its own CPU, memory, and file system
-- **Session lifetime:** a session ends after 15 idle minutes or 8 total hours
+- **Session lifetime:** by default, the microVM stops after 15 idle minutes or 8 total hours; a later call can start a new microVM for the same session ID
+- **Conversation memory:** this workshop creates a new agent for every request, so it does not save earlier messages
 - **Scaling:** AWS starts and stops containers, picks the instance size, and patches the hosts
 - **Access control:** IAM decides who may invoke. Runtime also accepts OAuth 2.0 bearer tokens
 - **Versions:** each update creates a new version, and the `DEFAULT` endpoint moves to it
@@ -223,9 +222,9 @@ This deployment does not use the Module 4 Gateway. Both tools call Neo4j from th
 |---|---|
 | Several agents share one set of tools | The agent is the unit you deploy |
 | The tools belong to a different team | One team owns the whole thing |
-| You want tool calls governed centrally | You want one network hop, not three |
+| You want tool calls governed centrally | You want fewer deployed components on the tool path |
 
-Two patterns. Neither one is the mature version of the other.
+Choose the pattern that matches who needs to reuse the tools and who owns the deployment.
 
 <!--
 Say this clearly, because the run order makes Module 5 look like the sequel to

@@ -6,4 +6,4 @@ Package the grounded booking agent as a container, deploy it to AgentCore Runtim
 
 Run [`5.1_deploy.ipynb`](5.1_deploy.ipynb).
 
-See the [Module 5 workshop page](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/05-agentcore-deploy/) for instructions and background.
+See the [Module 5 workshop page](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/neo4j-aws-graphrag-workshop/1.0/05-agentcore-deploy/) for instructions and background.

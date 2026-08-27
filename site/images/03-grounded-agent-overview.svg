@@ -79,7 +79,7 @@
 
   <rect x="60" y="396" width="240" height="58" rx="8" fill="#FFFFFF" stroke="#8A8A8A" stroke-width="1.5" filter="url(#sh3)"/>
   <text x="180" y="421" text-anchor="middle" font-size="13" font-weight="700" fill="#1A1A1A">Reservation command</text>
-  <text x="180" y="438" text-anchor="middle" font-size="10.5" fill="#555555">application code, not an agent tool</text>
+  <text x="180" y="438" text-anchor="middle" font-size="10.5" fill="#555555">application-owned command</text>
   <line x1="300" y1="425" x2="330" y2="425" stroke="#6E7681" stroke-width="2" marker-end="url(#arrowGray3)"/>
 
   <rect x="330" y="396" width="240" height="58" rx="8" fill="#EEF4FB" stroke="#4581C3" stroke-width="1.5"/>

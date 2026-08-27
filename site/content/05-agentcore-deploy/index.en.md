@@ -3,9 +3,12 @@ title: "Module 5: Deploy to AgentCore Runtime"
 weight: 60
 ---
 
-Module 5 moves the grounded booking agent from JupyterLab to a managed
-container. Amazon Bedrock AgentCore Runtime starts the container and gives
-authorized AWS clients an API for invoking the agent.
+**Purpose:** Deploy a separate version of Module 3's booking workflow to
+AgentCore Runtime.
+
+Module 5 packages the two GraphRAG read tools and the protected reservation
+command in one Runtime container. Unlike Module 4, this deployment does not use
+Gateway. The agent calls Neo4j directly from its container.
 
 **What this module deploys**
 
@@ -26,7 +29,7 @@ The deployment changes where the agent runs and where its credentials live:
 | Runs in your kernel | Runs in a container AgentCore starts |
 | The notebook environment holds the Neo4j password | The Runtime holds it, injected at launch |
 | Reachable only from Jupyter | Invoked through `InvokeAgentRuntime` by authorized AWS clients |
-| Session is your kernel's memory | Each invocation uses a caller-provided session ID |
+| Runs in one local notebook process | Each invocation includes a caller-provided session ID |
 
 The deployed variant keeps Module 3's two read tools and reservation
 transaction. Runtime request handling changes how a caller sends a request and
@@ -50,11 +53,12 @@ Runtime runs the container and handles the operations work around it.
 * **Session isolation:** Each session gets its own microVM with its own CPU,
   memory, and file system. One caller's session stays private from every other
   caller.
-* **Session lifetime:** A session ends after 15 idle minutes or 8 total hours.
-  AgentCore then deletes the microVM and wipes its memory.
-* **Session context:** Invocations that share a session ID reach the same
-  container. Step 6 gives each smoke test its own session ID, so each test
-  starts clean.
+* **Session lifetime:** By default, the microVM stops after 15 idle minutes or
+  8 total hours. Its process memory then disappears. A later call can start a
+  new microVM for the same session ID.
+* **Session context:** A session ID selects an isolated Runtime environment.
+  This workshop creates a new agent for every request, so it does not save chat
+  history. Step 6 gives each smoke test its own session ID.
 * **Scaling:** AWS starts and stops containers as traffic changes. AWS also
   picks the instance size and patches the hosts.
 * **Invocation API:** Clients call `InvokeAgentRuntime` with the Runtime ARN, a
@@ -172,13 +176,20 @@ Open `notebooks/05-agentcore-deploy/5.1_deploy.ipynb` to build the container,
 deploy the Runtime, and invoke the deployed agent.
 
 :::alert{type="warning" header="AWS resources created"}
-The notebook creates one IAM execution role, one ECR repository, one CodeBuild project, and one AgentCore Runtime. The container build takes three to five minutes.
+The notebook creates the AgentCore Runtime `GraphRagBookingAgent`, the ECR
+repository `workshop-graphrag-booking-agent`, the CodeBuild project
+`bedrock-agentcore-graphragbookingagent-builder`, and the IAM execution role
+`workshop-graphrag-runtime-role`. It tags all four with
+`WorkshopResource=graphrag-with-neo4j`. The container build takes three to five
+minutes.
 
 Runtime use, ECR image storage, and CodeBuild builds can incur AWS charges. The
 workshop leaves these resources in place. On the Vocareum path, the lab account
-goes away when the lab session ends. If you use your own account, remove the
-Runtime, ECR repository, CodeBuild project, and IAM execution role when you
-finish.
+goes away when the lab session ends. If you use your own account, remove all
+four resources and their generated CloudWatch log groups when you finish.
+Stored CloudWatch logs can continue to incur storage charges. IAM has no
+additional charge. The [cleanup inventory](../setup/own-account-setup/#cleanup)
+lists every name.
 :::
 
 :image[Module 5 architecture: an authorized AWS client invokes the packaged agent on AgentCore Runtime, which calls Neo4j and Bedrock from the Runtime container]{src="../../images/05-agentcore-runtime-architecture.svg" width=800}

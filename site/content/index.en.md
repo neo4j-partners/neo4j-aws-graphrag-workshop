@@ -10,7 +10,7 @@ and show the source for its answer.
 
 This workshop uses a hotel booking scenario. You will:
 
-- **Compare retrieval:** Test four retrieval patterns.
+- **Compare retrieval:** Test GraphRAG retrieval paths for different question types.
 - **Shape retrieval tools:** Turn complementary passage and structured patterns into bounded interfaces.
 - **Build an agent:** Let the model route between those tools and inspect its grounding evidence.
 - **Deploy tools and the agent:** Use :link[Amazon Bedrock AgentCore]{href="https://aws.amazon.com/bedrock/agentcore/" external=true}.
@@ -26,12 +26,12 @@ AgentCore are new to you.
 A booking agent needs evidence for its answers and controls for its actions.
 
 - **Wrong answer:** The agent promises an amenity that the hotel does not offer.
-- **Wrong action:** The agent holds a room for more guests than it can accommodate.
+- **Wrong action:** The agent accepts a reservation request for more guests than the hotel allows.
 - **Missing provenance:** The team cannot trace a claim to its source document.
-- **Workshop challenge:** Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
+- **Workshop challenge:** Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I submit a booking request for four guests?
 
-You will connect the answer to its sources and enforce booking rules before the
-agent writes a reservation request.
+You will connect each answer to its sources. A separate reservation command
+will enforce booking rules before it saves a request.
 
 :::alert{type="info" header="Region"}
 This workshop runs in **us-east-1**, the N. Virginia region. Your AWS account
@@ -48,7 +48,7 @@ arrives pre-configured. Setup guides you through creating a free Neo4j database.
 | **Setup** | Create a Neo4j AuraDB Free database, restore the workshop graph, verify Neo4j and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} access |
 | **Module 1: Build the Graph** | Extract five held-out hotel documents into the graph, define the extraction schema, create both retrieval indexes |
 | **Module 2: From Vector Search to Graph-Enriched Retrieval** | Semantic search, exact-term search, and graph-enriched retrieval |
-| **Module 3: Build the Grounded Booking Agent** | Automatic routing between passage and structured reads, explicit grounding verdicts, and protected reservation writes |
+| **Module 3: Build a Grounded Booking Agent with GraphRAG** | Turn two GraphRAG read paths into agent tools, check grounding verdicts, and protect reservation writes |
 | **Module 4: Production Agent with AgentCore** | AgentCore Gateway, IAM-authenticated MCP, and a Strands agent over remote tools |
 | **Module 5: Deploy to AgentCore Runtime** | Containerize the agent, launch it on Runtime, correlate one request end to end |
 | **Module 6: Neo4j Graph Memory** | Cross-session graph memory, actor-scoped recall, full provenance, and a conceptual AgentCore comparison |

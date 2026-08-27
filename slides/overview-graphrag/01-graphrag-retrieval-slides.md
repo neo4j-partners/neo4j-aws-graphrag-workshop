@@ -31,9 +31,9 @@ ol > li {
 
 Eight ways to search the graph, and how to choose one
 
-> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I hold it for four guests?
+> Which Chicago hotel has both a spa and a swimming pool, what is its cancellation policy, and can I submit a booking request for four guests?
 
-This deck answers the first two clauses. Module 3 answers the third.
+This deck answers the first two clauses. Module 3 uses a separate command to record the booking request.
 
 <!--
 The longest deck of the day, and the one the whole workshop turns on. Its hinge
@@ -245,10 +245,10 @@ eight.
 
 ## 1. Vector Retriever
 
-`VectorRetriever` returns the matched chunks and nothing else.
+`VectorRetriever` returns matched chunks and their similarity scores. This notebook also looks up each chunk's source filename.
 
 - **Good for:** A question phrased differently from the source text still finds its chunk
-- **Returns:** The result carries ranked chunk text and a similarity score
+- **Returns:** The base result carries ranked chunk text and a similarity score. This notebook adds the source filename through a provenance lookup.
 - **Not for:** A question that needs a hotel property, an amenity list, or a `hotel_id` gets none of them back
 
 The baseline. Everything after this adds to it.
@@ -569,9 +569,9 @@ Module 2 lets you call each pattern directly. Module 3 lets the model choose by 
 This is the handoff to Module 3. The application fixes the implementation and
 input contract of each path; the model chooses between those paths.
 
-search_hotel_passages accepts query text and nothing else. Not an index name,
-not a top_k, not a ranker. The model cannot widen its own search, and that is a
-deliberate constraint rather than a missing feature.
+search_hotel_passages accepts only the guest's natural-language query. The
+application fixes the index, top_k, and ranker. This boundary keeps the model
+inside the reviewed search configuration.
 
 Hybrid Cypher fits hotel text because questions mix paraphrased language and
 exact names. Text2Cypher fits aggregates and flexible filters because five top

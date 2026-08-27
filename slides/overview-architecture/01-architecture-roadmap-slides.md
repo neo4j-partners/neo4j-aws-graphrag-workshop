@@ -108,10 +108,9 @@ section { font-size: 26px; }
 The graph holds more than the retrieval corpus. Business rules and reservation requests live there too, and that is what makes the write path in Module 3 enforceable.
 
 <!--
-Give the two platforms parallel treatment. Neo4j is not a bolt-on to Bedrock
-and Bedrock is not a bolt-on to Neo4j. The graph holds the facts and the rules,
-Bedrock holds the reasoning and the embeddings, and neither can do the other's
-job.
+Give the two platforms parallel treatment. Neo4j holds connected facts and
+rules. Bedrock provides reasoning and embeddings. Each platform owns a clear
+part of the request path.
 
 The closing line is the one that is worth slowing down for. Most agents keep
 their business rules in a system prompt, where the rule and the reasoning share
@@ -267,8 +266,8 @@ returns one decision to the model: which evidence shape fits the question.
 The passage tool still owns a fixed retrieval configuration. The structured
 tool does allow a model to generate Cypher, but the query is returned for
 inspection and Neo4j runs it only after the planner reports a read plan. A
-valid read query can still have the wrong meaning, so this is a safety boundary,
-not a correctness guarantee.
+valid read query can still have the wrong meaning. The plan check is a safety
+boundary. Semantic validation remains a separate responsibility.
 
 The availability verdict is deterministic data from the tool. The final prose
 and whether the agent follows its prompt remain model behavior, which the lab

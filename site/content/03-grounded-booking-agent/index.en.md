@@ -1,12 +1,13 @@
 ---
-title: "Module 3: Build the Grounded Booking Agent"
+title: "Module 3: Build a Grounded Booking Agent with GraphRAG"
 weight: 40
 ---
 
-Module 3 builds a local hotel assistant with the Strands Agents SDK. A plain
-Strands agent chooses between two read tools, inspects what the selected tools
-return, and writes its response from that evidence. A separate reservation
-command checks business rules before it writes an approved request to Neo4j.
+Module 2 compares GraphRAG ways to read hotel information from Neo4j. Module 3
+turns two of those read paths into tools for one local hotel assistant. A plain
+Strands agent chooses a read tool, uses its returned evidence to answer, and
+says when the graph does not have a needed fact. A separate reservation command
+checks business rules before it writes an approved request to Neo4j.
 
 **Brief overview**
 
@@ -147,9 +148,8 @@ fail.
 
 The next example sends `thanks, that is all`. Because it needs no hotel fact,
 the expected behavior is a direct reply with no tool call. Together, these
-checks demonstrate the intended policy and expose deviations during the lab;
-they are not a hard runtime guarantee that the model will always route or word
-an answer correctly.
+checks demonstrate the intended policy and expose deviations during the lab.
+Production systems still need routing and answer-quality monitoring.
 
 ## The Reservation Command
 
@@ -159,7 +159,9 @@ five defined inputs and runs application-owned queries.
 
 * **`request_id`:** A caller-created UUID that stays the same when the caller
   retries a request.
-* **`hotel_id`:** The stable hotel identifier returned by retrieval.
+* **`hotel_id`:** The stable hotel identifier used to select the hotel. In an
+  application, retrieval supplies this ID. This notebook's write example uses
+  the matching ID from the local fixture manifest.
 * **`check_in` and `check_out`:** ISO dates that the command validates before
   opening the write transaction.
 * **`guests`:** A positive integer checked against the enabled Neo4j rule.

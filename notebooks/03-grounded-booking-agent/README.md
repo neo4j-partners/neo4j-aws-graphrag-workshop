@@ -6,4 +6,4 @@ Build a Strands agent that chooses between passage and structured graph reads, t
 
 Run [`3.1_grounded_booking_agent.ipynb`](3.1_grounded_booking_agent.ipynb).
 
-See the [Module 3 workshop page](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/03-grounded-booking-agent/) for instructions and background.
+See the [Module 3 workshop page](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/neo4j-aws-graphrag-workshop/1.0/03-grounded-booking-agent/) for instructions and background.

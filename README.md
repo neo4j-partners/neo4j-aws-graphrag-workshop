@@ -1,8 +1,15 @@
 # Grounded AI Agents with Neo4j and AWS
 
-**[Open the workshop microsite](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/)**
+## Live Workshop: Start Here
 
-**[Run the workshop in your own AWS account](environment/own-account/README.md)**
+You will use these two resources side by side during the live workshop. Keep both open.
+
+| Primary resource | Use it for |
+|---|---|
+| **1. [Workshop microsite](https://neo4j-partners.github.io/neo4j-aws-graphrag-workshop/)** | Read the setup instructions, module explanations, diagrams, and exercises. |
+| **2. Vocareum Workshop Lab** | Run the notebooks and use the provided AWS lab account. Open it from the link in your event invitation. |
+
+Running the workshop on your own? Follow the [self-paced AWS account instructions](environment/own-account/README.md).
 
 [![Python](https://img.shields.io/badge/Python-3.10+-3776AB.svg?style=flat&logo=python&logoColor=white)](https://python.org)
 [![Amazon Bedrock](https://img.shields.io/badge/Amazon-Bedrock-FF9900.svg?style=flat&logo=amazon-aws)](https://aws.amazon.com/bedrock/)
@@ -231,7 +238,7 @@ Prerequisites for this path are Python 3.10+, [`uv`](https://docs.astral.sh/uv/)
 
 `prepare_graph.py` wipes and rebuilds. Module 1's notebook uses the additive path instead, so it extends a restored graph without deleting anything a participant has already built.
 
-Modules 4 and 5 leave running AWS resources behind on this path, and the workshop does not delete them for you. Module 4 resources are not tagged, so remove the `hotel-booking-gateway` Gateway, both `hotel-booking-*` Lambda functions, the `workshop-hotel-lambda-role` and `workshop-hotel-gateway-role` IAM roles, and the Secrets Manager secret whose name begins with `neo4j-ws-retrieval`. The Module 5 notebook tags its resources with `WorkshopResource`; use that tag to find and remove the AgentCore Runtime, ECR repository, CodeBuild project, and Runtime execution role. Then delete the AuraDB Free instance from the Aura console if you no longer need the graph.
+Modules 4 and 5 leave AWS resources behind on this path, and the workshop does not delete them for you. Both notebooks apply `WorkshopResource=graphrag-with-neo4j` to the resources they create directly. Gateway targets and generated CloudWatch log groups do not carry an independent workshop tag. For Module 4, remove the `hotel-booking-gateway` Gateway and its two targets, the `hotel-booking-search_hotel_passages` and `hotel-booking-query_hotel_records` Lambda functions, every Secrets Manager secret whose name begins with `neo4j-ws-retrieval`, the `workshop-hotel-lambda-role` and `workshop-hotel-gateway-role` IAM roles, and the two `/aws/lambda/hotel-booking-*` CloudWatch log groups. For Module 5, remove the `GraphRagBookingAgent` Runtime, `workshop-graphrag-booking-agent` ECR repository, `bedrock-agentcore-graphragbookingagent-builder` CodeBuild project, `workshop-graphrag-runtime-role` execution role, and their generated CloudWatch log groups. Then delete the AuraDB Free instance from the Aura console if you no longer need the graph.
 
 ---
 

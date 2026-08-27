@@ -87,5 +87,5 @@
   <!-- Grounded answer -->
   <rect x="160" y="606" width="580" height="64" rx="8" fill="#232F3E" filter="url(#shF)"/>
   <text x="450" y="633" text-anchor="middle" font-size="13.5" font-weight="700" fill="#FFFFFF">Prompt policy: answer from evidence or state what is missing</text>
-  <text x="450" y="653" text-anchor="middle" font-size="10.8" fill="#D5DBE2">automatic routing is observed, not forced by a model subclass</text>
+  <text x="450" y="653" text-anchor="middle" font-size="10.8" fill="#D5DBE2">the trace shows the model's automatic routing choice</text>
 </svg>

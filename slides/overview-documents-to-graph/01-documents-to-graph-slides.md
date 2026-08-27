@@ -296,7 +296,7 @@ will fail for the wrong reason.
 
 The graph is built and both indexes exist. Everything that reads it starts here.
 
-Module 2 runs eight retrieval patterns against this graph and picks one for the application.
+Module 2 runs eight retrieval patterns against this graph. Module 3 then uses two complementary read paths: passage search and structured record queries.
 
 <!--
 Forward pointer. The next deck is the longest of the day and it is where the
