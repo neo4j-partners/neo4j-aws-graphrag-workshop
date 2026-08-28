@@ -3,6 +3,10 @@ title: "Neo4j AuraDB Free Setup"
 weight: 1
 ---
 
+:::alert{type="warning" header="Don't stop after creating the instance"}
+Creating the AuraDB instance is only half the job. You also have to restore the workshop's database dump into it, or the graph stays empty. [Jump to Step 3: Restore the Dump](#restore-the-dump) once your instance is running.
+:::
+
 ## Create the Database Every Module Talks To
 
 Every module in this workshop reads and writes one :link[Neo4j]{href="https://neo4j.com/" external=true} graph. You create that database yourself on **Neo4j AuraDB Free** and restore the workshop's hotel graph into it. The database is the same on both compute paths, Vocareum and your own AWS account, so do this before you open a notebook.
@@ -34,17 +38,13 @@ Wait for the instance card to report **RUNNING**. A restore into an instance tha
 
 ## Step 2: Download the Workshop Graph
 
-The hotel graph ships as a Neo4j database dump. Download it to the machine your browser is running on, not to the workshop compute environment, because the Aura console uploads it from that browser\:
-
-:::code{language=text showCopyAction=true}
-https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/raw/main/graph/neo4j-hotel-graph.dump
+:::alert{type="warning" header="This is the step most participants miss"}
+The hotel graph ships as a Neo4j database dump. Download :link[neo4j-hotel-graph.dump]{href="https://github.com/neo4j-partners/neo4j-aws-graphrag-workshop/raw/main/graph/neo4j-hotel-graph.dump" external=true} to the machine your browser is running on, not to the workshop compute environment, because the Aura console uploads it from that browser. It is a few megabytes, and also in this repository at `graph/neo4j-hotel-graph.dump` if you have already cloned it locally.
 :::
-
-The file is `neo4j-hotel-graph.dump`, a few megabytes. It is also in this repository at `graph/neo4j-hotel-graph.dump` if you have already cloned it locally.
 
 ---
 
-## Step 3: Restore the Dump
+## Step 3: Restore the Dump {#restore-the-dump}
 
 1. On the instance card in the Aura console, open the more menu (`...`) and choose **Inspect**
 2. Select the **Restore from backup file** tab, which sits next to **Snapshots**

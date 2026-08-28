@@ -97,9 +97,18 @@ for (const sourcePath of files) {
   const placeholderMarkdown = replaceBlocks(normalised, replacements)
   const converted = pandoc(placeholderMarkdown).replace(/^={3,}/gm, heading => heading.slice(1))
   let asciidoc = `= ${title}\n\n${converted}\n`
-  for (const replacement of replacements) {
-    const rendered = replacement.kind ? renderBlock(replacement) : replacement.value
-    asciidoc = asciidoc.replace(replacement.token, rendered)
+  let pending = replacements
+  while (pending.length > 0) {
+    const remaining = pending.filter(replacement => {
+      if (!asciidoc.includes(replacement.token)) return true
+      const rendered = replacement.kind ? renderBlock(replacement) : replacement.value
+      asciidoc = asciidoc.replaceAll(replacement.token, rendered)
+      return false
+    })
+    if (remaining.length === pending.length) {
+      throw new Error(`Unresolved token(s) in ${sourcePath}: ${remaining.map(r => r.token).join(', ')}`)
+    }
+    pending = remaining
   }
   const destination = path.join(pagesDirectory, pagePathFor(sourcePath))
   await mkdir(path.dirname(destination), { recursive: true })

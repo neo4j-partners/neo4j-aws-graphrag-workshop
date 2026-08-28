@@ -5,18 +5,24 @@ weight: 10
 
 ## Get Your Environment Ready
 
-Every module in this workshop talks to two services\: a :link[Neo4j]{href="https://neo4j.com/" external=true} database holding the hotel graph, and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} for the models. Setup is the work of proving both are reachable from your terminal before you open a notebook.
+Every module in this workshop talks to two services\: a :link[Neo4j]{href="https://neo4j.com/" external=true} database holding the hotel graph, and :link[Amazon Bedrock]{href="https://aws.amazon.com/bedrock/" external=true} for the models. Setup happens in two stages, each on its own page\: create the database, then pick the environment you run the notebooks in.
 
-Start with the database, because every path uses the same one. You create a **Neo4j AuraDB Free** instance and restore the workshop graph into it yourself. The steps are on the [Neo4j AuraDB Free Setup](./aura-free-setup/) page.
+:::alert{type="warning" header="Set up AuraDB and restore the dump first"}
+Do this before you start the Vocareum setup or the Own Account setup. Both paths assume the graph is already restored, and that step is the one most participants miss. Follow [Neo4j AuraDB Free Setup](./aura-free-setup/) now, then come back here.
+:::
 
-Then pick the environment you run the notebooks in\:
+## Step 1\: Create the Database
+
+Every path uses the same database. [Neo4j AuraDB Free Setup](./aura-free-setup/) walks through creating a **Neo4j AuraDB Free** instance and restoring the workshop graph into it.
+
+## Step 2\: Pick Your Environment
 
 | Path | When to use |
 |------|------------|
 | [Vocareum Access](./vocareum-access/) | Hosted event. Vocareum gives you JupyterLab and an AWS account |
 | [Own Account Setup](./own-account-setup/) | Self-paced, on your own machine and your own AWS account |
 
-Both paths end at the same place\: a terminal, four Neo4j settings in `CONFIG.txt`, AWS credentials in **us-east-1**, and the workshop dependencies installed.
+Both paths end at the same place\: a terminal, four Neo4j settings in `CONFIG.txt`, AWS credentials in **us-east-1**, and the workshop dependencies installed. Each page walks through filling in `CONFIG.txt`, installing dependencies, and verifying the environment for that path.
 
 ---
 
@@ -31,74 +37,6 @@ Both paths end at the same place\: a terminal, four Neo4j settings in `CONFIG.tx
 | `us.anthropic.claude-sonnet-4-6` | Extraction in Module 1, every agent from Module 2 onward |
 | `amazon.nova-2-multimodal-embeddings-v1:0` | Chunk embeddings written in Module 1 and queried after |
 | `amazon.titan-embed-text-v2:0` | Memory embeddings in Module 6 |
-
----
-
-## The Settings File
-
-The notebooks read their settings from `CONFIG.txt` at the repository root. It is already there, filled with placeholders. Open it and replace the Neo4j values with the ones from the instance you created\:
-
-| Setting | Value |
-|---|---|
-| `NEO4J_URI` | The `neo4j+s://` URI from your Aura credentials file |
-| `NEO4J_USERNAME` | `neo4j` |
-| `NEO4J_PASSWORD` | The password from your Aura credentials file |
-| `NEO4J_DATABASE` | `neo4j` |
-| `AWS_REGION` | `us-east-1`, already set |
-
-Only the URI and the password actually need typing. The username and the database name are already `neo4j`, and `AWS_REGION` already has a working value. Below that, a commented-out `AWS_BEARER_TOKEN_BEDROCK` line only applies if an instructor hands you a Bedrock API key\: uncomment it and paste the key only in that case, and leave it commented otherwise. An uncommented but blank value is worse than no line at all, because it sends an empty Bearer header and Bedrock calls stop falling back to your normal AWS credentials. Paste the credentials with no surrounding quotes and no trailing spaces.
-
-`NEO4J_URI` and `NEO4J_PASSWORD` have no defaults, on purpose. A built-in default password sends a bad credential to the right host and a built-in localhost URI sends a good credential to a host that is not listening, and both read like an outage rather than a missing setting.
-
-:::alert{type="warning" header="Do not commit your filled-in CONFIG.txt"}
-The repository ships `CONFIG.txt` as a template, so the file is tracked and your edits to it show up in `git status` like any other change. Leave them uncommitted. If you work from a fork, the safest move is `git update-index --skip-worktree CONFIG.txt` before you paste the password in.
-:::
-
----
-
-## Install the Dependencies
-
-:::code{language=bash showCopyAction=true}
-cd notebooks
-uv venv && uv pip install -r requirements.txt
-:::
-
-You can launch a notebook from the repository root, from `notebooks/`, or from
-that notebook's own module directory. Each location resolves the same shared
-package and module files. Custom launchers can set `WORKSHOP_NOTEBOOKS_DIR` to
-the absolute `notebooks/` directory.
-
----
-
-## Verify It
-
-One command checks everything the workshop needs. Run it from the `notebooks/` directory so it uses the environment you just built\:
-
-:::code{language=bash showCopyAction=true}
-uv run python ../environment/verify.py
-:::
-
-**Expected output\:**
-
-:::code{language=text}
-      loaded CONFIG.txt
-ok    python interpreter is supported
-ok    workshop dependencies import
-ok    neo4j settings are present
-ok    aws credentials resolve
-ok    neo4j returns the hero hotel
-ok    bedrock chat model answers
-ok    bedrock chunk embeddings are 1024-wide
-ok    bedrock memory embeddings are 1024-wide
-
-Your environment is ready. Open the Module 1 notebook.
-:::
-
-Anything other than `ok` on every line means stop and fix it here. The script exits non-zero, prints what failed, and prints what to do about it.
-
-:::alert{type="info" header="Why it checks a named hotel and not a node count"}
-`environment/verify.py` does not ask Neo4j how many hotels it holds. A count is plausible at any value, so a half-restored dump passes that check. Instead it reads one specific hotel by name and compares its address to the value the later modules depend on. The same rule governs the two embedding checks\: they compare the returned vector width to the expected 1024 dimensions, because a model that answers at the wrong width breaks Module 3 silently rather than loudly.
-:::
 
 ---
 
@@ -135,9 +73,5 @@ The terminal has no AWS credentials. On the Vocareum path they come from the lab
 ---
 
 Slides for this module\: [The Hotel Booking Assistant](../slides/overview-architecture/)
-
-## Next
-
-With every line reporting `ok`, head to [Module 1](../01-build-graph/).
 
 ::children{depth=1 variant=list}
